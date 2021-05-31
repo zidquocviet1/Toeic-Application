@@ -1,4 +1,4 @@
-package com.example.toeicapplication.adapters;
+package com.example.toeicapplication.network;
 
 
 import com.google.gson.JsonDeserializationContext;

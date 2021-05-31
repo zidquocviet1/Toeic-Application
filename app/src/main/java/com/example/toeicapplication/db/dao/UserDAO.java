@@ -10,6 +10,7 @@ import com.example.toeicapplication.db.model.User;
 
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
@@ -23,7 +24,8 @@ public interface UserDAO {
     Flowable<List<User>> getAllUsers();
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    Maybe<Void> updateUser(User user);
+    // completable doesn't care the return value
+    Completable updateUser(User user);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Single<Long> addUser(User user);

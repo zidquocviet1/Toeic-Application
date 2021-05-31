@@ -26,7 +26,7 @@
     <string name="find">Tìm khóa thi bạn muốn thi thử</string>
     <string name="search">Tìm kiếm khóa thi thử</string>
     <string name="courses">Khóa thi</string>
-    <string name="vocabulary">Từ vựng</string>
+    <string name="vocabulary">Từ vựng phổ biến</string>
     <string name="see_all">Xem tất cả</string>
     <string name="account_info">Thông tin tài khoản</string>
     <string name="title_activity_exam" translatable="false">ExamActivity</string>

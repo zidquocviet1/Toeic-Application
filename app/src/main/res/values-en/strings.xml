@@ -26,8 +26,8 @@
     <string name="find">Find a course you want to learn</string>
     <string name="search">Search for anything</string>
     <string name="courses">Courses</string>
-    <string name="vocabulary">Vocabulary</string>
-    <string name="see_all">See All</string>
+    <string name="vocabulary">Popular Vocabulary</string>
+    <string name="see_all">Learn more</string>
     <string name="account_info">Account Information</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import com.example.toeicapplication.databinding.ActivityHomeBinding;
 import com.example.toeicapplication.db.model.User;
+import com.example.toeicapplication.fragment.HomeFragment;
 import com.example.toeicapplication.listeners.PopupItemClickListener;
 import com.example.toeicapplication.utilities.NetworkController;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
@@ -69,6 +71,9 @@ public class HomeActivity
         setupViewModel();
         setupObserves();
         getAllUsers();
+        getAllCourses();
+        getTop30Words();
+        openFragment(HomeFragment.class, "Home");
     }
 
     private void setupViewModel() {
@@ -83,7 +88,14 @@ public class HomeActivity
                     users.stream()
                             .filter(u -> u != null && u.isLogin())
                             .findFirst()
-                            .ifPresent(this::showUserInfo);
+                            .map(user -> {
+                                homeVM.getOnlineUser().postValue(user);
+                                return user;
+                            })
+                            .orElseGet(() -> {
+                                homeVM.getOnlineUser().postValue(null);
+                                return null;
+                            });
                 }
             });
         }
@@ -113,6 +125,14 @@ public class HomeActivity
 
     private void getAllUsers() {
         homeVM.getAllUsers();
+    }
+
+    private void getAllCourses() {
+        homeVM.getAllCourses();
+    }
+
+    private void getTop30Words() {
+        homeVM.get30Words();
     }
 
     private void showUserInfo(User user) {
@@ -173,6 +193,22 @@ public class HomeActivity
         homeVM.updateUser(newUser);
     }
 
+    private void openFragment(Class fragmentClass, String tag){
+        Fragment fragment = null;
+        try{
+            fragment = (Fragment) fragmentClass.newInstance();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        if (fragment != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(binding.framelayout.getId(), fragment, tag)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -196,18 +232,20 @@ public class HomeActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        boolean isClick = false;
+        Class fragmentClass = null;
+        String tag = "";
 
         if (id == R.id.mnHome) {
-            Log.d(TAG, "Home item is clicked!");
-            isClick = true;
+            fragmentClass = HomeFragment.class;
+            tag = "Home";
         } else if (id == R.id.mnCourse) {
             Log.d(TAG, "Course item is clicked!");
-            isClick = true;
         } else if (id == R.id.mnRank) {
             Log.d(TAG, "Rank item is clicked!");
-            isClick = true;
         }
+
+        if (binding.bottomNav.getSelectedItemId() == id)
+            return false;
 
         binding.bottomNav.setOnNavigationItemSelectedListener(null);
         binding.navView.setNavigationItemSelectedListener(null);
@@ -215,11 +253,12 @@ public class HomeActivity
         binding.bottomNav.setSelectedItemId(id);
         binding.navView.setCheckedItem(id);
         binding.drawerLayout.closeDrawers();
+        openFragment(fragmentClass, tag);
 
         binding.bottomNav.setOnNavigationItemSelectedListener(this);
         binding.navView.setNavigationItemSelectedListener(this);
 
-        return isClick;
+        return true;
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.example.toeicapplication.di;
 
 import android.content.Context;
 
+import androidx.room.RoomDatabase;
+
 import com.example.toeicapplication.db.MyDB;
 import com.example.toeicapplication.db.dao.UserDAO;
 
@@ -18,5 +20,11 @@ import dagger.hilt.components.SingletonComponent;
 public class DatabaseModule {
     @Singleton
     @Provides
-    UserDAO provideUserDAO(@ApplicationContext Context context){ return MyDB.getInstance(context).getUserDAO(); }
+    MyDB provideDatabase(@ApplicationContext Context context){
+        return MyDB.getInstance(context);
+    }
+
+    @Singleton
+    @Provides
+    UserDAO provideUserDAO(MyDB database){ return database.getUserDAO(); }
 }

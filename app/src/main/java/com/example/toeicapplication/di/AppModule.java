@@ -2,6 +2,7 @@ package com.example.toeicapplication.di;
 
 import android.content.Context;
 
+import com.example.toeicapplication.db.MyDB;
 import com.example.toeicapplication.db.dao.UserDAO;
 import com.example.toeicapplication.network.service.UserService;
 import com.example.toeicapplication.repository.HomeRepository;
@@ -35,8 +36,10 @@ public class AppModule {
 
     @Singleton
     @Provides
-    public HomeRepository provideHomeRepository(UserDAO userDAO, CompositeDisposable cd,
+    public HomeRepository provideHomeRepository(UserDAO userDAO,
+                                                MyDB database,
+                                                CompositeDisposable cd,
                                                 @ApplicationContext Context context){
-        return new HomeRepositoryImpl(userDAO, cd, context);
+        return new HomeRepositoryImpl(userDAO, database, cd, context);
     }
 }
