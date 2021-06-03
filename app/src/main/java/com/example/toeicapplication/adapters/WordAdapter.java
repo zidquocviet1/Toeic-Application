@@ -22,7 +22,7 @@ import java.util.List;
 
 public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder>{
     private List<Word> data;
-    private Context context;
+    private final Context context;
     private ItemClickListener callback;
 
     public WordAdapter(Context context, List<Word> data){
@@ -63,6 +63,10 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                     callback.onItemClick(this, position);
                 }
             }
+        });
+
+        holder.chkWasLearnt.setOnClickListener(v -> {
+            word.setWasLearnt(!word.isWasLearnt());
         });
     }
 

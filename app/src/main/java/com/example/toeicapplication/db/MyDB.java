@@ -54,8 +54,9 @@ public abstract class MyDB extends RoomDatabase {
                                 .newSingleThreadScheduledExecutor()
                                 .execute(() -> {
                                     getInstance(context).getCourseDAO().insertAll(Course.courses);
+                                    List<Word> words = getWordFromAssets(context);
 
-                                    getInstance(context).getWordDAO().insertAll(getWordFromAssets(context));
+                                    getInstance(context).getWordDAO().insertAll(words);
                                 });
                     }
                 })
@@ -69,14 +70,14 @@ public abstract class MyDB extends RoomDatabase {
 
             Gson gson = new Gson();
             Type listWordType = new TypeToken<List<Word>>() {}.getType();
-            List<Word> words = gson.fromJson(jsonFileString, listWordType);
 
-            return words;
+            return gson.fromJson(jsonFileString, listWordType);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
+
 //    private static List<Word> getQuestionFromAssets(Context context){
 //        try {
 //            InputStream is = context.getAssets().open("question.json");
@@ -95,8 +96,7 @@ public abstract class MyDB extends RoomDatabase {
 //        }
 //    }
 
-    public MyDB() {
-    }
+    public MyDB() { }
 
     public abstract UserDAO getUserDAO();
 

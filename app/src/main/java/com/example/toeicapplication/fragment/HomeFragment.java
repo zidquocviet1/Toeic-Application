@@ -101,6 +101,7 @@ public class HomeFragment extends Fragment
 
         observeViewModel();
         initRecyclerView();
+        setData();
 
         return binding.getRoot();
     }
@@ -109,6 +110,26 @@ public class HomeFragment extends Fragment
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+        updateLearnedWord();
+    }
+
+    private void updateLearnedWord(){
+        if (words != null && !words.isEmpty()){
+            homeVM.updateLearnedWord(words);
+        }
+    }
+
+    private void setData(){
+        List<Course> newCourses = homeVM.getCourses().getValue();
+        List<Word> top30Words = homeVM.getTop30Words().getValue();
+
+        if (newCourses != null)
+            courses = new ArrayList<>(newCourses);
+        if (top30Words != null)
+            words = new ArrayList<>(top30Words);
+
+        courseAdapter.setData(courses);
+        wordsAdapter.setData(words);
     }
 
     @Override
@@ -141,20 +162,14 @@ public class HomeFragment extends Fragment
     private void observeViewModel() {
         homeVM = new ViewModelProvider(context).get(HomeViewModel.class);
 
-        homeVM.getCourses().observe(getViewLifecycleOwner(), courses -> {
-            courseAdapter.setData(courses);
-        });
-
-        homeVM.getTop30Words().observe(getViewLifecycleOwner(), words -> {
-            wordsAdapter.setData(words);
-        });
 //        homeVM.getWords().observe(this, words -> {
 //            if (words != null){
 //                vocabulary.addAll(words);
 //                binding.txtSeall.setClickable(true);
 //            }
 //        });
-        homeVM.getOnlineUser().observe(getViewLifecycleOwner(), user -> {
+
+        homeVM.getCacheUser().observe(getViewLifecycleOwner(), user -> {
             if (user != null)
                 binding.txtHello.setText(getString(R.string.hello, user.getDisplayName()));
             else
@@ -173,12 +188,12 @@ public class HomeFragment extends Fragment
         wordsAdapter.setOnItemClickListener(this);
 
         binding.rvCourse.setAdapter(courseAdapter);
-        binding.rvCourse.setHasFixedSize(true);
+        binding.rvCourse.setHasFixedSize(false);
         binding.rvCourse.setLayoutManager(new GridLayoutManager(context, 1,
                 RecyclerView.HORIZONTAL, false));
 
         binding.rvVocab.setAdapter(wordsAdapter);
-        binding.rvVocab.setHasFixedSize(true);
+        binding.rvVocab.setHasFixedSize(false);
         binding.rvVocab.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         binding.rvVocab.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
     }

@@ -11,8 +11,11 @@ import com.example.toeicapplication.db.dao.UserDAO;
 import com.example.toeicapplication.db.model.Course;
 import com.example.toeicapplication.db.model.User;
 import com.example.toeicapplication.db.model.Word;
+import com.example.toeicapplication.network.response.GetResponse;
+import com.example.toeicapplication.network.service.UserService;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -25,17 +28,17 @@ import io.reactivex.schedulers.Schedulers;
 
 public class HomeRepositoryImpl implements HomeRepository {
     private final CompositeDisposable compositeDisposable;
-    private final UserDAO userDAO;
+    private final UserService userService;
     private final Context context;
     private final MyDB database;
 
     @Inject
-    public HomeRepositoryImpl(UserDAO dao,
+    public HomeRepositoryImpl(UserService userService,
                               MyDB database,
                               CompositeDisposable compositeDisposable,
                               @ApplicationContext Context context) {
         this.compositeDisposable = compositeDisposable;
-        this.userDAO = dao;
+        this.userService = userService;
         this.context = context;
         this.database = database;
     }
@@ -43,14 +46,14 @@ public class HomeRepositoryImpl implements HomeRepository {
     @Override
     public void getAllUsers(MutableLiveData<List<User>> request) {
         compositeDisposable.add(
-                userDAO.getAllUsers()
+                database.getUserDAO().getAllUsers()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(users -> {
                             request.postValue(users);
-                            Log.e("TAG", "Lay du lieu tu database thanh cong");
+                            Log.e("TAG", "Lay du lieu User tu database thanh cong");
                         }, throwable -> {
-                            Log.e("TAG", "Lay du lieu tu database that bai: " + throwable.getMessage());
+                            Log.e("TAG", "Lay du lieu User tu database that bai: " + throwable.getMessage());
                             request.postValue(null);
                             throwable.printStackTrace();
                         })
@@ -60,7 +63,7 @@ public class HomeRepositoryImpl implements HomeRepository {
     @Override
     public void addUser(User user) {
         compositeDisposable.add(
-                userDAO.addUser(user)
+                database.getUserDAO().addUser(user)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(aLong -> {
@@ -72,7 +75,7 @@ public class HomeRepositoryImpl implements HomeRepository {
     @Override
     public void updateUser(User newUser) {
         compositeDisposable.add(
-                userDAO.updateUser(newUser)
+                database.getUserDAO().updateUser(newUser)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(() ->
@@ -107,15 +110,44 @@ public class HomeRepositoryImpl implements HomeRepository {
     }
 
     @Override
+    public void updateLearnedWord(List<Word> words) {
+        compositeDisposable.add(
+                database.getWordDAO().updateLearnedWord(words)
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(() -> Log.e("TAG", "update tu vung da hoc thanh cong"),
+                                throwable -> {
+                                    Log.e("TAG", "update tu vung da hoc that bai");
+                                })
+        );
+    }
+
+    @Override
+    public void callRemoteUser(MutableLiveData<User> request, Long id) {
+        compositeDisposable.add(
+                userService.findUser(id)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .timeout(5, TimeUnit.SECONDS)
+                        .subscribe(userGetResponse -> {
+                            if (userGetResponse.isStatus())
+                                request.postValue(userGetResponse.getData().get(0));
+                            Log.e("TAG", "Lay thong tin nguoi dung tu remote thanh cong");
+                        }, throwable -> {
+                            Log.e("TAG", "Lay thong tin nguoi dung tu remote that bai");
+                        })
+        );
+    }
+
+    @Override
     public void getAllCourses(MutableLiveData<List<Course>> request) {
         compositeDisposable.add(
-          database.getCourseDAO().getAllCourses()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(request::postValue, throwable -> {
-                    Log.e("TAG", "Khong the lay du lieu khoa hoc tu database: " + throwable.getMessage());
-                    throwable.printStackTrace();
-                })
+                database.getCourseDAO().getAllCourses()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(request::postValue, throwable -> {
+                            Log.e("TAG", "Khong the lay du lieu khoa hoc tu database: " + throwable.getMessage());
+                            throwable.printStackTrace();
+                        })
         );
     }
 }

@@ -20,4 +20,8 @@ public interface HomeRepository {
     void getAllWords(MutableLiveData<List<Word>> request);
 
     void get30Words(MutableLiveData<List<Word>> request);
+
+    void updateLearnedWord(List<Word> words);
+
+    void callRemoteUser(MutableLiveData<User> request, Long id);
 }

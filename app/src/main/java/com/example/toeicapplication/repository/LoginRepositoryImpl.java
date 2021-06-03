@@ -10,6 +10,8 @@ import com.example.toeicapplication.db.model.User;
 import com.example.toeicapplication.network.response.Response;
 import com.example.toeicapplication.network.service.UserService;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -27,14 +29,15 @@ public class LoginRepositoryImpl implements LoginRepository {
     }
 
     @Override
-    public void login(String userName, String password, Context context, MutableLiveData<Response.PostResponse<User>> request) {
+    public void login(User user, Context context, MutableLiveData<Response.PostResponse<User>> request) {
         compositeDisposable.add(
-                service.login(userName, password)
+                service.login(user)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
+                        .timeout(3, TimeUnit.SECONDS)
                         .subscribe(userPostResponse -> {
                             request.postValue(userPostResponse);
-                            Log.e("TAG", "Da vao duoc toi day: " + userPostResponse.toString());
+//                            Log.e("TAG", "Da vao duoc toi day: " + userPostResponse.toString());
                         }, throwable -> {
                             Response.PostResponse<User> res = new Response.PostResponse<>();
                             res.setData(null);
@@ -42,7 +45,7 @@ public class LoginRepositoryImpl implements LoginRepository {
                             res.setMessage(context.getString(R.string.server_error));
 
                             request.postValue(res);
-                            Log.e("TAG", "Cung da vao duoc toi day nhung loi");
+//                            Log.e("TAG", "Cung da vao duoc toi day nhung loi");
                         })
         );
     }

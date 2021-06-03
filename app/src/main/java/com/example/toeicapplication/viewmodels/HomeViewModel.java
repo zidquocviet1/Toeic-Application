@@ -20,16 +20,20 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<List<Course>> courses;
     private final MutableLiveData<List<Word>> words;
     private final MutableLiveData<List<Word>> top30Words;
-    private final MutableLiveData<User> onlineUser;
+
+    private final MutableLiveData<User> cacheUser;
+    private final MutableLiveData<User> remoteUser;
+
     private final HomeRepository repository;
 
     @Inject
     public HomeViewModel(HomeRepository repository) {
         users = new MutableLiveData<>();
         courses = new MutableLiveData<>();
-        onlineUser = new MutableLiveData<>();
+        cacheUser = new MutableLiveData<>();
         words = new MutableLiveData<>();
         top30Words = new MutableLiveData<>();
+        remoteUser = new MutableLiveData<>();
 
         this.repository = repository;
     }
@@ -50,8 +54,12 @@ public class HomeViewModel extends ViewModel {
         return courses;
     }
 
-    public MutableLiveData<User> getOnlineUser() {
-        return onlineUser;
+    public MutableLiveData<User> getCacheUser() {
+        return cacheUser;
+    }
+
+    public MutableLiveData<User> getRemoteUser() {
+        return remoteUser;
     }
 
     public void setUserList(List<User> users) {
@@ -74,6 +82,10 @@ public class HomeViewModel extends ViewModel {
         repository.getAllUsers(this.getUsers());
     }
 
+    public void callRemoteUser(Long id){
+        repository.callRemoteUser(this.remoteUser, id);
+    }
+
     public void updateUser(User newUser) {
         repository.updateUser(newUser);
     }
@@ -88,5 +100,9 @@ public class HomeViewModel extends ViewModel {
 
     public void get30Words(){
         repository.get30Words(this.top30Words);
+    }
+
+    public void updateLearnedWord(List<Word> words){
+        repository.updateLearnedWord(words);
     }
 }

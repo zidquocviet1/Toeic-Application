@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="LoadingDialog">
-        <item name="android:windowBackground">#80DFDEDE</item>
+        <item name="android:windowBackground">#CC000000</item>
     </style>
 
     <style name="NoActionBar" parent="Theme.MaterialComponents.DayNight.DarkActionBar">

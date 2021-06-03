@@ -36,10 +36,10 @@ public class AppModule {
 
     @Singleton
     @Provides
-    public HomeRepository provideHomeRepository(UserDAO userDAO,
+    public HomeRepository provideHomeRepository(UserService userService,
                                                 MyDB database,
                                                 CompositeDisposable cd,
                                                 @ApplicationContext Context context){
-        return new HomeRepositoryImpl(userDAO, database, cd, context);
+        return new HomeRepositoryImpl(userService, database, cd, context);
     }
 }

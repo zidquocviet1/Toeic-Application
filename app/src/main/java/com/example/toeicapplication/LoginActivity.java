@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
 
@@ -68,21 +69,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
 
         loginVM.getResponse().observe(this, userPostResponse -> {
+            // check the response data from login session
             if (userPostResponse != null){
                 if (userPostResponse.isStatus()){
                     User user = userPostResponse.getData();
 
-                    if (user != null && user.isLogin())
-                        navigateHomePage(userPostResponse.getData());
-                    else {
+                    if (user != null && user.isLogin()) {
+                        new Handler(getMainLooper()).postDelayed(() -> {
+                            LoadingDialog.dismissDialog();
+                            navigateHomePage(user);
+                        }, 1000);
+                    }
+                }else{
+                    new Handler(getMainLooper()).postDelayed(() -> {
                         LoadingDialog.dismissDialog();
                         Toast.makeText(this, userPostResponse.getMessage(),
                                 Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    LoadingDialog.dismissDialog();
-                    Toast.makeText(this, userPostResponse.getMessage(),
-                            Toast.LENGTH_SHORT).show();
+                    }, 1000);
                 }
             }
         });
@@ -118,9 +121,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void login(String userName, String password){
         if (validateUserNameAndPassword(userName, password)) {
             String newPassword = EncryptPassword.encrypt(password);
+            User user = new User(userName, newPassword);
 
             LoadingDialog.showLoadingDialog(this);
-            loginVM.login(userName, newPassword, this);
+            loginVM.login(user, this);
         }
     }
 

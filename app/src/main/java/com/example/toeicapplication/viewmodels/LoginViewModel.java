@@ -83,7 +83,7 @@ public class LoginViewModel extends ViewModel {
         this.passwordError.setValue(message);
     }
 
-    public void login(String userName, String password, Context context) {
-        repository.login(userName, password, context, this.getResponse());
+    public void login(User user, Context context) {
+        repository.login(user, context, this.getResponse());
     }
 }

@@ -66,7 +66,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
         holder.itemView.setOnClickListener(l -> {
             if (callback != null){
-                callback.onItemClick(CourseAdapter.class, position);
+                callback.onItemClick(this, position);
             }
         });
     }

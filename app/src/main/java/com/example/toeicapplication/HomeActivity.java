@@ -31,7 +31,6 @@ import com.example.toeicapplication.viewmodels.HomeViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -70,10 +69,7 @@ public class HomeActivity
         registerOnClickEvent();
         setupViewModel();
         setupObserves();
-        getAllUsers();
-        getAllCourses();
-        getTop30Words();
-        openFragment(HomeFragment.class, "Home");
+        loadData();
     }
 
     private void setupViewModel() {
@@ -89,13 +85,25 @@ public class HomeActivity
                             .filter(u -> u != null && u.isLogin())
                             .findFirst()
                             .map(user -> {
-                                homeVM.getOnlineUser().postValue(user);
+                                homeVM.getCacheUser().postValue(user);
+                                homeVM.callRemoteUser(1L);
                                 return user;
                             })
                             .orElseGet(() -> {
-                                homeVM.getOnlineUser().postValue(null);
+                                homeVM.getCacheUser().postValue(null);
                                 return null;
                             });
+                }
+            });
+
+            homeVM.getCourses().observe(this, courses -> {
+//                Log.e("TAG", "Load du lieu khoa hoc thanh cong");
+                openFragment(HomeFragment.class, "Home");
+            });
+
+            homeVM.getRemoteUser().observe(this, user -> {
+                if (user != null){
+                    homeVM.getCacheUser().postValue(user);
                 }
             });
         }
@@ -123,19 +131,15 @@ public class HomeActivity
         binding.bottomNav.setOnNavigationItemSelectedListener(this);
     }
 
-    private void getAllUsers() {
-        homeVM.getAllUsers();
+    private void loadData(){
+        if (homeVM != null) {
+            homeVM.getAllUsers();
+            homeVM.getAllCourses();
+            homeVM.get30Words();
+        }
     }
 
-    private void getAllCourses() {
-        homeVM.getAllCourses();
-    }
-
-    private void getTop30Words() {
-        homeVM.get30Words();
-    }
-
-    private void showUserInfo(User user) {
+    private void loadRemoteUser(User user) {
 
     }
 
@@ -204,19 +208,14 @@ public class HomeActivity
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(binding.framelayout.getId(), fragment, tag)
-                    .addToBackStack(null)
                     .commit();
         }
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
     protected void onDestroy() {
-        unregisterReceiver(receiver);
+        if (receiver != null)
+            unregisterReceiver(receiver);
         super.onDestroy();
     }
 
@@ -250,10 +249,10 @@ public class HomeActivity
         binding.bottomNav.setOnNavigationItemSelectedListener(null);
         binding.navView.setNavigationItemSelectedListener(null);
 
+        openFragment(fragmentClass, tag);
         binding.bottomNav.setSelectedItemId(id);
         binding.navView.setCheckedItem(id);
         binding.drawerLayout.closeDrawers();
-        openFragment(fragmentClass, tag);
 
         binding.bottomNav.setOnNavigationItemSelectedListener(this);
         binding.navView.setNavigationItemSelectedListener(this);
@@ -299,19 +298,8 @@ public class HomeActivity
                         Intent data = result.getData();
                         User responseUser = data.getParcelableExtra("user");
 
-                        User test = new User(null,
-                                "12345678",
-                                "12345678",
-                                "Mai Quoc Viet",
-                                LocalDate.now(),
-                                true);
-                        if (responseUser == null) {
-                            Log.e(TAG, "null user");
-                            homeVM.addUser(test);
-                        } else {
-                            Log.e(TAG, responseUser.toString());
-                            homeVM.addUser(test);
-                        }
+                        if (responseUser != null)
+                            homeVM.addUser(responseUser);
                     }
                 });
             } else if (id == R.id.mnRegister) {

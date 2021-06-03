@@ -20,17 +20,17 @@ public class User implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     private Long id;
     @ColumnInfo(name = "user_name")
-    @SerializedName(value = "username")
+    @SerializedName(value = "userName")
     private String userName;
     @ColumnInfo(name = "password")
     private String password;
     @ColumnInfo(name = "display_name")
-    @SerializedName(value = "display_name")
+    @SerializedName(value = "displayName")
     private String displayName;
     @ColumnInfo(name = "timestamp")
     private LocalDate timestamp;
     @ColumnInfo(name = "login")
-    @SerializedName(value = "login_state")
+    @SerializedName(value = "login")
     private boolean isLogin;
 
     public User(Long id, String userName, String password, String displayName, LocalDate timestamp, boolean isLogin) {
@@ -49,6 +49,12 @@ public class User implements Parcelable {
         this.displayName = displayName;
         this.timestamp = timestamp;
         this.isLogin = isLogin;
+    }
+
+    @Ignore
+    public User(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
     }
 
     @Ignore
