@@ -1,4 +1,4 @@
-package com.example.toeicapplication.db.model;
+package com.example.toeicapplication.model;
 
 public class Comment {
     private int id;

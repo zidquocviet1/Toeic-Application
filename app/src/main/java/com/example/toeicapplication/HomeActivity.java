@@ -1,6 +1,7 @@
 package com.example.toeicapplication;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -15,18 +16,23 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import com.example.toeicapplication.databinding.ActivityHomeBinding;
-import com.example.toeicapplication.db.model.User;
-import com.example.toeicapplication.fragment.HomeFragment;
+import com.example.toeicapplication.model.User;
+import com.example.toeicapplication.view.LoadingDialog;
+import com.example.toeicapplication.view.fragment.CourseFragment;
+import com.example.toeicapplication.view.fragment.HomeFragment;
 import com.example.toeicapplication.listeners.PopupItemClickListener;
+import com.example.toeicapplication.utilities.DataState;
 import com.example.toeicapplication.utilities.NetworkController;
+import com.example.toeicapplication.view.fragment.RankFragment;
+import com.example.toeicapplication.view.fragment.VocabularyFragment;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -49,12 +55,7 @@ public class HomeActivity
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (NetworkController.isOnline(context)) {
-
-            } else {
-                Toast.makeText(HomeActivity.this,
-                        getText(R.string.connection), Toast.LENGTH_SHORT).show();
-            }
+            homeVM.getNetworkState().postValue(NetworkController.isOnline(context));
         }
     };
 
@@ -78,6 +79,7 @@ public class HomeActivity
 
     private void setupObserves() {
         if (homeVM != null) {
+            // show cache user
             homeVM.getUsers().observe(this, users -> {
                 if (users != null && !users.isEmpty()) {
                     // get the first user with state is login
@@ -86,7 +88,8 @@ public class HomeActivity
                             .findFirst()
                             .map(user -> {
                                 homeVM.getCacheUser().postValue(user);
-                                homeVM.callRemoteUser(1L);
+                                if (isNetwork())
+                                    homeVM.callRemoteUser(user.getId());
                                 return user;
                             })
                             .orElseGet(() -> {
@@ -97,16 +100,23 @@ public class HomeActivity
             });
 
             homeVM.getCourses().observe(this, courses -> {
-//                Log.e("TAG", "Load du lieu khoa hoc thanh cong");
-                openFragment(HomeFragment.class, "Home");
+                openFragment(HomeFragment.class, "Home", R.id.mnHome);
             });
 
-            homeVM.getRemoteUser().observe(this, user -> {
-                if (user != null){
-                    homeVM.getCacheUser().postValue(user);
+            homeVM.getRemoteUser().observe(this, stateUser -> {
+                if (stateUser != null){
+                    if (stateUser.getStatus() == DataState.Status.SUCCESS) {
+                        homeVM.getCacheUser().postValue(stateUser.getData());
+                        loadRemoteUser(stateUser.getData());
+                    }
                 }
             });
         }
+    }
+
+    private boolean isNetwork(){
+        return homeVM.getNetworkState().getValue() != null
+                && homeVM.getNetworkState().getValue();
     }
 
     private void registerOnClickEvent() {
@@ -136,9 +146,11 @@ public class HomeActivity
             homeVM.getAllUsers();
             homeVM.getAllCourses();
             homeVM.get30Words();
+            homeVM.getRecentLogOutUser();
         }
     }
 
+    // show the avatar of the user
     private void loadRemoteUser(User user) {
 
     }
@@ -155,6 +167,14 @@ public class HomeActivity
                     showPopup(null, false);
                     return null;
                 });
+    }
+
+    public void displayLoading(boolean isDisplay, long time) {
+        if (isDisplay) {
+            LoadingDialog.showLoadingDialog(this);
+        } else {
+            new Handler(getMainLooper()).postDelayed(LoadingDialog::dismissDialog, time);
+        }
     }
 
     private void showPopup(User user, boolean isLogin) {
@@ -195,9 +215,12 @@ public class HomeActivity
         newUser.setLogin(false);
 
         homeVM.updateUser(newUser);
+
+        if (isNetwork())
+            homeVM.callLogout(newUser);
     }
 
-    private void openFragment(Class fragmentClass, String tag){
+    public void openFragment(Class fragmentClass, String tag, int id){
         Fragment fragment = null;
         try{
             fragment = (Fragment) fragmentClass.newInstance();
@@ -206,6 +229,24 @@ public class HomeActivity
         }
 
         if (fragment != null) {
+            binding.bottomNav.setOnNavigationItemSelectedListener(null);
+            binding.navView.setNavigationItemSelectedListener(null);
+
+            binding.txtTitle.setText(tag);
+            binding.bottomNav.setSelectedItemId(id);
+            binding.navView.setCheckedItem(id);
+            binding.drawerLayout.closeDrawers();
+
+            binding.bottomNav.setOnNavigationItemSelectedListener(this);
+            binding.navView.setNavigationItemSelectedListener(this);
+
+            if (id == R.id.mnVocab
+                    && (homeVM.getWords().getValue() == null
+                    || homeVM.getWords().getValue().getData() == null
+                    || homeVM.getWords().getValue().getData().isEmpty())){
+                homeVM.getAllWords();
+            }
+
             getSupportFragmentManager().beginTransaction()
                     .replace(binding.framelayout.getId(), fragment, tag)
                     .commit();
@@ -214,9 +255,16 @@ public class HomeActivity
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
+
         if (receiver != null)
             unregisterReceiver(receiver);
-        super.onDestroy();
+
+        User cacheUser = homeVM.getCacheUser().getValue();
+        User recentLogoutUser = homeVM.getRecentLogOutUserLiveData().getValue();
+
+        if (isNetwork() && (cacheUser == null || !cacheUser.isLogin()) && recentLogoutUser != null)
+            homeVM.callLogout(recentLogoutUser);
     }
 
     @Override
@@ -238,24 +286,20 @@ public class HomeActivity
             fragmentClass = HomeFragment.class;
             tag = "Home";
         } else if (id == R.id.mnCourse) {
-            Log.d(TAG, "Course item is clicked!");
+            fragmentClass = CourseFragment.class;
+            tag = "Courses";
         } else if (id == R.id.mnRank) {
-            Log.d(TAG, "Rank item is clicked!");
+            fragmentClass = RankFragment.class;
+            tag = "Leader Board";
+        }else if (id == R.id.mnVocab){
+            fragmentClass = VocabularyFragment.class;
+            tag = "Vocabulary";
         }
 
         if (binding.bottomNav.getSelectedItemId() == id)
             return false;
 
-        binding.bottomNav.setOnNavigationItemSelectedListener(null);
-        binding.navView.setNavigationItemSelectedListener(null);
-
-        openFragment(fragmentClass, tag);
-        binding.bottomNav.setSelectedItemId(id);
-        binding.navView.setCheckedItem(id);
-        binding.drawerLayout.closeDrawers();
-
-        binding.bottomNav.setOnNavigationItemSelectedListener(this);
-        binding.navView.setNavigationItemSelectedListener(this);
+        openFragment(fragmentClass, tag, id);
 
         return true;
     }

@@ -1,7 +1,6 @@
 package com.example.toeicapplication.db;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -12,9 +11,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.toeicapplication.db.dao.CourseDAO;
 import com.example.toeicapplication.db.dao.UserDAO;
 import com.example.toeicapplication.db.dao.WordDAO;
-import com.example.toeicapplication.db.model.Course;
-import com.example.toeicapplication.db.model.User;
-import com.example.toeicapplication.db.model.Word;
+import com.example.toeicapplication.model.Course;
+import com.example.toeicapplication.model.User;
+import com.example.toeicapplication.model.Word;
 import com.example.toeicapplication.utilities.Utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -24,13 +23,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import io.reactivex.functions.Action;
-import io.reactivex.schedulers.Schedulers;
 
 @Database(entities = {User.class, Course.class, Word.class}, exportSchema = false, version = 2)
 public abstract class MyDB extends RoomDatabase {

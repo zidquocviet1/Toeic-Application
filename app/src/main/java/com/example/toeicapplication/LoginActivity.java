@@ -1,6 +1,7 @@
 package com.example.toeicapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
@@ -10,11 +11,13 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.toeicapplication.databinding.ActivityLoginBinding;
-import com.example.toeicapplication.db.model.User;
+import com.example.toeicapplication.model.User;
+import com.example.toeicapplication.utilities.DataState;
 import com.example.toeicapplication.utilities.EncryptPassword;
 import com.example.toeicapplication.view.LoadingDialog;
 import com.example.toeicapplication.viewmodels.LoginViewModel;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -34,7 +37,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         binding.btnLogin.setOnClickListener(this);
     }
 
-    private void setupVMAndObserve(){
+    private void setupVMAndObserve() {
         loginVM = new ViewModelProvider(this).get(LoginViewModel.class);
 
         loginVM.getUserName().observe(this, userName -> {
@@ -61,51 +64,48 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         });
 
-        // return the home page
-        loginVM.getUserResponse().observe(this, responseUser -> {
-            if (responseUser != null){
-                navigateHomePage(responseUser);
+        loginVM.getStateResponse().observe(this, userDataState -> {
+            if (userDataState.getStatus() == DataState.Status.LOADING) {
+                displayLoading(true);
             }
-        });
 
-        loginVM.getResponse().observe(this, userPostResponse -> {
-            // check the response data from login session
-            if (userPostResponse != null){
-                if (userPostResponse.isStatus()){
-                    User user = userPostResponse.getData();
+            if (userDataState.getStatus() == DataState.Status.SUCCESS) {
+                displayLoading(false);
+                navigateHomePage(userDataState.getData());
+            }
 
-                    if (user != null && user.isLogin()) {
-                        new Handler(getMainLooper()).postDelayed(() -> {
-                            LoadingDialog.dismissDialog();
-                            navigateHomePage(user);
-                        }, 1000);
-                    }
-                }else{
-                    new Handler(getMainLooper()).postDelayed(() -> {
-                        LoadingDialog.dismissDialog();
-                        Toast.makeText(this, userPostResponse.getMessage(),
-                                Toast.LENGTH_SHORT).show();
-                    }, 1000);
-                }
+            if (userDataState.getStatus() == DataState.Status.ERROR) {
+                displayLoading(false);
+                new Handler(getMainLooper()).postDelayed(()
+                        -> Toast.makeText(this, userDataState.getMessage(),
+                        Toast.LENGTH_SHORT).show(), 1000);
             }
         });
     }
 
-    private boolean validateUserNameAndPassword(String userName, String password){
+    private void displayLoading(boolean isDisplay) {
+        if (isDisplay) {
+            LoadingDialog.showLoadingDialog(this);
+        } else {
+            new Handler(getMainLooper()).postDelayed(LoadingDialog::dismissDialog, 1000);
+        }
+    }
+
+    private boolean validateUserNameAndPassword(String userName, String password) {
         // check the network state
         if (false) {
             Toast.makeText(this, getText(R.string.connection),
                     Toast.LENGTH_SHORT).show();
             return false;
         } else {
-            if (userName.length() < 8){
+            if (userName.length() < 8) {
                 binding.layoutUsername.setError(getText(R.string.username_error));
                 Objects.requireNonNull(binding.layoutUsername.getEditText()).requestFocus();
                 binding.layoutPassword.setErrorEnabled(false);
                 loginVM.setUserNameError(getText(R.string.username_error).toString());
                 return false;
             }
-            if (password.length() < 8){
+            if (password.length() < 8) {
                 binding.layoutPassword.setError(getText(R.string.password_error));
                 Objects.requireNonNull(binding.layoutPassword.getEditText()).requestFocus();
                 binding.layoutUsername.setErrorEnabled(false);
@@ -118,17 +118,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void login(String userName, String password){
+    private void login(String userName, String password) {
         if (validateUserNameAndPassword(userName, password)) {
             String newPassword = EncryptPassword.encrypt(password);
             User user = new User(userName, newPassword);
 
-            LoadingDialog.showLoadingDialog(this);
             loginVM.login(user, this);
         }
     }
 
-    private void navigateHomePage(User user){
+    private void navigateHomePage(User user) {
         Intent intent = new Intent();
         intent.putExtra("user", user);
         setResult(RESULT_OK, intent);
@@ -150,7 +149,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         int id = v.getId();
 
-        if (id == R.id.btnLogin){
+        if (id == R.id.btnLogin) {
             String userName = binding.layoutUsername.getEditText().getText().toString();
             String password = binding.layoutPassword.getEditText().getText().toString();
 

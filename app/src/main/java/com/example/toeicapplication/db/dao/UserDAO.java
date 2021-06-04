@@ -6,13 +6,12 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.toeicapplication.db.model.User;
+import com.example.toeicapplication.model.User;
 
 import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 @Dao
@@ -29,4 +28,7 @@ public interface UserDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Single<Long> addUser(User user);
+
+    @Query("select * from user_info order by timestamp desc limit 1")
+    Single<User> recentLogoutUser();
 }

@@ -9,6 +9,7 @@ import com.example.toeicapplication.repository.HomeRepository;
 import com.example.toeicapplication.repository.HomeRepositoryImpl;
 import com.example.toeicapplication.repository.LoginRepository;
 import com.example.toeicapplication.repository.LoginRepositoryImpl;
+import com.example.toeicapplication.utilities.MyActivityForResult;
 
 import javax.inject.Singleton;
 
@@ -16,6 +17,7 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
+import dagger.hilt.android.scopes.ActivityScoped;
 import dagger.hilt.components.SingletonComponent;
 import io.reactivex.disposables.CompositeDisposable;
 

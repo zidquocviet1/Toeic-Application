@@ -3,7 +3,7 @@ package com.example.toeicapplication.db.converter;
 import androidx.room.TypeConverter;
 
 
-import com.example.toeicapplication.db.model.Comment;
+import com.example.toeicapplication.model.Comment;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

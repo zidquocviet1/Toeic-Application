@@ -6,9 +6,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.toeicapplication.db.model.User;
+import com.example.toeicapplication.model.User;
 import com.example.toeicapplication.repository.LoginRepositoryImpl;
 import com.example.toeicapplication.network.response.Response;
+import com.example.toeicapplication.utilities.DataState;
 
 import javax.inject.Inject;
 
@@ -20,8 +21,8 @@ public class LoginViewModel extends ViewModel {
     private final MutableLiveData<String> password;
     private final MutableLiveData<String> userError;
     private final MutableLiveData<String> passwordError;
-    private final MutableLiveData<User> responseUser;
-    private final MutableLiveData<Response.PostResponse<User>> response;
+
+    private final MutableLiveData<DataState<User>> stateResponse;
 
     @Inject
     LoginRepositoryImpl repository;
@@ -32,15 +33,13 @@ public class LoginViewModel extends ViewModel {
         password = new MutableLiveData<>();
         userError = new MutableLiveData<>();
         passwordError = new MutableLiveData<>();
-        responseUser = new MutableLiveData<>();
-        response = new MutableLiveData<>();
+
+        stateResponse = new MutableLiveData<>();
 
         userName.postValue("");
         password.postValue("");
         userError.postValue("");
         passwordError.postValue("");
-        responseUser.postValue(null);
-        response.postValue(null);
     }
 
     public LiveData<String> getUserName() {
@@ -59,14 +58,6 @@ public class LoginViewModel extends ViewModel {
         return this.passwordError;
     }
 
-    public LiveData<User> getUserResponse() {
-        return this.responseUser;
-    }
-
-    public MutableLiveData<Response.PostResponse<User>> getResponse() {
-        return this.response;
-    }
-
     public void setUserName(String userName) {
         this.userName.setValue(userName);
     }
@@ -83,7 +74,11 @@ public class LoginViewModel extends ViewModel {
         this.passwordError.setValue(message);
     }
 
-    public void login(User user, Context context) {
-        repository.login(user, context, this.getResponse());
+    public MutableLiveData<DataState<User>> getStateResponse() {
+        return stateResponse;
+    }
+
+    public void login(User user, Context context){
+        repository.login(user, context, this.getStateResponse());
     }
 }

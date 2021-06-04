@@ -5,14 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.toeicapplication.R;
-import com.example.toeicapplication.db.model.Course;
-import com.example.toeicapplication.db.model.Word;
+import com.example.toeicapplication.model.Word;
 import com.example.toeicapplication.listeners.ItemClickListener;
 
 import org.jetbrains.annotations.NotNull;
@@ -20,14 +21,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder>{
+public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> implements Filterable {
     private List<Word> data;
+    private List<Word> dataFiltered;
     private final Context context;
     private ItemClickListener callback;
 
     public WordAdapter(Context context, List<Word> data){
         this.context = context;
         this.data = data;
+        this.dataFiltered = this.data;
     }
 
     public void setOnItemClickListener(ItemClickListener callback){
@@ -35,7 +38,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     }
 
     public void setData(List<Word> words){
-        this.data = new ArrayList<>(words);
+        this.data = words;
         notifyItemRangeInserted(0, data.size() -1);
     }
 
@@ -43,7 +46,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     @NotNull
     @Override
     public WordViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(this.context).inflate(R.layout.word_info, parent, false);
+        View view = LayoutInflater.from(this.context).inflate(R.layout.info_word, parent, false);
         return new WordAdapter.WordViewHolder(view);
     }
 
@@ -73,6 +76,39 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    // not complete yet
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    dataFiltered = data;
+                } else {
+                    List<Word> filteredList = new ArrayList<>();
+                    for (Word row : data) {
+                        if (row.getName().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(row);
+                        }
+                    }
+                    dataFiltered = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = dataFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                dataFiltered = new ArrayList<>((List<Word>)filterResults.values);
+
+                notifyItemRangeChanged(0, dataFiltered.size() - 1);
+            }
+        };
     }
 
     public static class WordViewHolder extends RecyclerView.ViewHolder{

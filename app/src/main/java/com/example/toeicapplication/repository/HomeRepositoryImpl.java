@@ -6,13 +6,14 @@ import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.toeicapplication.R;
 import com.example.toeicapplication.db.MyDB;
-import com.example.toeicapplication.db.dao.UserDAO;
-import com.example.toeicapplication.db.model.Course;
-import com.example.toeicapplication.db.model.User;
-import com.example.toeicapplication.db.model.Word;
-import com.example.toeicapplication.network.response.GetResponse;
+import com.example.toeicapplication.model.Course;
+import com.example.toeicapplication.model.User;
+import com.example.toeicapplication.model.Word;
+import com.example.toeicapplication.network.response.Response;
 import com.example.toeicapplication.network.service.UserService;
+import com.example.toeicapplication.utilities.DataState;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -51,10 +51,9 @@ public class HomeRepositoryImpl implements HomeRepository {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(users -> {
                             request.postValue(users);
-                            Log.e("TAG", "Lay du lieu User tu database thanh cong");
+                            Log.e("TAG", "Get User data from db successful");
                         }, throwable -> {
-                            Log.e("TAG", "Lay du lieu User tu database that bai: " + throwable.getMessage());
-                            request.postValue(null);
+                            Log.e("TAG", "Get User data from db failure: " + throwable.getMessage());
                             throwable.printStackTrace();
                         })
         );
@@ -66,9 +65,7 @@ public class HomeRepositoryImpl implements HomeRepository {
                 database.getUserDAO().addUser(user)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(aLong -> {
-                            Log.d("TAG", "them user thanh cong voi id = " + aLong);
-                        })
+                        .subscribe(aLong -> Log.d("TAG", "Add user with id = " + aLong))
         );
     }
 
@@ -79,18 +76,27 @@ public class HomeRepositoryImpl implements HomeRepository {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(() ->
-                                Toast.makeText(context, "You are logging out successfully!", Toast.LENGTH_SHORT).show())
+                                Toast.makeText(context, "You are logging out successfully!",
+                                        Toast.LENGTH_SHORT).show())
         );
     }
 
     @Override
-    public void getAllWords(MutableLiveData<List<Word>> request) {
+    public void getAllWords(MutableLiveData<DataState<List<Word>>> request) {
+        request.postValue(DataState.Loading(null));
+
         compositeDisposable.add(
                 database.getWordDAO().getAllWords()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(request::postValue, throwable -> {
-                            Log.e("TAG", "Khong the lay du lieu khoa hoc tu database: " + throwable.getMessage());
+                        .subscribe(words -> {
+                            if (words != null){
+                                request.postValue(DataState.Success(words));
+                            }
+                        }, throwable -> {
+                            request.postValue(DataState.Error(throwable.getMessage()));
+                            Log.e("TAG", "Can't get the course data from database: "
+                                    + throwable.getMessage());
                             throwable.printStackTrace();
                         })
         );
@@ -103,7 +109,8 @@ public class HomeRepositoryImpl implements HomeRepository {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(request::postValue, throwable -> {
-                            Log.e("TAG", "Khong the lay du lieu khoa hoc tu database: " + throwable.getMessage());
+                            Log.e("TAG", "Can't get the top 30 words from database: "
+                                    + throwable.getMessage());
                             throwable.printStackTrace();
                         })
         );
@@ -114,27 +121,29 @@ public class HomeRepositoryImpl implements HomeRepository {
         compositeDisposable.add(
                 database.getWordDAO().updateLearnedWord(words)
                         .subscribeOn(Schedulers.io())
-                        .subscribe(() -> Log.e("TAG", "update tu vung da hoc thanh cong"),
-                                throwable -> {
-                                    Log.e("TAG", "update tu vung da hoc that bai");
-                                })
+                        .subscribe(() -> Log.e("TAG", "Update learned words successful"),
+                                throwable -> Log.e("TAG", "Update learned words failure"))
         );
     }
 
     @Override
-    public void callRemoteUser(MutableLiveData<User> request, Long id) {
+    public void callRemoteUser(MutableLiveData<DataState<User>> request, Long id) {
+        request.postValue(DataState.Loading(null));
+
         compositeDisposable.add(
                 userService.findUser(id)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .timeout(5, TimeUnit.SECONDS)
                         .subscribe(userGetResponse -> {
-                            if (userGetResponse.isStatus())
-                                request.postValue(userGetResponse.getData().get(0));
-                            Log.e("TAG", "Lay thong tin nguoi dung tu remote thanh cong");
-                        }, throwable -> {
-                            Log.e("TAG", "Lay thong tin nguoi dung tu remote that bai");
-                        })
+                            if (userGetResponse.isStatus()) {
+                                User user = userGetResponse.getData().get(0);
+
+                                request.postValue(DataState.Success(user));
+                            } else {
+                                request.postValue(DataState.Error(userGetResponse.getMessage()));
+                            }
+                        }, throwable -> request.postValue(DataState.Error(context.getString(R.string.server_error))))
         );
     }
 
@@ -145,7 +154,40 @@ public class HomeRepositoryImpl implements HomeRepository {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(request::postValue, throwable -> {
-                            Log.e("TAG", "Khong the lay du lieu khoa hoc tu database: " + throwable.getMessage());
+                            Log.e("TAG", "Get the course data failure: " + throwable.getMessage());
+                            throwable.printStackTrace();
+                        })
+        );
+    }
+
+    @Override
+    public void callLogout(User user) {
+        compositeDisposable.add(
+                userService.logout(user)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(userPutResponse -> {
+                            if (userPutResponse.isStatus()) {
+                                Log.e("TAG", "Log out user successfully with id = " + user.getId());
+                            }
+                        }, throwable -> {
+                            Log.e("TAG", "Log out failure: " + throwable.getMessage());
+                            throwable.printStackTrace();
+                        })
+        );
+    }
+
+    @Override
+    public void getRecentLogOutUser(MutableLiveData<User> request) {
+        compositeDisposable.add(
+                database.getUserDAO().recentLogoutUser()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(user -> {
+                            if (user != null) request.setValue(user);
+                            Log.e("TAG", "Get recent log out user successfully");
+                        }, throwable -> {
+                            Log.e("TAG", "No user expected: " + throwable.getMessage());
                             throwable.printStackTrace();
                         })
         );

@@ -5,7 +5,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.toeicapplication.db.model.Word;
+import com.example.toeicapplication.model.Word;
 
 import java.util.List;
 

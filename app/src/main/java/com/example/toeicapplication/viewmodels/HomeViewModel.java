@@ -3,10 +3,11 @@ package com.example.toeicapplication.viewmodels;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.toeicapplication.db.model.Course;
-import com.example.toeicapplication.db.model.User;
-import com.example.toeicapplication.db.model.Word;
+import com.example.toeicapplication.model.Course;
+import com.example.toeicapplication.model.User;
+import com.example.toeicapplication.model.Word;
 import com.example.toeicapplication.repository.HomeRepository;
+import com.example.toeicapplication.utilities.DataState;
 
 import java.util.List;
 
@@ -18,11 +19,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class HomeViewModel extends ViewModel {
     private final MutableLiveData<List<User>> users;
     private final MutableLiveData<List<Course>> courses;
-    private final MutableLiveData<List<Word>> words;
+    private final MutableLiveData<DataState<List<Word>>> words;
     private final MutableLiveData<List<Word>> top30Words;
+    private final MutableLiveData<Boolean> networkState;
 
     private final MutableLiveData<User> cacheUser;
-    private final MutableLiveData<User> remoteUser;
+    private final MutableLiveData<User> recentLogOutUser;
+    private final MutableLiveData<DataState<User>> remoteUser;
 
     private final HomeRepository repository;
 
@@ -34,8 +37,15 @@ public class HomeViewModel extends ViewModel {
         words = new MutableLiveData<>();
         top30Words = new MutableLiveData<>();
         remoteUser = new MutableLiveData<>();
+        networkState = new MutableLiveData<>();
+        recentLogOutUser = new MutableLiveData<>();
 
         this.repository = repository;
+        networkState.setValue(false);
+    }
+
+    public MutableLiveData<Boolean> getNetworkState() {
+        return networkState;
     }
 
     public MutableLiveData<List<User>> getUsers() {
@@ -46,7 +56,7 @@ public class HomeViewModel extends ViewModel {
         return top30Words;
     }
 
-    public MutableLiveData<List<Word>> getWords() {
+    public MutableLiveData<DataState<List<Word>>> getWords() {
         return words;
     }
 
@@ -58,7 +68,11 @@ public class HomeViewModel extends ViewModel {
         return cacheUser;
     }
 
-    public MutableLiveData<User> getRemoteUser() {
+    public MutableLiveData<User> getRecentLogOutUserLiveData() {
+        return recentLogOutUser;
+    }
+
+    public MutableLiveData<DataState<User>> getRemoteUser() {
         return remoteUser;
     }
 
@@ -104,5 +118,13 @@ public class HomeViewModel extends ViewModel {
 
     public void updateLearnedWord(List<Word> words){
         repository.updateLearnedWord(words);
+    }
+
+    public void callLogout(User user){
+        repository.callLogout(user);
+    }
+
+    public void getRecentLogOutUser(){
+        repository.getRecentLogOutUser(this.recentLogOutUser);
     }
 }

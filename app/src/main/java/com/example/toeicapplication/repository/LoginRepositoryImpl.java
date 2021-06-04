@@ -1,14 +1,14 @@
 package com.example.toeicapplication.repository;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.toeicapplication.R;
-import com.example.toeicapplication.db.model.User;
+import com.example.toeicapplication.model.User;
 import com.example.toeicapplication.network.response.Response;
 import com.example.toeicapplication.network.service.UserService;
+import com.example.toeicapplication.utilities.DataState;
 
 import java.util.concurrent.TimeUnit;
 
@@ -29,22 +29,25 @@ public class LoginRepositoryImpl implements LoginRepository {
     }
 
     @Override
-    public void login(User user, Context context, MutableLiveData<Response.PostResponse<User>> request) {
+    public void login(User user, Context context, MutableLiveData<DataState<User>> request) {
+        request.postValue(DataState.Loading(null));
+
         compositeDisposable.add(
                 service.login(user)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .timeout(3, TimeUnit.SECONDS)
+                        .timeout(5, TimeUnit.SECONDS)
                         .subscribe(userPostResponse -> {
-                            request.postValue(userPostResponse);
-//                            Log.e("TAG", "Da vao duoc toi day: " + userPostResponse.toString());
-                        }, throwable -> {
-                            Response.PostResponse<User> res = new Response.PostResponse<>();
-                            res.setData(null);
-                            res.setStatus(false);
-                            res.setMessage(context.getString(R.string.server_error));
+                            if (userPostResponse.isStatus()) {
+                                User data = userPostResponse.getData();
 
-                            request.postValue(res);
+                                request.postValue(DataState.Success(data));
+                            }else{
+                                request.postValue(DataState.Error(userPostResponse.getMessage()));
+                            }
+                        }, throwable -> {
+                            request.postValue(DataState.Error(context.getString(R.string.server_error)));
+                            throwable.printStackTrace();
 //                            Log.e("TAG", "Cung da vao duoc toi day nhung loi");
                         })
         );

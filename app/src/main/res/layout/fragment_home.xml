@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.HomeFragment">
+    tools:context=".view.fragment.HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -105,7 +105,7 @@
             android:clickable="true"
             android:focusable="true"
             android:fontFamily="@font/avenir_lt_pro_light"
-            android:text="@string/see_all"
+            android:text="@string/view_all"
             android:textColor="@color/see_all"
             android:textSize="18sp"
             android:textStyle="bold"

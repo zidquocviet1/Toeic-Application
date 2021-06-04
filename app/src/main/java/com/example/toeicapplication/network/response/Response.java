@@ -9,7 +9,8 @@ public class Response {
     @SerializedName("message")
     private String message;
 
-    public Response(){}
+    public Response() {
+    }
 
     public Response(boolean status, String message) {
         this.status = status;
@@ -19,6 +20,7 @@ public class Response {
     public boolean isStatus() {
         return status;
     }
+
     public String getMessage() {
         return message;
     }
@@ -31,21 +33,44 @@ public class Response {
         this.message = message;
     }
 
-    public static final class PostResponse<T> extends Response{
+    public static final class PostResponse<T> extends Response {
         private T data;
 
-        public PostResponse(){
+        public PostResponse() {
             super();
         }
 
-        public PostResponse(PostResponse<T> obj){
+        public PostResponse(PostResponse<T> obj) {
             super(obj.isStatus(), obj.getMessage());
             this.data = obj.getData();
         }
 
-        public T getData(){return this.data; }
+        public T getData() {
+            return this.data;
+        }
 
-        public void setData(T data){
+        public void setData(T data) {
+            this.data = data;
+        }
+    }
+
+    public static final class PutResponse<T> extends Response {
+        private T data;
+
+        public PutResponse() {
+            super();
+        }
+
+        public PutResponse(PostResponse<T> obj) {
+            super(obj.isStatus(), obj.getMessage());
+            this.data = obj.getData();
+        }
+
+        public T getData() {
+            return this.data;
+        }
+
+        public void setData(T data) {
             this.data = data;
         }
     }

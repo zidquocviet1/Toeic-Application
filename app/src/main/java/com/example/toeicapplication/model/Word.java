@@ -1,4 +1,4 @@
-package com.example.toeicapplication.db.model;
+package com.example.toeicapplication.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

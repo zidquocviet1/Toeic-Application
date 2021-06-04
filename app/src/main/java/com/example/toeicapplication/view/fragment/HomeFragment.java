@@ -1,4 +1,4 @@
-package com.example.toeicapplication.fragment;
+package com.example.toeicapplication.view.fragment;
 
 import android.os.Bundle;
 
@@ -20,8 +20,8 @@ import com.example.toeicapplication.R;
 import com.example.toeicapplication.adapters.CourseAdapter;
 import com.example.toeicapplication.adapters.WordAdapter;
 import com.example.toeicapplication.databinding.FragmentHomeBinding;
-import com.example.toeicapplication.db.model.Course;
-import com.example.toeicapplication.db.model.Word;
+import com.example.toeicapplication.model.Course;
+import com.example.toeicapplication.model.Word;
 import com.example.toeicapplication.listeners.ItemClickListener;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
 
@@ -47,7 +47,6 @@ public class HomeFragment extends Fragment
 
     private List<Course> courses;
     private List<Word> words;
-    private List<Word> vocabulary = new ArrayList<>();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -101,7 +100,6 @@ public class HomeFragment extends Fragment
 
         observeViewModel();
         initRecyclerView();
-        setData();
 
         return binding.getRoot();
     }
@@ -110,26 +108,13 @@ public class HomeFragment extends Fragment
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-        updateLearnedWord();
+//        updateLearnedWord(); // this should be in on destroy of home activity
     }
 
     private void updateLearnedWord(){
         if (words != null && !words.isEmpty()){
             homeVM.updateLearnedWord(words);
         }
-    }
-
-    private void setData(){
-        List<Course> newCourses = homeVM.getCourses().getValue();
-        List<Word> top30Words = homeVM.getTop30Words().getValue();
-
-        if (newCourses != null)
-            courses = new ArrayList<>(newCourses);
-        if (top30Words != null)
-            words = new ArrayList<>(top30Words);
-
-        courseAdapter.setData(courses);
-        wordsAdapter.setData(words);
     }
 
     @Override
@@ -144,7 +129,6 @@ public class HomeFragment extends Fragment
 //                    LoadingDialog.dismissDialog();
 //                    startActivity(intent);
 //                },1000);
-                Log.e("TAG", "Course item has been clicked!");
             }
         } else if (object instanceof WordAdapter) {
         }
@@ -152,22 +136,13 @@ public class HomeFragment extends Fragment
 
     @Override
     public void onClick(View v) {
-        // load all word into vocabulary activity
-        // the current problem is the room database is loading so slow with the large data
-//        if (v.getId() == R.id.txtSeall){
-//            context.openFragment(VocabularyFragment.class, "Vocabulary");
-//        }
+        if (v.getId() == R.id.txtSeall){
+            context.openFragment(VocabularyFragment.class, "Vocabulary", R.id.mnVocab);
+        }
     }
 
     private void observeViewModel() {
         homeVM = new ViewModelProvider(context).get(HomeViewModel.class);
-
-//        homeVM.getWords().observe(this, words -> {
-//            if (words != null){
-//                vocabulary.addAll(words);
-//                binding.txtSeall.setClickable(true);
-//            }
-//        });
 
         homeVM.getCacheUser().observe(getViewLifecycleOwner(), user -> {
             if (user != null)
@@ -175,13 +150,25 @@ public class HomeFragment extends Fragment
             else
                 binding.txtHello.setText(getString(R.string.hello, "Guys"));
         });
+
+        homeVM.getTop30Words().observe(getViewLifecycleOwner(), words -> {
+            if (words != null){
+                wordsAdapter.setData(words);
+            }
+        });
+
+        homeVM.getCourses().observe(getViewLifecycleOwner(), courses -> {
+            if (courses != null){
+                courseAdapter.setData(courses);
+            }
+        });
     }
 
     private void initRecyclerView() {
         courses = new ArrayList<>();
         words = new ArrayList<>();
 
-        courseAdapter = new CourseAdapter(context, courses);
+        courseAdapter = new CourseAdapter(context, courses, R.layout.info_course, CourseAdapter.Owner.HOME_FRAGMENT);
         wordsAdapter = new WordAdapter(context, words);
 
         courseAdapter.setOnItemClickListener(this);
@@ -197,5 +184,4 @@ public class HomeFragment extends Fragment
         binding.rvVocab.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         binding.rvVocab.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
     }
-
 }

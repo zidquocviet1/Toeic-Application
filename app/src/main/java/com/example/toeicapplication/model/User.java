@@ -1,4 +1,4 @@
-package com.example.toeicapplication.db.model;
+package com.example.toeicapplication.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,13 +9,14 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.example.toeicapplication.db.converter.LocalDateConverter;
+import com.example.toeicapplication.db.converter.LocalDateTimeConverter;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity(tableName = "user_info")
-@TypeConverters(LocalDateConverter.class)
+@TypeConverters(LocalDateTimeConverter.class)
 public class User implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     private Long id;
@@ -28,12 +29,13 @@ public class User implements Parcelable {
     @SerializedName(value = "displayName")
     private String displayName;
     @ColumnInfo(name = "timestamp")
-    private LocalDate timestamp;
+    private LocalDateTime timestamp;
     @ColumnInfo(name = "login")
     @SerializedName(value = "login")
     private boolean isLogin;
 
-    public User(Long id, String userName, String password, String displayName, LocalDate timestamp, boolean isLogin) {
+    public User(Long id, String userName, String password,
+                String displayName, LocalDateTime timestamp, boolean isLogin) {
         this.id = id;
         this.userName = userName;
         this.password = password;
@@ -43,7 +45,8 @@ public class User implements Parcelable {
     }
 
     @Ignore
-    public User(String userName, String password, String displayName, LocalDate timestamp, boolean isLogin) {
+    public User(String userName, String password, String displayName,
+                LocalDateTime timestamp, boolean isLogin) {
         this.userName = userName;
         this.password = password;
         this.displayName = displayName;
@@ -66,6 +69,7 @@ public class User implements Parcelable {
         this.isLogin = b.isLogin;
     }
 
+
     protected User(Parcel in) {
         if (in.readByte() == 0) {
             id = null;
@@ -76,6 +80,7 @@ public class User implements Parcelable {
         password = in.readString();
         displayName = in.readString();
         isLogin = in.readByte() != 0;
+        timestamp = (LocalDateTime) in.readSerializable();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -122,11 +127,11 @@ public class User implements Parcelable {
         this.displayName = displayName;
     }
 
-    public LocalDate getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDate timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -155,5 +160,6 @@ public class User implements Parcelable {
         dest.writeString(password);
         dest.writeString(displayName);
         dest.writeByte((byte) (isLogin ? 1 : 0));
+        dest.writeSerializable(timestamp);
     }
 }
