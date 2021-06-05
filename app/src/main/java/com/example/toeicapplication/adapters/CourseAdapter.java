@@ -27,15 +27,15 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     private final Context context;
     private List<Course> data;
     private ItemClickListener callback;
-    private int layoutResource;
-    private Owner owner;
+    private final int layoutResource;
+    private final Owner owner;
 
     public enum Owner {
         HOME_FRAGMENT,
         COURSE_FRAGMENT
     }
 
-    private int[] images = {
+    private static final int[] images = {
             R.drawable.image_1,
             R.drawable.image_2,
             R.drawable.image_3,
@@ -58,6 +58,10 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         notifyItemRangeInserted(0, data.size() -1);
     }
 
+    public Course getItem(int position){
+        return data.get(position);
+    }
+
     @NonNull
     @NotNull
     @Override
@@ -74,8 +78,14 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         holder.imageView.setImageDrawable(ContextCompat.getDrawable(context, images[imagesIndex]));
         holder.txtName.setText(course.getName());
         holder.txtDescription.setText(course.getDescription());
+        holder.itemView.setOnClickListener(v -> {
+            if (callback != null){
+                callback.onItemClick(this, position);
+            }
+        });
 
         if (owner == Owner.COURSE_FRAGMENT){
+            holder.itemView.setOnClickListener(null);
             holder.rbStar.setRating(course.getRating());
             holder.txtComment.setText(context.getString(R.string.comment,
                                         course.getComment() == null ? 0: course.getComment().size()));
@@ -88,6 +98,8 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 }
             });
         }
+
+
     }
 
     @Override

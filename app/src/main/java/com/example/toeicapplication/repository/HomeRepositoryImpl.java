@@ -116,6 +116,7 @@ public class HomeRepositoryImpl implements HomeRepository {
         );
     }
 
+    // not perfect case
     @Override
     public void updateLearnedWord(List<Word> words) {
         compositeDisposable.add(

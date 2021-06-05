@@ -117,4 +117,36 @@
             android:src="@mipmap/ic_launcher_lv_toeic_round" />
     </androidx.cardview.widget.CardView>
 
+    <View
+        android:id="@+id/left"
+        android:background="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/txtOr"
+        app:layout_constraintTop_toTopOf="@id/txtOr"
+        app:layout_constraintBottom_toBottomOf="@id/txtOr"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"/>
+
+    <View
+        android:id="@+id/right"
+        android:background="@color/black"
+        app:layout_constraintTop_toTopOf="@id/txtOr"
+        app:layout_constraintBottom_toBottomOf="@id/txtOr"
+        app:layout_constraintStart_toEndOf="@id/txtOr"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"/>
+
+    <TextView
+        android:id="@+id/txtOr"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/txtSignup"
+        app:layout_constraintStart_toEndOf="@id/left"
+        app:layout_constraintEnd_toStartOf="@id/right"
+        android:layout_width="wrap_content"
+        android:text="or"
+        android:fontFamily="@font/avenir_lt_pro_light"
+        android:textColor="@color/description"
+        android:textSize="20sp"
+        android:layout_height="wrap_content"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

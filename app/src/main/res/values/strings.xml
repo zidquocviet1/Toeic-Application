@@ -2,65 +2,100 @@
     <string name="app_name">LV Toeic</string>
     <string name="facebook_app_id">1037347723373604</string>
     <string name="fb_login_protocol_scheme">fb1037347723373604</string>
-    <string name="hello">Xin Chào, %1$s</string>
-    <string name="password_error">Mật khẩu phải có ít nhất 8 kí tự.</string>
-    <string name="username_error">Tài khoản phải có ít nhất 8 kí tự.</string>
-    <string name="re_password">Mật khẩu nhập lại không chính xác.</string>
+
+    // server and network string
     <string name="server">Server không phản hồi ngay bây giờ. Vui lòng thử lại sau!</string>
     <string name="server_error">Không thể kết nối đến server!</string>
     <string name="connection">Không có kết nối internet. Vui lòng kiểm tra lại</string>
-    <string name="password">Mật khẩu</string>
-    <string name="confirm_password">Xác nhật mật khẩu</string>
-    <string name="username">Tài khoản</string>
-    <string name="login">Đăng nhập</string>
+    //
+
+    // home activity string
+    <string name="hello">Xin Chào, %1$s</string>
     <string name="logout">Đăng xuất</string>
-    <string name="login_success">Đăng nhập thành công.</string>
-    <string name="login_error">Tài khoản hoặc mật khẩu không hợp lệ.</string>
-    <string name="signup">Đăng ký</string>
-    <string name="signup_error">Đăng ký thất bại. Tên tài khoản đã tồn tại!</string>
-    <string name="signup_success">Đăng ký tài khoản thành công.</string>
-    <string name="havAccount">Bạn chưa có tài khoản?</string>
-    <string name="account_title">Thông Báo</string>
-    <string name="account_message_login">Tài khoản của bạn hiện chưa đăng nhập. Bạn có muốn đăng nhập ngay bây giờ?</string>
-    <string name="account_message_logout">Bạn có chắc chắn muốn đăng xuất không?</string>
     <string name="find">Tìm khóa thi bạn muốn thi thử</string>
     <string name="search">Tìm kiếm khóa thi thử</string>
     <string name="courses">Khóa thi</string>
-    <string name="vocabulary">Từ vựng phổ biến</string>
     <string name="view_all">Xem tất cả</string>
     <string name="account_info">Thông tin tài khoản</string>
-    <string name="title_activity_exam" translatable="false">ExamActivity</string>
-    <string name="hello_world" translatable="false">Hello Square World!</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="popular_vocabulary">Từ vựng phổ biến</string>
+    //
+
+    // navigation drawer and bottom navigation menu string
+    <string name="vocabulary">Từ vựng</string>
     <string name="home">Trang chủ</string>
     <string name="rank">Xếp hạng</string>
-    <string name="profile">Thông tin</string>
-    <string name="account">Tài khoản</string>
     <string name="communicate">Cộng đồng</string>
     <string name="share">Chia sẻ</string>
     <string name="rate_us">Đánh giá</string>
     <string name="about">Giới thiệu</string>
-    <string name="developer" translatable="false">Mai Quốc Việt - 5180095
+
+    <string name="developer" translatable="false">
+        Mai Quốc Việt - 5180095
         Trương Văn Long - 51800897</string>
     <string name="share_message">Cảm ơn vì bạn đã chia sẻ.</string>
     <string name="rate_message">Cảm ơn vì bạn đã đánh giá chúng tôi.</string>
-    <string name="score">Điểm: %1$d</string>
-    <string name="comment_ratio" translatable="false">%1$s/5</string>
-    <string name="full_name">Họ và tên</string>
-    <string name="confirm">Xác nhận</string>
-    <string name="number_question">Câu hỏi %1$d</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    //
+
+    // confirm dialog string
     <string name="progress_dialog_title">Tiếp Tục Thi?</string>
     <string name="progress_dialog_message">Khóa thi chưa hoàn thành. Bạn có muốn tiếp tục thi không?</string>
     <string name="yes">Có</string>
     <string name="no">Không</string>
     <string name="cancel">Hủy bỏ</string>
+    <string name="confirm">Xác nhận</string>
     <string name="exit_testing_title">DỪNG THI?</string>
     <string name="exit_testing_message">Khóa thi chưa hoàn thành. Bạn có chắc chắn muốn dừng thi?</string>
-    <string name="course_notfound">Khóa thi không tồn tại. Vui lòng thử lại sau!</string>
+    <string name="course_not_found">Khóa thi không tồn tại. Vui lòng thử lại sau!</string>
     <string name="mode">Chọn Chế Độ Thi</string>
     <string name="counting_time">Tính giờ</string>
     <string name="without_counting_time">Không tính giờ</string>
+    <string name="account_message_logout">Bạn có chắc chắn muốn đăng xuất không?</string>
+    <string name="account_title">Thông Báo</string>
+    <string name="account_message_login">Tài khoản của bạn hiện chưa đăng nhập. Bạn có muốn đăng nhập ngay bây giờ?</string>
+    //
+
+    // user information string
+    <string name="full_name">Họ và tên</string>
+    <string name="gender">Giới tính</string>
+    <string name="male">Nam</string>
+    <string name="female">Nữ</string>
+    <string name="birthday">Ngày sinh</string>
+    <string name="address">Địa chỉ</string>
+    <string name="email">Email</string>
+    <string name="edit">Chỉnh sửa</string>
+    //
+
+    // login activity string
+    <string name="password_error">Mật khẩu phải có ít nhất 8 kí tự.</string>
+    <string name="username_error">Tài khoản phải có ít nhất 8 kí tự.</string>
+    <string name="re_password">Mật khẩu nhập lại không chính xác.</string>
+    <string name="password">Mật khẩu</string>
+    <string name="confirm_password">Xác nhật mật khẩu</string>
+    <string name="username">Tài khoản</string>
+    <string name="login">Đăng nhập</string>
+    <string name="login_success">Đăng nhập thành công.</string>
+    <string name="login_error">Tài khoản hoặc mật khẩu không hợp lệ.</string>
+    //
+
+    // sign up string
+    <string name="signup">Đăng ký</string>
+    <string name="signup_error">Đăng ký thất bại. Tên tài khoản đã tồn tại!</string>
+    <string name="signup_success">Đăng ký tài khoản thành công.</string>
+    <string name="havAccount">Bạn chưa có tài khoản?</string>
+    //
+
+    // fragment course info
+    <string name="comment_ratio" translatable="false">%1$s/5</string>
     <string name="comment">Bình luận: %1$d</string>
+    //
+
     <string name="comment_title">Bình Luận</string>
+    <string name="title_activity_exam" translatable="false">ExamActivity</string>
+    <string name="profile">Thông tin</string>
+    <string name="account">Tài khoản</string>
+    <string name="score">Điểm: %1$d</string>
+    <string name="number_question">Câu hỏi %1$d</string>
 </resources>

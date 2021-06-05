@@ -21,6 +21,7 @@ public class LoginViewModel extends ViewModel {
     private final MutableLiveData<String> password;
     private final MutableLiveData<String> userError;
     private final MutableLiveData<String> passwordError;
+    private final MutableLiveData<Boolean> networkState;
 
     private final MutableLiveData<DataState<User>> stateResponse;
 
@@ -33,6 +34,7 @@ public class LoginViewModel extends ViewModel {
         password = new MutableLiveData<>();
         userError = new MutableLiveData<>();
         passwordError = new MutableLiveData<>();
+        networkState = new MutableLiveData<>();
 
         stateResponse = new MutableLiveData<>();
 
@@ -40,8 +42,8 @@ public class LoginViewModel extends ViewModel {
         password.postValue("");
         userError.postValue("");
         passwordError.postValue("");
+        networkState.setValue(false);
     }
-
     public LiveData<String> getUserName() {
         return this.userName;
     }
@@ -77,6 +79,11 @@ public class LoginViewModel extends ViewModel {
     public MutableLiveData<DataState<User>> getStateResponse() {
         return stateResponse;
     }
+
+    public MutableLiveData<Boolean> getNetworkState() {
+        return networkState;
+    }
+
 
     public void login(User user, Context context){
         repository.login(user, context, this.getStateResponse());

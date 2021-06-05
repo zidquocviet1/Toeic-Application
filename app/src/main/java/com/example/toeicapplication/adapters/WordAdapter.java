@@ -1,6 +1,7 @@
 package com.example.toeicapplication.adapters;
 
 import android.content.Context;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

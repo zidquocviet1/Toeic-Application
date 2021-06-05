@@ -1,4 +1,4 @@
-package com.example.toeicapplication.view;
+package com.example.toeicapplication.view.custom;
 
 import android.app.Dialog;
 import android.content.Context;

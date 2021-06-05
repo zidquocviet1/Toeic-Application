@@ -1,4 +1,4 @@
-package com.example.toeicapplication.view;
+package com.example.toeicapplication.view.custom;
 
 import android.content.Context;
 import android.graphics.Canvas;

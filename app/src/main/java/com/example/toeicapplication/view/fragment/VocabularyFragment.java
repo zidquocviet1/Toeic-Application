@@ -105,6 +105,7 @@ public class VocabularyFragment extends Fragment {
             setData();
         }
 
+        // chua xong phan nay
         binding.input.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -124,6 +125,7 @@ public class VocabularyFragment extends Fragment {
 
             }
         });
+
         return binding.getRoot();
     }
 

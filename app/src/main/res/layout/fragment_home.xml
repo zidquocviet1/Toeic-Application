@@ -90,27 +90,21 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:fontFamily="@font/avenir_lt_pro_black"
-            android:text="@string/vocabulary"
+            android:text="@string/popular_vocabulary"
             android:textColor="@color/title"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="@id/courses"
             app:layout_constraintTop_toBottomOf="@id/rvCourse" />
 
-        <TextView
-            android:id="@+id/txtSeall"
+        <Button
+            android:id="@+id/btnViewAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:background="?selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:fontFamily="@font/avenir_lt_pro_light"
             android:text="@string/view_all"
-            android:textColor="@color/see_all"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/vocabulary"
-            app:layout_constraintEnd_toEndOf="@+id/rvCourse" />
+            style="@style/Widget.Button.ViewAllButton"
+            app:layout_constraintTop_toTopOf="@id/vocabulary"
+            app:layout_constraintBottom_toBottomOf="@id/vocabulary"
+            app:layout_constraintEnd_toEndOf="@id/rvCourse"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvVocab"

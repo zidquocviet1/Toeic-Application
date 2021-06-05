@@ -1,7 +1,6 @@
 package com.example.toeicapplication;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -17,7 +16,6 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +23,8 @@ import android.widget.PopupMenu;
 
 import com.example.toeicapplication.databinding.ActivityHomeBinding;
 import com.example.toeicapplication.model.User;
-import com.example.toeicapplication.view.LoadingDialog;
+import com.example.toeicapplication.model.Word;
+import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.example.toeicapplication.view.fragment.CourseFragment;
 import com.example.toeicapplication.view.fragment.HomeFragment;
 import com.example.toeicapplication.listeners.PopupItemClickListener;
@@ -100,7 +99,7 @@ public class HomeActivity
             });
 
             homeVM.getCourses().observe(this, courses -> {
-                openFragment(HomeFragment.class, "Home", R.id.mnHome);
+                openFragment(HomeFragment.class, getString(R.string.home), R.id.mnHome);
             });
 
             homeVM.getRemoteUser().observe(this, stateUser -> {
@@ -253,6 +252,13 @@ public class HomeActivity
         }
     }
 
+    private void updateLearnedWord(){
+        List<Word> words = homeVM.getTop30Words().getValue();
+        if (words != null && !words.isEmpty()) {
+            homeVM.updateLearnedWord(words);
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -265,6 +271,8 @@ public class HomeActivity
 
         if (isNetwork() && (cacheUser == null || !cacheUser.isLogin()) && recentLogoutUser != null)
             homeVM.callLogout(recentLogoutUser);
+
+        updateLearnedWord();
     }
 
     @Override
@@ -284,16 +292,16 @@ public class HomeActivity
 
         if (id == R.id.mnHome) {
             fragmentClass = HomeFragment.class;
-            tag = "Home";
+            tag = getString(R.string.home);
         } else if (id == R.id.mnCourse) {
             fragmentClass = CourseFragment.class;
-            tag = "Courses";
+            tag = getString(R.string.courses);
         } else if (id == R.id.mnRank) {
             fragmentClass = RankFragment.class;
-            tag = "Leader Board";
+            tag = getString(R.string.rank);
         }else if (id == R.id.mnVocab){
             fragmentClass = VocabularyFragment.class;
-            tag = "Vocabulary";
+            tag = getString(R.string.vocabulary);
         }
 
         if (binding.bottomNav.getSelectedItemId() == id)

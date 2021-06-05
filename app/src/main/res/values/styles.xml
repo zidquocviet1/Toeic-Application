@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="LoadingDialog">
-        <item name="android:windowBackground">#CC000000</item>
+        <item name="android:windowBackground">#99000000</item>
     </style>
 
     <style name="NoActionBar" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
@@ -15,10 +15,33 @@
         <item name="colorSecondary">@color/content</item>
         <item name="colorSecondaryVariant">@color/content</item>
     </style>
+
     <style name="RatingBar"
         parent="android:style/Widget.Material.RatingBar.Small">
         <item name="colorControlNormal">@color/content</item>
         <item name="colorOnBackground">@color/description</item>
         <item name="colorControlActivated">@color/description</item>
+    </style>
+
+    <style name="Widget.Button.ViewAllButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:minHeight">30dp</item>
+        <item name="android:maxWidth">300dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">12sp</item>
+        <item name="backgroundTint">@color/see_all</item>
+        <item name="cornerRadius">25dp</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">10sp</item>
+        <item name="autoSizeMaxTextSize">16sp</item>
+        <item name="autoSizeStepGranularity">2sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:lineSpacingExtra">4sp</item>
+        <item name="android:gravity">center</item>
+        <item name="fontFamily">@font/avenir_lt_pro_light</item>
+        <item name="textAllCaps">false</item>
+        <item name="background">?selectableItemBackground</item>
     </style>
 </resources>

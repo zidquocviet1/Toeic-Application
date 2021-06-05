@@ -1,5 +1,6 @@
 package com.example.toeicapplication.view.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,11 +11,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.toeicapplication.ExamActivity;
 import com.example.toeicapplication.HomeActivity;
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.adapters.CourseAdapter;
@@ -23,6 +27,7 @@ import com.example.toeicapplication.databinding.FragmentHomeBinding;
 import com.example.toeicapplication.model.Course;
 import com.example.toeicapplication.model.Word;
 import com.example.toeicapplication.listeners.ItemClickListener;
+import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
 
 import java.util.ArrayList;
@@ -95,8 +100,7 @@ public class HomeFragment extends Fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
         context = (HomeActivity) getActivity();
-        binding.txtSeall.setClickable(false);
-        binding.txtSeall.setOnClickListener(this);
+        binding.btnViewAll.setOnClickListener(this);
 
         observeViewModel();
         initRecyclerView();
@@ -108,36 +112,31 @@ public class HomeFragment extends Fragment
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-//        updateLearnedWord(); // this should be in on destroy of home activity
-    }
-
-    private void updateLearnedWord(){
-        if (words != null && !words.isEmpty()){
-            homeVM.updateLearnedWord(words);
-        }
     }
 
     @Override
     public void onItemClick(Object object, int position) {
         if (object instanceof CourseAdapter) {
-            if (isAdded() && context != null){
-//                Intent intent = new Intent(context, ExamActivity.class);
-//                intent.putExtra("course", courseAdapter.getItem(position));
-//                LoadingDialog.showLoadingDialog(context);
-//
-//                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-//                    LoadingDialog.dismissDialog();
-//                    startActivity(intent);
-//                },1000);
-            }
+            Course course = courseAdapter.getItem(position);
+
+            Intent intent = new Intent(context, ExamActivity.class);
+            intent.putExtra("course", course);
+
+            LoadingDialog.showLoadingDialog(context);
+
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                LoadingDialog.dismissDialog();
+                startActivity(intent);
+            }, 500);
         } else if (object instanceof WordAdapter) {
+            // open WordInfoActivity
         }
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.txtSeall){
-            context.openFragment(VocabularyFragment.class, "Vocabulary", R.id.mnVocab);
+        if (v.getId() == R.id.btnViewAll){
+            context.openFragment(VocabularyFragment.class, getString(R.string.vocabulary), R.id.mnVocab);
         }
     }
 

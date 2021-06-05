@@ -15,21 +15,28 @@ import com.google.gson.annotations.SerializedName;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nonnull;
+
 @Entity(tableName = "user_info")
 @TypeConverters(LocalDateTimeConverter.class)
 public class User implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     private Long id;
+
     @ColumnInfo(name = "user_name")
     @SerializedName(value = "userName")
     private String userName;
+
     @ColumnInfo(name = "password")
     private String password;
+
     @ColumnInfo(name = "display_name")
     @SerializedName(value = "displayName")
     private String displayName;
+
     @ColumnInfo(name = "timestamp")
     private LocalDateTime timestamp;
+
     @ColumnInfo(name = "login")
     @SerializedName(value = "login")
     private boolean isLogin;

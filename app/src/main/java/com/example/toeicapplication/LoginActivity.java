@@ -1,10 +1,13 @@
 package com.example.toeicapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -14,10 +17,10 @@ import com.example.toeicapplication.databinding.ActivityLoginBinding;
 import com.example.toeicapplication.model.User;
 import com.example.toeicapplication.utilities.DataState;
 import com.example.toeicapplication.utilities.EncryptPassword;
-import com.example.toeicapplication.view.LoadingDialog;
+import com.example.toeicapplication.utilities.NetworkController;
+import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.example.toeicapplication.viewmodels.LoginViewModel;
 
-import java.time.LocalDate;
 import java.util.Objects;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -26,6 +29,14 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private ActivityLoginBinding binding;
     private LoginViewModel loginVM;
+    private boolean isNetwork = false;
+
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            loginVM.getNetworkState().postValue(NetworkController.isOnline(context));
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +44,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         setupVMAndObserve();
         binding.btnLogin.setOnClickListener(this);
     }
@@ -81,6 +93,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         Toast.LENGTH_SHORT).show(), 1000);
             }
         });
+
+        loginVM.getNetworkState().observe(this, status -> isNetwork = status);
     }
 
     private void displayLoading(boolean isDisplay) {
@@ -93,7 +107,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private boolean validateUserNameAndPassword(String userName, String password) {
         // check the network state
-        if (false) {
+        if (!isNetwork) {
             Toast.makeText(this, getText(R.string.connection),
                     Toast.LENGTH_SHORT).show();
             return false;
@@ -142,6 +156,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onDestroy() {
         LoadingDialog.dismissDialog();
+        if (receiver != null){
+            unregisterReceiver(receiver);
+        }
         super.onDestroy();
     }
 
