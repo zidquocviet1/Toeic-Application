@@ -1,21 +1,36 @@
 package com.example.toeicapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.example.toeicapplication.databinding.ActivityExamBinding;
 import com.example.toeicapplication.model.Course;
+import com.example.toeicapplication.model.Question;
+import com.example.toeicapplication.utilities.Utils;
+import com.example.toeicapplication.viewmodels.ExamViewModel;
+import com.example.toeicapplication.viewmodels.HomeViewModel;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.dialog.MaterialDialogs;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ExamActivity extends AppCompatActivity {
     private ActivityExamBinding binding;
+    private ExamViewModel examVM;
+    private List<Question> questions;
     private int TESTING_TIME = 2*60*60*1000;
-    private Timer timer;
+    private boolean isCounting = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,26 +40,47 @@ public class ExamActivity extends AppCompatActivity {
 
         Course course = getIntent().getParcelableExtra("course");
 
-        if (course != null){
-            binding.txtTitle.setText(course.getName());
+        observeViewModel();
+        loadListQuestion(course.getId());
 
-            startCountingTime();
+        if (questions != null && !questions.isEmpty()){
+            binding.txtTitle.setText(course.getName());
+        }
+    }
+
+    private void observeViewModel() {
+        examVM = new ViewModelProvider(this).get(ExamViewModel.class);
+
+        examVM.getQuestions().observe(this, questionList -> {
+            if (questionList != null && !questionList.isEmpty()){
+                questions = new ArrayList<>(questionList);
+
+                chooseModeDialog();
+            }else{
+                unavailableCourseDialog();
+            }
+        });
+    }
+
+    private void loadListQuestion(Long courseID){
+        if (examVM != null){
+            examVM.getListQuestionByCourseID(courseID);
         }
     }
 
     private void startCountingTime(){
-        timer = new Timer();
+        Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 runOnUiThread(() -> {
                     if (TESTING_TIME > 0){
                         binding.pbTime.setProgress(TESTING_TIME);
-                        binding.txtDisplayTime.setText(convertTime(TESTING_TIME));
+                        binding.txtDisplayTime.setText(Utils.convertTime(TESTING_TIME));
                         TESTING_TIME -= 1000;
                     }else{
                         binding.pbTime.setProgress(0);
-                        binding.txtDisplayTime.setText(convertTime(0));
+                        binding.txtDisplayTime.setText(Utils.convertTime(0));
 //                        showResultDialog(false);
                     }
                 });
@@ -52,12 +88,33 @@ public class ExamActivity extends AppCompatActivity {
         }, 0, 1000);
     }
 
-    private String convertTime(long milliseconds) {
-        return String.format(Locale.getDefault(),"%02d:%02d:%02d",
-                TimeUnit.MILLISECONDS.toHours(milliseconds),
-                TimeUnit.MILLISECONDS.toMinutes(milliseconds) -
-                        TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(milliseconds)),
-                TimeUnit.MILLISECONDS.toSeconds(milliseconds) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds)));
+    private void chooseModeDialog(){
+        new MaterialAlertDialogBuilder(this)
+                .setCancelable(false)
+                .setTitle(R.string.mode)
+                .setPositiveButton(R.string.counting_time, (dialog, which) -> {
+                    isCounting = true;
+                    dialog.dismiss();
+
+                    startCountingTime();
+                })
+                .setNegativeButton(R.string.without_counting_time, (dialog, which) -> {
+                    isCounting = false;
+                    dialog.dismiss();
+                })
+                .create().show();
+    }
+
+    private void unavailableCourseDialog(){
+        new MaterialAlertDialogBuilder(this)
+                .setCancelable(false)
+                .setTitle(R.string.account_title)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setMessage(R.string.course_not_found)
+                .setNegativeButton(R.string.confirm, (dialog, which) -> {
+                    dialog.dismiss();
+                    this.finish();
+                })
+                .create().show();
     }
 }
