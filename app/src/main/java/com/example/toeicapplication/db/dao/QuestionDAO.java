@@ -16,5 +16,5 @@ public interface QuestionDAO {
     void insertAll(List<Question> questions);
 
     @Query("select * from question where courseID = :courseID")
-    Single<List<Question>> getQuestionById(Long courseID);
+    Single<List<Question>> getListQuestionById(Long courseID);
 }
