@@ -34,8 +34,8 @@ public class AppModule {
 
     @Singleton
     @Provides
-    public LoginRepository provideLoginRepository(UserService us, CompositeDisposable cd){
-        return new LoginRepositoryImpl(us, cd);
+    public LoginRepository provideLoginRepository(UserService us){
+        return new LoginRepositoryImpl(us);
     }
 
     @Singleton
