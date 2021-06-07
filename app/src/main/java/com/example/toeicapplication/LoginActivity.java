@@ -83,7 +83,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             if (userDataState.getStatus() == DataState.Status.SUCCESS) {
                 displayLoading(false);
-                navigateHomePage(userDataState.getData());
+                new Handler(getMainLooper()).postDelayed(()
+                        -> navigateHomePage(userDataState.getData()), 1000);
             }
 
             if (userDataState.getStatus() == DataState.Status.ERROR) {
