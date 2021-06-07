@@ -44,4 +44,14 @@
         <item name="textAllCaps">false</item>
         <item name="background">?selectableItemBackground</item>
     </style>
+
+    <style name="CustomEditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusBottomEnd">15dp</item>
+        <item name="boxCornerRadiusBottomStart">15dp</item>
+        <item name="boxCornerRadiusTopEnd">15dp</item>
+        <item name="boxCornerRadiusTopStart">15dp</item>
+        <item name="boxBackgroundColor">@color/white</item>
+        <item name="hintTextColor">@color/title</item>
+    </style>
+
 </resources>
