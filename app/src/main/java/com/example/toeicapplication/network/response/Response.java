@@ -2,18 +2,22 @@ package com.example.toeicapplication.network.response;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Response {
+public class Response<T> {
     @SerializedName("status")
     private boolean status;
 
     @SerializedName("message")
     private String message;
 
+    @SerializedName("data")
+    private T data;
+
     public Response() {
     }
 
-    public Response(boolean status, String message) {
+    public Response(boolean status, T data, String message) {
         this.status = status;
+        this.data = data;
         this.message = message;
     }
 
@@ -33,45 +37,11 @@ public class Response {
         this.message = message;
     }
 
-    public static final class PostResponse<T> extends Response {
-        private T data;
-
-        public PostResponse() {
-            super();
-        }
-
-        public PostResponse(PostResponse<T> obj) {
-            super(obj.isStatus(), obj.getMessage());
-            this.data = obj.getData();
-        }
-
-        public T getData() {
-            return this.data;
-        }
-
-        public void setData(T data) {
-            this.data = data;
-        }
+    public T getData() {
+        return data;
     }
 
-    public static final class PutResponse<T> extends Response {
-        private T data;
-
-        public PutResponse() {
-            super();
-        }
-
-        public PutResponse(PostResponse<T> obj) {
-            super(obj.isStatus(), obj.getMessage());
-            this.data = obj.getData();
-        }
-
-        public T getData() {
-            return this.data;
-        }
-
-        public void setData(T data) {
-            this.data = data;
-        }
+    public void setData(T data) {
+        this.data = data;
     }
 }
