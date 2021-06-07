@@ -15,15 +15,20 @@ import com.example.toeicapplication.network.response.Response;
 import com.example.toeicapplication.network.service.UserService;
 import com.example.toeicapplication.utilities.DataState;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class HomeRepositoryImpl implements HomeRepository {
@@ -129,22 +134,33 @@ public class HomeRepositoryImpl implements HomeRepository {
 
     @Override
     public void callRemoteUser(MutableLiveData<DataState<User>> request, Long id) {
-        request.postValue(DataState.Loading(null));
-
         compositeDisposable.add(
                 userService.findUser(id)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .timeout(5, TimeUnit.SECONDS)
-                        .subscribe(userGetResponse -> {
-                            if (userGetResponse.isStatus()) {
-                                User user = userGetResponse.getData().get(0);
+                        .subscribeWith(new DisposableObserver<Response<User>>() {
+                            @Override
+                            public void onNext(@NotNull Response<User> userResponse) {
+                                if (userResponse.isStatus()) {
+                                    User user = userResponse.getData();
 
-                                request.postValue(DataState.Success(user));
-                            } else {
-                                request.postValue(DataState.Error(userGetResponse.getMessage()));
+                                    request.postValue(DataState.Success(user));
+                                } else {
+                                    request.postValue(DataState.Error(userResponse.getMessage()));
+                                }
                             }
-                        }, throwable -> request.postValue(DataState.Error(context.getString(R.string.server_error))))
+
+                            @Override
+                            public void onError(@NotNull Throwable e) {
+                                request.postValue(DataState.Error(context.getString(R.string.server_error)));
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+                            }
+                        })
         );
     }
 
