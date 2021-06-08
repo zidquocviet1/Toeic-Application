@@ -10,6 +10,7 @@ import com.example.toeicapplication.databinding.ActivityExamBinding;
 import com.example.toeicapplication.model.Course;
 import com.example.toeicapplication.model.Question;
 import com.example.toeicapplication.utilities.Utils;
+import com.example.toeicapplication.view.custom.ChooseModeBottomDialogFragment;
 import com.example.toeicapplication.viewmodels.ExamViewModel;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -25,7 +26,9 @@ import java.util.concurrent.TimeUnit;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class ExamActivity extends AppCompatActivity {
+public class ExamActivity
+        extends AppCompatActivity
+        implements ChooseModeBottomDialogFragment.ChooseModeListener {
     private ActivityExamBinding binding;
     private ExamViewModel examVM;
     private List<Question> questions;
@@ -55,7 +58,10 @@ public class ExamActivity extends AppCompatActivity {
             if (questionList != null && !questionList.isEmpty()){
                 questions = new ArrayList<>(questionList);
 
-                chooseModeDialog();
+                ChooseModeBottomDialogFragment bottomDialog
+                        = ChooseModeBottomDialogFragment.newInstance();
+                bottomDialog.setCancelable(false);
+                bottomDialog.show(getSupportFragmentManager(), "Exam");
             }else{
                 unavailableCourseDialog();
             }
@@ -88,23 +94,6 @@ public class ExamActivity extends AppCompatActivity {
         }, 0, 1000);
     }
 
-    private void chooseModeDialog(){
-        new MaterialAlertDialogBuilder(this)
-                .setCancelable(false)
-                .setTitle(R.string.mode)
-                .setPositiveButton(R.string.counting_time, (dialog, which) -> {
-                    isCounting = true;
-                    dialog.dismiss();
-
-                    startCountingTime();
-                })
-                .setNegativeButton(R.string.without_counting_time, (dialog, which) -> {
-                    isCounting = false;
-                    dialog.dismiss();
-                })
-                .create().show();
-    }
-
     private void unavailableCourseDialog(){
         new MaterialAlertDialogBuilder(this)
                 .setCancelable(false)
@@ -116,5 +105,22 @@ public class ExamActivity extends AppCompatActivity {
                     this.finish();
                 })
                 .create().show();
+    }
+
+    private void startExam(){
+        if (isCounting)
+            startCountingTime();
+        // ....
+    }
+
+    @Override
+    public void onConfirm(boolean isCounting) {
+        this.isCounting = isCounting;
+        startExam();
+    }
+
+    @Override
+    public void onCancel() {
+        this.finish();
     }
 }
