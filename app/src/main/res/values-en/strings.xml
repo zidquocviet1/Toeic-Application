@@ -15,8 +15,8 @@
     <string name="find">Find a course you want to learn</string>
     <string name="search">Search for anything</string>
     <string name="courses">Courses</string>
-    <string name="view_all">View All</string>
-    <string name="account_info">Account Information</string>
+    <string name="view_all">See more</string>
+    <string name="account_info">Profile</string>
     <string name="popular_vocabulary">Popular Vocabulary</string>
     //
 
@@ -49,7 +49,8 @@
     <string name="exit_testing_message">This course hasn\'t done. Would you like to exit anyway?</string>
     <string name="confirm">Confirm</string>
     <string name="course_not_found">The course not exists. Please try again!</string>
-    <string name="mode">Select Test Mode</string>
+    <string name="mode">Mode</string>
+    <string name="mode_description">Choose one of two mode to start the exam</string>
     <string name="counting_time">Counting time</string>
     <string name="without_counting_time">Without counting time</string>
     <string name="account_message_logout">Bạn có chắc chắn muốn đăng xuất không?</string>

@@ -50,6 +50,7 @@
     <string name="exit_testing_message">Khóa thi chưa hoàn thành. Bạn có chắc chắn muốn dừng thi?</string>
     <string name="course_not_found">Khóa thi không tồn tại. Vui lòng thử lại sau!</string>
     <string name="mode">Chọn Chế Độ Thi</string>
+    <string name="mode_description">Chọn một trong hai chế độ thi đê bắt đầu</string>
     <string name="counting_time">Tính giờ</string>
     <string name="without_counting_time">Không tính giờ</string>
     <string name="account_message_logout">Bạn có chắc chắn muốn đăng xuất không?</string>
