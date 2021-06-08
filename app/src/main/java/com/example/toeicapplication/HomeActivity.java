@@ -335,7 +335,6 @@ public class HomeActivity
     public void onItemClick(User user, int id, boolean isLogin) {
         if (isLogin) {
             if (id == R.id.mnInfo) {
-                // open account information activity
                 Intent intent = new Intent(HomeActivity.this, UserActivity.class);
                 intent.putExtra("user", user);
                 startActivity(intent);
@@ -343,20 +342,23 @@ public class HomeActivity
                 showLogoutDialog(user);
             }
         } else {
-            if (id == R.id.mnLogin) {
-                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-                activityLauncher.mLaunch(intent, result -> {
-                    if (result.getResultCode() == RESULT_OK) {
-                        Intent data = result.getData();
-                        User responseUser = data.getParcelableExtra("user");
+            Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
 
-                        if (responseUser != null)
-                            homeVM.addUser(responseUser);
-                    }
-                });
+            if (id == R.id.mnLogin) {
+                intent.putExtra("dest", "Login");
             } else if (id == R.id.mnRegister) {
-                // open register activity
+                intent.putExtra("dest", "Register");
             }
+
+            activityLauncher.mLaunch(intent, result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    Intent data = result.getData();
+                    User responseUser = data.getParcelableExtra("user");
+
+                    if (responseUser != null)
+                        homeVM.addUser(responseUser);
+                }
+            });
         }
     }
 
