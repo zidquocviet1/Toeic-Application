@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.fragment.TabSignUpFragment">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutUsername"
+        style="@style/CustomEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/username"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.05"
+        app:layout_constraintWidth_percent=".8"
+        app:startIconDrawable="@drawable/ic_account_circle_24"
+        app:startIconTint="@color/icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/content"
+            android:textColorHint="@color/title" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutFullName"
+        style="@style/CustomEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/full_name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias=".5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutUsername"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintWidth_percent=".8"
+        app:startIconDrawable="@drawable/ic_supervised_user_circle_24"
+        app:startIconTint="@color/icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/content"
+            android:inputType="text"
+            android:textColorHint="@color/title" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutPassword"
+        style="@style/CustomEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/password"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias=".5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutFullName"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintWidth_percent=".8"
+        app:startIconDrawable="@drawable/ic_key_24"
+        app:startIconTint="@color/icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textPassword"
+            android:textColor="@color/content"
+            android:textColorHint="@color/title" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutRePassword"
+        style="@style/CustomEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/confirm_password"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias=".5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutPassword"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintWidth_percent=".8"
+        app:startIconDrawable="@drawable/ic_key_24"
+        app:startIconTint="@color/icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textPassword"
+            android:textColor="@color/content"
+            android:textColorHint="@color/title" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSignup"
+        style="@style/CornerButton"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="40dp"
+        android:text="@string/signup"
+        android:textAllCaps="true"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/layoutRePassword"
+        app:layout_constraintStart_toStartOf="@+id/layoutRePassword"
+        app:layout_constraintTop_toBottomOf="@id/layoutRePassword"
+        app:layout_constraintVertical_bias="0" />
+</androidx.constraintlayout.widget.ConstraintLayout>
