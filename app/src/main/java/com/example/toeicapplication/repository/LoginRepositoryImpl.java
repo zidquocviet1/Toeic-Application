@@ -64,4 +64,39 @@ public class LoginRepositoryImpl implements LoginRepository {
                     }
                 });
     }
+
+    @Override
+    public void signUp(User user, Context context, MutableLiveData<DataState<User>> request) {
+        service.register(user)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .timeout(5, TimeUnit.SECONDS)
+                .subscribe(new Observer<Response<User>>() {
+                    @Override
+                    public void onSubscribe(@NotNull Disposable d) {
+                        request.postValue(DataState.Loading(null));
+                    }
+
+                    @Override
+                    public void onNext(@NotNull Response<User> userPostResponse) {
+                        if (userPostResponse.isStatus()) {
+                            User data = userPostResponse.getData();
+
+                            request.postValue(DataState.Success(data));
+                        }else{
+                            request.postValue(DataState.Error(userPostResponse.getMessage()));
+                        }
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                        request.postValue(DataState.Error(context.getString(R.string.server_error)));
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
 }

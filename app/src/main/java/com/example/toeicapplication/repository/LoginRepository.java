@@ -10,4 +10,6 @@ import com.example.toeicapplication.utilities.DataState;
 
 public interface LoginRepository {
     void login(User user, Context context, MutableLiveData<DataState<User>> request);
+
+    void signUp(User user, Context context, MutableLiveData<DataState<User>> request);
 }
