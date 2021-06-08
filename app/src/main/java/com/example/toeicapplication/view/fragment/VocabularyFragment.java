@@ -54,7 +54,7 @@ public class VocabularyFragment extends Fragment {
     private HomeActivity context;
     private HomeViewModel homeVM;
 
-    private static final long DELAY = 200;
+    private static final long DELAY = 500;
 
     public VocabularyFragment() {
         // Required empty public constructor
