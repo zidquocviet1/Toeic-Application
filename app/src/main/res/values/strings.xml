@@ -79,6 +79,8 @@
     <string name="login">Đăng nhập</string>
     <string name="login_success">Đăng nhập thành công.</string>
     <string name="login_error">Tài khoản hoặc mật khẩu không hợp lệ.</string>
+    <string name="forget_password"><u>Quên mật khẩu?</u>></string>
+    <string name="display_name_error">Họ và tên không được để trống</string>
     //
 
     // sign up string

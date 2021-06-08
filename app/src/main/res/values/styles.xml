@@ -52,6 +52,8 @@
         <item name="boxCornerRadiusTopStart">15dp</item>
         <item name="boxBackgroundColor">@color/white</item>
         <item name="hintTextColor">@color/title</item>
+        <item name="maxLines">1</item>
+        <item name="android:maxLength">100</item>
     </style>
 
     <style name="CornerButton" parent="Widget.MaterialComponents.Button">

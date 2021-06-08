@@ -53,8 +53,8 @@
     <string name="mode_description">Choose one of two mode to start the exam</string>
     <string name="counting_time">Counting time</string>
     <string name="without_counting_time">Without counting time</string>
-    <string name="account_message_logout">Bạn có chắc chắn muốn đăng xuất không?</string>
-    <string name="account_title">Thông Báo</string>
+    <string name="account_message_logout">Are you sure want to log out?</string>
+    <string name="account_title">Notification</string>
     <string name="account_message_login">Your account isn\'t logged in. Do you want to login right now?</string>
     //
 
@@ -80,6 +80,8 @@
     <string name="login">Login</string>
     <string name="login_success">Login successfully.</string>
     <string name="login_error">Username or password is incorrect.</string>
+    <string name="forget_password"><u>Forget password?</u></string>
+    <string name="display_name_error">Full name must have at least 1 digit.</string>
     //
 
     // sign up string
