@@ -25,7 +25,8 @@
         <activity android:name=".UserActivity" />
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/NoActionBar" />
+            android:theme="@style/NoActionBar"
+            android:windowSoftInputMode="adjustNothing"/>
         <activity
             android:name=".HomeActivity"
             android:screenOrientation="portrait"

@@ -27,6 +27,8 @@ public class LoginActivity extends AppCompatActivity{
     private ActivityLoginBinding binding;
     private LoginViewModel loginVM;
 
+    private TabLayout tb;
+
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -47,7 +49,7 @@ public class LoginActivity extends AppCompatActivity{
     }
 
     private void setupUI(){
-        TabLayout tb = binding.tabLayout;
+        tb = binding.tabLayout;
 
         LoginAdapter loginAdapter = new LoginAdapter(getSupportFragmentManager(), getLifecycle(), 2);
         binding.viewPager.setAdapter(loginAdapter);
@@ -86,6 +88,14 @@ public class LoginActivity extends AppCompatActivity{
         intent.putExtra("user", user);
         setResult(RESULT_OK, intent);
         this.finish();
+    }
+
+    public void navigateTabLogin(){
+        if (tb != null){
+            TabLayout.Tab tab = tb.getTabAt(0);
+            if (tab != null)
+                tab.select();
+        }
     }
 
     @Override

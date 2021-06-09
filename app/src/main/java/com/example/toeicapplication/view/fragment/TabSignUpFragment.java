@@ -103,8 +103,19 @@ public class TabSignUpFragment extends Fragment implements View.OnClickListener 
 
                 if (userDataState.getStatus() == DataState.Status.SUCCESS) {
                     context.displayLoading(false);
-                    new Handler(getMainLooper()).postDelayed(()
-                            -> context.navigateHomePage(userDataState.getData()), 1000);
+
+                    new Handler(getMainLooper()).postDelayed(() -> {
+                        Toast.makeText(context, R.string.signup_success,
+                                Toast.LENGTH_SHORT).show();
+
+                        String userName = binding.layoutUsername.getEditText().getText().toString();
+                        String password = binding.layoutPassword.getEditText().getText().toString();
+
+                        loginVM.setLoginUserName(userName);
+                        loginVM.setLoginPassword(password);
+
+                        context.navigateTabLogin();
+                    }, 1000);
                 }
 
                 if (userDataState.getStatus() == DataState.Status.ERROR) {
