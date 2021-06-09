@@ -46,10 +46,10 @@
     </style>
 
     <style name="CustomEditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxCornerRadiusBottomEnd">15dp</item>
-        <item name="boxCornerRadiusBottomStart">15dp</item>
-        <item name="boxCornerRadiusTopEnd">15dp</item>
-        <item name="boxCornerRadiusTopStart">15dp</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/button_edit_text_corner</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/button_edit_text_corner</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/button_edit_text_corner</item>
+        <item name="boxCornerRadiusTopStart">@dimen/button_edit_text_corner</item>
         <item name="boxBackgroundColor">@color/white</item>
         <item name="hintTextColor">@color/title</item>
         <item name="maxLines">1</item>
@@ -57,7 +57,7 @@
     </style>
 
     <style name="CornerButton" parent="Widget.MaterialComponents.Button">
-        <item name="cornerRadius">10dp</item>
+        <item name="cornerRadius">@dimen/button_edit_text_corner</item>
         <item name="android:maxLines">1</item>
         <item name="textAllCaps">false</item>
         <item name="background">?selectableItemBackground</item>

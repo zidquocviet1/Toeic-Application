@@ -13,4 +13,5 @@
     -->
     <dimen name="inner_frame_layout_padding">5dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="button_edit_text_corner">44dp</dimen>
 </resources>
