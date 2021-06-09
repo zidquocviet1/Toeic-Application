@@ -2,9 +2,13 @@ package com.example.toeicapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.transition.Fade;
+import android.transition.TransitionInflater;
+import android.transition.TransitionManager;
 import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,7 +22,10 @@ public class MainActivity extends AppCompatActivity {
         new Handler(getMainLooper()).postDelayed(() -> {
             Intent intent = new Intent(this, HomeActivity.class);
             startActivity(intent);
-            this.finish();
+
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
+            this.finishAfterTransition();
         }, 1000);
     }
 }
