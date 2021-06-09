@@ -16,9 +16,9 @@ public class EncryptPassword {
     }
 
     private static String byteToHex(byte[] input){
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < input.length; i++) {
-            sb.append(Integer.toString((input[i] & 0xff) + 0x100, 16).substring(1));
+        StringBuilder sb = new StringBuilder();
+        for (byte b : input) {
+            sb.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
         }
         return sb.toString();
     }
