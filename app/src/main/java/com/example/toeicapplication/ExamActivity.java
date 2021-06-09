@@ -3,8 +3,8 @@ package com.example.toeicapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.toeicapplication.databinding.ActivityExamBinding;
 import com.example.toeicapplication.model.Course;
@@ -12,16 +12,12 @@ import com.example.toeicapplication.model.Question;
 import com.example.toeicapplication.utilities.Utils;
 import com.example.toeicapplication.view.custom.ChooseModeBottomDialogFragment;
 import com.example.toeicapplication.viewmodels.ExamViewModel;
-import com.example.toeicapplication.viewmodels.HomeViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.dialog.MaterialDialogs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -108,8 +104,11 @@ public class ExamActivity
     }
 
     private void startExam(){
-        if (isCounting)
+        if (isCounting) {
+            binding.txtDisplayTime.setVisibility(View.VISIBLE);
+            binding.pbTime.setVisibility(View.VISIBLE);
             startCountingTime();
+        }
         // ....
     }
 

@@ -15,9 +15,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.jetbrains.annotations.NotNull;
 
-public class ChooseModeBottomDialogFragment extends BottomSheetDialogFragment implements View.OnClickListener {
+public class ChooseModeBottomDialogFragment
+        extends BottomSheetDialogFragment
+        implements View.OnClickListener {
     private ChooseModeListener callback;
-    private RadioGroup radioGroup;
 
     public interface ChooseModeListener{
         void onConfirm(boolean isCounting);
@@ -39,9 +40,9 @@ public class ChooseModeBottomDialogFragment extends BottomSheetDialogFragment im
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        radioGroup = view.findViewById(R.id.radioGroup);
 
-        view.findViewById(R.id.btnConfirm).setOnClickListener(this);
+        view.findViewById(R.id.btnNoCount).setOnClickListener(this);
+        view.findViewById(R.id.btnCount).setOnClickListener(this);
         view.findViewById(R.id.btnCancel).setOnClickListener(this);
     }
 
@@ -71,8 +72,11 @@ public class ChooseModeBottomDialogFragment extends BottomSheetDialogFragment im
     public void onClick(View v) {
         int id = v.getId();
 
-        if (id == R.id.btnConfirm){
-            callback.onConfirm(radioGroup.getCheckedRadioButtonId() == R.id.rbCount);
+        if (id == R.id.btnCount){
+            callback.onConfirm(true);
+            dismiss();
+        }else if (id == R.id.btnNoCount){
+            callback.onConfirm(false);
             dismiss();
         }else if (id == R.id.btnCancel){
             callback.onCancel();
