@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.toeicapplication.CourseDetailActivity;
 import com.example.toeicapplication.ExamActivity;
 import com.example.toeicapplication.HomeActivity;
 import com.example.toeicapplication.R;
@@ -119,15 +120,10 @@ public class HomeFragment extends Fragment
         if (object instanceof CourseAdapter) {
             Course course = courseAdapter.getItem(position);
 
-            Intent intent = new Intent(context, ExamActivity.class);
+            Intent intent = new Intent(context, CourseDetailActivity.class);
             intent.putExtra("course", course);
 
-            LoadingDialog.showLoadingDialog(context);
-
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                LoadingDialog.dismissDialog();
-                startActivity(intent);
-            }, 500);
+            startActivity(intent);
         } else if (object instanceof WordAdapter) {
             // open WordInfoActivity
         }

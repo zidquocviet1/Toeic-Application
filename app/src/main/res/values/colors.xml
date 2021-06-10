@@ -13,4 +13,6 @@
     <color name="see_all">#6F8DFF</color>
     <color name="ic_launcher_lv_toeic_background">#DC8F4B</color>
     <color name="icon">#404870</color>
+    <color name="alert">#d9534f</color>
+    <color name="primary">#0275d8</color>
 </resources>
