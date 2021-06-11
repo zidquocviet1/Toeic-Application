@@ -35,7 +35,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         COURSE_FRAGMENT
     }
 
-    private static final int[] images = {
+    public static final int[] images = {
             R.drawable.image_1,
             R.drawable.image_2,
             R.drawable.image_3,
