@@ -34,5 +34,5 @@
         android:textStyle="italic"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="Toeic Test from \n Mai Quoc Viet Inc"/>
+        android:text="from \n Mai Quoc Viet Inc"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

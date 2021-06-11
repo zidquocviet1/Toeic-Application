@@ -111,15 +111,15 @@
             app:layout_constraintTop_toBottomOf="@id/imgUser" />
 
         <ImageView
-            android:src="@drawable/ic_crown"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.15"
-            app:layout_constraintHeight_percent="0.12"
-            app:layout_constraintVertical_bias="1"
+            android:src="@drawable/ic_crown"
             app:layout_constraintBottom_toTopOf="@id/imgTop1"
+            app:layout_constraintEnd_toEndOf="@id/imgTop1"
+            app:layout_constraintHeight_percent="0.12"
             app:layout_constraintStart_toStartOf="@id/imgTop1"
-            app:layout_constraintEnd_toEndOf="@id/imgTop1"/>
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintWidth_percent="0.15" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/imgTop1"
@@ -165,8 +165,8 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="Mai Quoc Viet"
-            android:textSize="12sp"
             android:textAlignment="center"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="@id/txtScore1"
             app:layout_constraintStart_toStartOf="@id/txtScore1"
             app:layout_constraintTop_toBottomOf="@id/txtScore1"
@@ -180,6 +180,7 @@
             android:text="2"
             android:textColor="@color/title"
             android:textSize="14sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/imgTop2"
             app:layout_constraintEnd_toEndOf="@id/imgTop2"
             app:layout_constraintStart_toStartOf="@id/imgTop2" />
@@ -227,8 +228,8 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="Tran Huynh Nhu"
-            android:textSize="12sp"
             android:textAlignment="center"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="@id/txtScore2"
             app:layout_constraintStart_toStartOf="@id/txtScore2"
             app:layout_constraintTop_toBottomOf="@id/txtScore2"
@@ -242,6 +243,7 @@
             android:text="3"
             android:textColor="@color/title"
             android:textSize="14sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/imgTop3"
             app:layout_constraintEnd_toEndOf="@id/imgTop3"
             app:layout_constraintStart_toStartOf="@id/imgTop3" />
@@ -289,8 +291,8 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="Mai Quoc Viet"
-            android:textSize="12sp"
             android:textAlignment="center"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="@id/txtScore3"
             app:layout_constraintStart_toStartOf="@id/txtScore3"
             app:layout_constraintTop_toBottomOf="@id/txtScore3"
@@ -320,20 +322,47 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/txtCourseDes"
-            android:layout_width="match_parent"
+        <com.google.android.material.tabs.TabLayout
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/avenir_lt_pro_light"
-            android:lineSpacingExtra="4dp"
-            android:text="@string/course_description"
-            android:textColor="@color/description"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/txtCourseContent"
-            app:layout_constraintTop_toBottomOf="@id/txtCourseContent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.2"
+            app:layout_constraintHorizontal_bias="0.3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtCourseContent"
+            app:layout_constraintWidth_percent="0.8"
+            app:tabInlineLabel="false"
+            app:tabMode="fixed"
+            app:tabIndicatorColor="@null"
+            app:tabSelectedTextColor="@color/title"
+            app:tabTextColor="@color/description">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Overview" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Review" />
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/txtCourseDes"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="0dp"-->
+        <!--            android:layout_marginStart="24dp"-->
+        <!--            android:layout_marginTop="10dp"-->
+        <!--            android:fontFamily="@font/avenir_lt_pro_light"-->
+        <!--            android:lineSpacingExtra="4dp"-->
+        <!--            android:text="@string/course_description"-->
+        <!--            android:textColor="@color/description"-->
+        <!--            android:textSize="16sp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="@id/txtCourseContent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/txtCourseContent" />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -353,10 +382,10 @@
             android:layout_height="70dp"
             android:layout_margin="8dp"
             android:backgroundTint="@color/primary"
+            android:onClick="enrollCourse"
             android:text="@string/enroll"
             android:textSize="18sp"
             android:textStyle="normal"
-            android:onClick="enrollCourse"
             app:cornerRadius="@dimen/button_edit_text_corner"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
