@@ -28,7 +28,7 @@ import java.util.Objects;
 
 import static android.os.Looper.getMainLooper;
 
-public class TabSignUpFragment extends Fragment implements View.OnClickListener {
+public class SignUpFragment extends Fragment implements View.OnClickListener {
     private TabSignupFragmentBinding binding;
     private LoginActivity context;
     private LoginViewModel loginVM;

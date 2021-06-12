@@ -6,8 +6,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.toeicapplication.view.fragment.TabLoginFragment;
-import com.example.toeicapplication.view.fragment.TabSignUpFragment;
+import com.example.toeicapplication.view.fragment.LoginFragment;
+import com.example.toeicapplication.view.fragment.SignUpFragment;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -25,9 +25,9 @@ public class LoginAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch(position){
             case 0:
-                return new TabLoginFragment();
+                return new LoginFragment();
             case 1:
-                return new TabSignUpFragment();
+                return new SignUpFragment();
             default:
                 return null;
         }

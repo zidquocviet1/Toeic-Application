@@ -31,7 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import static android.os.Looper.getMainLooper;
 
 @AndroidEntryPoint
-public class TabLoginFragment extends Fragment implements View.OnClickListener {
+public class LoginFragment extends Fragment implements View.OnClickListener {
     private TabLoginFragmentBinding binding;
     private LoginActivity context;
     private LoginViewModel loginVM;
