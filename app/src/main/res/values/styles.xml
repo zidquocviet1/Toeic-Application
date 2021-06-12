@@ -80,4 +80,8 @@
         <item name="android:textAlignment">textStart</item>
         <item name="rippleColor">@color/title</item>
     </style>
+
+    <style name="SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/background_splash_screen</item>
+    </style>
 </resources>

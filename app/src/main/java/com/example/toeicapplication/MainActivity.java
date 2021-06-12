@@ -19,13 +19,8 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
-        new Handler(getMainLooper()).postDelayed(() -> {
-            Intent intent = new Intent(this, HomeActivity.class);
-            startActivity(intent);
-
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-
-            this.finishAfterTransition();
-        }, 1000);
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+        this.finishAfterTransition();
     }
 }
