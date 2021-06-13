@@ -112,5 +112,8 @@
     <string name="enroll">Enroll</string>
     <string name="course_content">Course Content</string>
     <string name="top_user">Top Users</string>
+    <string name="overview">Overview</string>
+    <string name="review">Review</string>
+    <string name="no_comment">Have no comment yet!</string>
     //
 </resources>

@@ -106,11 +106,11 @@ public class Course implements Parcelable {
     }
 
     public static final Course[] courses = {
-            new Course(0, "Toeic 750", "Mục tiêu 750 điểm", 4),
-            new Course(0, "Toeic 550", "Mục tiêu 550 điểm", 3),
-            new Course(0, "Toeic 850", "Mục tiêu 850 điểm", 2),
-            new Course(0, "Toeic 990", "Mục tiêu 990 điểm", 1),
-            new Course(0, "Toeic 650", "Mục tiêu 650 điểm", 3)
+            new Course(0, "Toeic 750", "Mục tiêu 750 điểm", 0),
+            new Course(0, "Toeic 550", "Mục tiêu 550 điểm", 0),
+            new Course(0, "Toeic 850", "Mục tiêu 850 điểm", 0),
+            new Course(0, "Toeic 990", "Mục tiêu 990 điểm", 0),
+            new Course(0, "Toeic 650", "Mục tiêu 650 điểm", 0)
     };
 
     @Override

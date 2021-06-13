@@ -111,5 +111,8 @@
     <string name="enroll">Tham Gia</string>
     <string name="course_content">Nội dung bài thi</string>
     <string name="top_user">Xếp hạng cao nhất</string>
+    <string name="overview">Tổng quan</string>
+    <string name="review">Nhận xét</string>
+    <string name="no_comment">Chưa có nhận xét nào!</string>
     //
 </resources>

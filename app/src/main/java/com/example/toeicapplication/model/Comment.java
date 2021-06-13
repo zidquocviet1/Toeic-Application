@@ -1,6 +1,9 @@
 package com.example.toeicapplication.model;
 
-public class Comment {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Comment implements Parcelable {
     private int id;
     private String content;
     private int rating;
@@ -18,6 +21,32 @@ public class Comment {
         this.course = course;
         this.user = user;
     }
+
+    protected Comment(Parcel in) {
+        id = in.readInt();
+        content = in.readString();
+        rating = in.readInt();
+        courseId = in.readLong();
+        if (in.readByte() == 0) {
+            userId = null;
+        } else {
+            userId = in.readLong();
+        }
+        course = in.readParcelable(Course.class.getClassLoader());
+        user = in.readParcelable(User.class.getClassLoader());
+    }
+
+    public static final Creator<Comment> CREATOR = new Creator<Comment>() {
+        @Override
+        public Comment createFromParcel(Parcel in) {
+            return new Comment(in);
+        }
+
+        @Override
+        public Comment[] newArray(int size) {
+            return new Comment[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -73,5 +102,26 @@ public class Comment {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(content);
+        dest.writeInt(rating);
+        dest.writeLong(courseId);
+        if (userId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(userId);
+        }
+        dest.writeParcelable(course, flags);
+        dest.writeParcelable(user, flags);
     }
 }
