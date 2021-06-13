@@ -45,7 +45,7 @@ public class CourseDetailActivity extends AppCompatActivity {
 
         courseDetailAdapter = new CourseDetailAdapter(getSupportFragmentManager(), getLifecycle(), 2, course);
         binding.viewPager.setAdapter(courseDetailAdapter);
-
+        binding.viewPager.setUserInputEnabled(false);
         new TabLayoutMediator(tab, binding.viewPager, (tab1, position) -> {
             if (position == 0){
                 tab1.setText(R.string.overview);
