@@ -79,6 +79,7 @@
         <item name="android:layout_height">60dp</item>
         <item name="android:textAlignment">textStart</item>
         <item name="rippleColor">@color/title</item>
+        <item name="fontFamily">@font/avenir_lt_pro_light</item>
     </style>
 
     <style name="SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">

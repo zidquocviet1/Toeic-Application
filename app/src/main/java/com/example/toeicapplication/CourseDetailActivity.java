@@ -64,6 +64,7 @@ public class CourseDetailActivity extends AppCompatActivity {
             intent.putExtra("course", course);
 
             startActivity(intent);
+            this.finish();
         }, 500);
     }
 }
