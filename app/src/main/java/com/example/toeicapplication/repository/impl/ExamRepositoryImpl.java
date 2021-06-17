@@ -1,11 +1,13 @@
-package com.example.toeicapplication.repository;
+package com.example.toeicapplication.repository.impl;
 
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.toeicapplication.db.MyDB;
+import com.example.toeicapplication.model.Progress;
 import com.example.toeicapplication.model.Question;
+import com.example.toeicapplication.repository.ExamRepository;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -15,6 +17,7 @@ import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class ExamRepositoryImpl implements ExamRepository {
@@ -35,6 +38,17 @@ public class ExamRepositoryImpl implements ExamRepository {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(request::postValue, throwable -> {
                     Log.e("TAG", "Can't get the data from Question table: " + throwable.getMessage());
+                })
+        );
+    }
+
+    @Override
+    public void getProgressByCourseID(MutableLiveData<Progress> request, Long courseID) {
+        cd.add(database.getProgressDAO().getByCourseID(courseID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(request::postValue, throwable -> {
+                    Log.e("TAG", "Can't get the data from Progress table: " + throwable.getMessage());
                 })
         );
     }

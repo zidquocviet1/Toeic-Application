@@ -1,4 +1,4 @@
-package com.example.toeicapplication.repository;
+package com.example.toeicapplication.repository.impl;
 
 import android.content.Context;
 
@@ -8,6 +8,7 @@ import com.example.toeicapplication.R;
 import com.example.toeicapplication.model.User;
 import com.example.toeicapplication.network.response.Response;
 import com.example.toeicapplication.network.service.UserService;
+import com.example.toeicapplication.repository.LoginRepository;
 import com.example.toeicapplication.utilities.DataState;
 
 import org.jetbrains.annotations.NotNull;
