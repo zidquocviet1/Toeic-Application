@@ -91,4 +91,14 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">normal</item>
     </style>
+
+    <style name="QuestionTextView" parent="Widget.AppCompat.TextView">
+        <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="fontFamily">@font/avenir_lt_pro_light</item>
+        <item name="android:background">@drawable/answer_1</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:textColor">@color/description</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 </resources>

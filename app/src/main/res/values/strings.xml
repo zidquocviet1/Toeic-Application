@@ -106,7 +106,7 @@
     <string name="course_description" translatable="false">LV TOEIC is an online service using real-life workplace
         scenarios and over 1,000 authentic TOEIC® test
         questions to help you build the English skills
-        you need for everyday workplace situations<br/>
+        you need for everyday workplace situations<br />
     </string>
     <string name="enroll">Tham Gia</string>
     <string name="course_content">Nội dung bài thi</string>
@@ -114,5 +114,7 @@
     <string name="overview">Tổng quan</string>
     <string name="review">Nhận xét</string>
     <string name="no_comment">Chưa có nhận xét nào!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     //
 </resources>
