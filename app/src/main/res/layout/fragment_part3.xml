@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.fragment.Part3Fragment">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/image_question"
+                android:layout_width="match_parent"
+                android:layout_height="164dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/lnlayout1"
+                android:layout_width="345dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/image_question">
+                <!--Question-->
+                <TextView
+                    android:id="@+id/question1"
+                    android:layout_width="345dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:lineSpacingExtra="8sp"
+                    android:text="Which of the following enzymes convert glucose into glucose-6-p during glycolsis?"
+                    android:textColor="@color/black"
+                    android:textSize="22sp" />
+                <!--answer-->
+                <TextView
+                    android:id="@+id/txtA"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/answer_1"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:gravity="center_vertical"
+                    android:text="A"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlCompat" />
+
+                <TextView
+                    android:id="@+id/txtB"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/answer_1"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:gravity="center_vertical"
+                    android:text="B"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlCompat" />
+
+                <TextView
+                    android:id="@+id/txtC"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/answer_1"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:gravity="center_vertical"
+                    android:text="C"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlCompat" />
+
+                <TextView
+                    android:id="@+id/txtD"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/answer_1"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:gravity="center_vertical"
+                    android:text="D"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlCompat" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lnlayout2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="@id/lnlayout1"
+                app:layout_constraintEnd_toEndOf="@id/lnlayout1"
+                app:layout_constraintTop_toBottomOf="@+id/lnlayout1">
+                <!--Question-->
+                <TextView
+                    android:id="@+id/question2"
+                    android:layout_width="345dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:lineSpacingExtra="8sp"
+                    android:text="Which of the following enzymes convert glucose into glucose-6-p during glycolsis?"
+                    android:textColor="@color/black"
+                    android:textSize="22sp" />
+                <!--answer-->
+                <TextView
+                    android:id="@+id/txtQues2A"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/answer_1"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:gravity="center_vertical"
+                    android:text="A"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlCompat" />
+
+                <TextView
+                    android:id="@+id/txtQues2B"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/answer_1"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:gravity="center_vertical"
+                    android:text="B"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlCompat" />
+
+                <TextView
+                    android:id="@+id/txtQues2C"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/answer_1"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:gravity="center_vertical"
+                    android:text="C"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlCompat" />
+
+                <TextView
+                    android:id="@+id/txtQues2D"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/answer_1"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:gravity="center_vertical"
+                    android:text="D"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlCompat" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lnlayout3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="@id/lnlayout2"
+                app:layout_constraintEnd_toEndOf="@id/lnlayout2"
+                app:layout_constraintTop_toBottomOf="@+id/lnlayout2">
+                <!--Question-->
+                <TextView
+                    android:id="@+id/question3"
+                    android:layout_width="345dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:lineSpacingExtra="8sp"
+                    android:text="Which of the following enzymes convert glucose into glucose-6-p during glycolsis?"
+                    android:textColor="@color/black"
+                    android:textSize="22sp" />
+                <!--answer-->
+                <TextView
+                    android:id="@+id/txtQues3A"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/answer_1"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:gravity="center_vertical"
+                    android:text="A"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlCompat" />
+
+                <TextView
+                    android:id="@+id/txtQues3B"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/answer_1"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:gravity="center_vertical"
+                    android:text="B"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlCompat" />
+
+                <TextView
+                    android:id="@+id/txtQues3C"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/answer_1"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:gravity="center_vertical"
+                    android:text="C"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlCompat" />
+
+                <TextView
+                    android:id="@+id/txtQues3D"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/answer_1"
+                    android:fontFamily="@font/avenir_lt_pro_light"
+                    android:gravity="center_vertical"
+                    android:text="D"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlCompat" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</FrameLayout>
