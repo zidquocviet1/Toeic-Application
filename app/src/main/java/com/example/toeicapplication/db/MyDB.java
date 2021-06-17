@@ -12,10 +12,12 @@ import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
 import com.example.toeicapplication.db.dao.CourseDAO;
+import com.example.toeicapplication.db.dao.ProgressDAO;
 import com.example.toeicapplication.db.dao.QuestionDAO;
 import com.example.toeicapplication.db.dao.UserDAO;
 import com.example.toeicapplication.db.dao.WordDAO;
 import com.example.toeicapplication.model.Course;
+import com.example.toeicapplication.model.Progress;
 import com.example.toeicapplication.model.Question;
 import com.example.toeicapplication.model.User;
 import com.example.toeicapplication.model.Word;
@@ -26,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 @Database(entities = {User.class,
         Course.class,
         Word.class,
-        Question.class}, exportSchema = false, version = 2)
+        Question.class, Progress.class}, exportSchema = false, version = 3)
 public abstract class MyDB extends RoomDatabase {
     private static MyDB instance;
 
@@ -61,4 +63,6 @@ public abstract class MyDB extends RoomDatabase {
     public abstract WordDAO getWordDAO();
 
     public abstract QuestionDAO getQuestionDAO();
+
+    public abstract ProgressDAO getProgressDAO();
 }
