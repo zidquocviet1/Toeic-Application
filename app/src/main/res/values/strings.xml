@@ -100,7 +100,6 @@
     <string name="profile">Thông tin</string>
     <string name="account">Tài khoản</string>
     <string name="score">Điểm: %1$d</string>
-    <string name="number_question">Câu hỏi %1$d</string>
 
     // course detail activity
     <string name="course_description" translatable="false">LV TOEIC is an online service using real-life workplace
@@ -114,7 +113,10 @@
     <string name="overview">Tổng quan</string>
     <string name="review">Nhận xét</string>
     <string name="no_comment">Chưa có nhận xét nào!</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    //
+
+    // exam activity
+    <string name="total_question" translatable="false">/%1$d</string>
+    <string name="number_question">Câu hỏi %1$d</string>
     //
 </resources>

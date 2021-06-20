@@ -167,21 +167,26 @@ public class Part2Fragment extends Fragment
             context.getMediaPlayer().stop();
         }
 
+        context.setQuestionTitle(this.numQuestion + "-" + (this.numQuestion + 2));
+
         binding.txt1A.setText(question.getQuestionA());
         binding.txt1B.setText(question.getQuestionB());
         binding.txt1C.setText(question.getQuestionC());
 
         binding.txt1A.setTag(this.numQuestion);
         binding.txt1B.setTag(this.numQuestion);
-        binding.txt1C.setTag(this.numQuestion++);
+        binding.txt1C.setTag(this.numQuestion);
+        binding.question1.setText(context.getString(R.string.number_question, this.numQuestion++));
 
         binding.txt2A.setTag(this.numQuestion);
         binding.txt2B.setTag(this.numQuestion);
-        binding.txt2C.setTag(this.numQuestion++);
+        binding.txt2C.setTag(this.numQuestion);
+        binding.question2.setText(context.getString(R.string.number_question, this.numQuestion++));
 
         binding.txt3A.setTag(this.numQuestion);
         binding.txt3B.setTag(this.numQuestion);
-        binding.txt3C.setTag(this.numQuestion++);
+        binding.txt3C.setTag(this.numQuestion);
+        binding.question3.setText(context.getString(R.string.number_question, this.numQuestion));
 
         if (context.getMediaPlayer() != null) {
             context.getMediaPlayer().reset();

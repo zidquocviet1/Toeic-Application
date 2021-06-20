@@ -30,13 +30,26 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginTop="2dp"
-        android:fontFamily="@font/avenir_lt_pro_light"
-        android:text="1/200"
+        android:fontFamily="@font/avenir_lt_pro_black"
+        android:text="11-13"
         android:textColor="@color/description"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/pbTime" />
+
+    <TextView
+        android:id="@+id/txtTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/avenir_lt_pro_light"
+        android:text="/200"
+        android:textColor="@color/description"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/question_id"
+        app:layout_constraintStart_toEndOf="@id/question_id"
+        app:layout_constraintTop_toTopOf="@id/question_id" />
 
     <LinearLayout
         android:id="@+id/layoutTime"
@@ -98,7 +111,7 @@
         android:id="@+id/framelayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toTopOf="@id/btnClick"
         app:layout_constraintEnd_toEndOf="parent"

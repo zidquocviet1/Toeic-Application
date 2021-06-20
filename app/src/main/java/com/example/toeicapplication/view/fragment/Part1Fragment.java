@@ -144,6 +144,7 @@ public class Part1Fragment extends Fragment implements View.OnClickListener, Exa
                 InputStream is = context.getAssets().open(question.getDescription());
                 Drawable drawable = Drawable.createFromStream(is, null);
                 binding.image.setImageDrawable(drawable);
+                context.setQuestionTitle(String.valueOf(numQuestion));
             }
         } catch (IOException e) {
             e.printStackTrace();

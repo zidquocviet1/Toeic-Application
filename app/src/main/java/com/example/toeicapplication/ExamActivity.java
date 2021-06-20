@@ -85,6 +85,7 @@ public class ExamActivity
         examVM.getQuestions().observe(this, questionList -> {
             if (questionList != null && !questionList.isEmpty()) {
                 questions = new ArrayList<>(questionList);
+                binding.txtTotal.setText(getString(R.string.total_question, questions.size()));
 
                 if (checkProgress()) {
                     restartProgressDialog();
@@ -118,6 +119,7 @@ public class ExamActivity
         }
     }
 
+    // start exam executed only one time
     private void startExam() {
         if (isCounting) {
             binding.layoutTime.setVisibility(View.VISIBLE);
@@ -125,6 +127,7 @@ public class ExamActivity
             startCountingTime();
         }
 
+        setQuestionTitle(String.valueOf(currentQuestion));
         Question question = questions.get(currentQuestion - 1);
         openFragment(question);
     }
@@ -316,5 +319,9 @@ public class ExamActivity
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setQuestionTitle(String question){
+        binding.questionId.setText(question);
     }
 }
