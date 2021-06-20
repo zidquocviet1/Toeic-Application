@@ -1,6 +1,7 @@
 package com.example.toeicapplication.view.fragment;
 
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.toeicapplication.ExamActivity;
 import com.example.toeicapplication.R;
@@ -23,20 +25,27 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class Part1Fragment extends Fragment implements View.OnClickListener {
+public class Part1Fragment extends Fragment implements View.OnClickListener, ExamActivity.OnConfirmAnswer {
     private FragmentPart1Binding binding;
     private ExamActivity context;
     private ExamViewModel examVM;
+    private Question question;
 
     private static final String NUM_QUESTION = "numQuestion";
     private static final String QUESTION = "question";
 
+    private Drawable answerNormalState;
+    private Drawable answerSelectedState;
+    private List<TextView> widgets;
+
     private int numQuestion;
-    private Question question;
+    private String answer;
 
     public Part1Fragment() {
         // Required empty public constructor
@@ -67,10 +76,56 @@ public class Part1Fragment extends Fragment implements View.OnClickListener {
         binding = FragmentPart1Binding.inflate(inflater, container, false);
         context = (ExamActivity) getActivity();
 
+        if (context != null) {
+            context.setOnConfirmAnswer(this);
+            context.changeButtonState(false);
+            answerNormalState = ContextCompat.getDrawable(context, R.drawable.answer_1);
+            answerSelectedState = ContextCompat.getDrawable(context, R.drawable.answer_selected);
+        }
+
         setupEvent();
         examVM = new ViewModelProvider(requireActivity()).get(ExamViewModel.class);
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (question != null){
+            showQuestion(question);
+        }
+
+        widgets = new ArrayList<>();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            widgets.addAll(List.of(binding.txtA, binding.txtB, binding.txtC, binding.txtD));
+        }else{
+            widgets.add(binding.txtA);
+            widgets.add(binding.txtB);
+            widgets.add(binding.txtC);
+            widgets.add(binding.txtD);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+
+        widgets.forEach(txt -> {
+            if (txt.getId() == id){
+                txt.setBackground(answerSelectedState);
+                answer = txt.getText().toString();
+            }else{
+                txt.setBackground(answerNormalState);
+            }
+        });
+        context.changeButtonState(true);
+    }
+
+    @Override
+    public void onConfirm() {
+        examVM.postSelectedQuestion(numQuestion, answer);
     }
 
     private void setupEvent() {
@@ -80,16 +135,7 @@ public class Part1Fragment extends Fragment implements View.OnClickListener {
         binding.txtD.setOnClickListener(this);
     }
 
-
-    @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (question != null){
-            showQuestion(question);
-        }
-    }
-
-    public void showQuestion(Question question) {
+    private void showQuestion(Question question) {
         if (context.getMediaPlayer() != null && context.getMediaPlayer().isPlaying()) {
             context.getMediaPlayer().stop();
         }
@@ -111,44 +157,6 @@ public class Part1Fragment extends Fragment implements View.OnClickListener {
         if (context.getMediaPlayer() != null) {
             context.getMediaPlayer().reset();
             context.startListening(question.getAudioFile());
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.txtA:
-                binding.txtA.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_selected));
-                binding.txtB.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_1));
-                binding.txtC.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_1));
-                binding.txtD.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_1));
-                examVM.postSelectedQuestion(numQuestion, binding.txtA.getText().toString());
-                context.changeButtonState(true);
-                break;
-            case R.id.txtB:
-                binding.txtB.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_selected));
-                binding.txtA.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_1));
-                binding.txtC.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_1));
-                binding.txtD.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_1));
-                examVM.postSelectedQuestion(numQuestion, binding.txtB.getText().toString());
-                context.changeButtonState(true);
-                break;
-            case R.id.txtC:
-                binding.txtC.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_selected));
-                binding.txtB.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_1));
-                binding.txtA.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_1));
-                binding.txtD.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_1));
-                examVM.postSelectedQuestion(numQuestion, binding.txtC.getText().toString());
-                context.changeButtonState(true);
-                break;
-            case R.id.txtD:
-                binding.txtD.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_selected));
-                binding.txtB.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_1));
-                binding.txtC.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_1));
-                binding.txtA.setBackground(ContextCompat.getDrawable(context, R.drawable.answer_1));
-                examVM.postSelectedQuestion(numQuestion, binding.txtD.getText().toString());
-                context.changeButtonState(true);
-                break;
         }
     }
 }

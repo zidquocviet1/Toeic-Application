@@ -45,6 +45,7 @@ public class ExamActivity
 
     private List<Question> questions;
     private Map<Integer, String> progressQuestion;
+    private OnConfirmAnswer callback;
 
     private boolean isCounting = true;
 
@@ -52,6 +53,14 @@ public class ExamActivity
     private int currentPart = -1;
     private int currentQuestion = 1;
     private int currentAudio;
+
+    public interface OnConfirmAnswer{
+        void onConfirm();
+    }
+
+    public void setOnConfirmAnswer(OnConfirmAnswer callback){
+        this.callback = callback;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +139,7 @@ public class ExamActivity
                 fragment = Part1Fragment.newInstance(this.currentQuestion, question);
                 break;
             case 2:
-                fragment = Part2Fragment.newInstance("", "");
+                fragment = Part2Fragment.newInstance(this.currentQuestion, question);
                 break;
             case 3:
             case 4:
@@ -195,9 +204,25 @@ public class ExamActivity
         int id = v.getId();
 
         if (id == binding.btnClick.getId()) {
-            this.currentQuestion++;
-            Question question = questions.get(this.currentQuestion);
-            openFragment(question);
+            // send a callback to announce answers are selected
+            if (this.callback != null){
+                callback.onConfirm();
+            }
+
+            // refresh fragment with a new question
+            Question question = null;
+
+            switch (this.currentPart){
+                case 1:
+                    question = questions.get(this.currentQuestion++);
+                    break;
+                case 2:
+                    this.currentQuestion += 3;
+                    question = questions.get(this.currentQuestion);
+                    break;
+            }
+            if (question != null)
+                openFragment(question);
         }
     }
 
@@ -286,12 +311,8 @@ public class ExamActivity
                 mediaPlayer.stop();
                 mediaPlayer.reset();
             }
-            try {
-                mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-                mediaPlayer.prepareAsync();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            mediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
         }

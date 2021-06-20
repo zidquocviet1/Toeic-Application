@@ -54,6 +54,16 @@ public class ExamViewModel extends ViewModel {
         this.getSelectedQuestion().postValue(selected);
     }
 
+    public void postSelectedQuestion(Map<Integer, String> answer){
+        Map<Integer, String> selected = this.getSelectedQuestion().getValue();
+
+        if (selected == null) selected  = new HashMap<>();
+
+        selected.putAll(answer);
+
+        this.getSelectedQuestion().postValue(selected);
+    }
+
     public void getListQuestionByCourseID(Long courseID){
         repository.getListQuestionByCourseID(this.questions, courseID);
     }
