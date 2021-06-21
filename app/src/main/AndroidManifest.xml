@@ -14,8 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CourseDetailActivity"/>
-        <activity android:name=".MainActivity"
+        <activity android:name=".ResultActivity">
+
+        </activity>
+        <activity android:name=".CourseDetailActivity" />
+        <activity
+            android:name=".MainActivity"
             android:theme="@style/SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +37,7 @@
             android:name=".HomeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
-            android:windowSoftInputMode="adjustNothing"/>
+            android:windowSoftInputMode="adjustNothing" />
     </application>
 
 </manifest>
