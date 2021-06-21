@@ -4,10 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 
 import com.example.toeicapplication.databinding.ActivityExamBinding;
@@ -16,9 +19,9 @@ import com.example.toeicapplication.model.Progress;
 import com.example.toeicapplication.model.Question;
 import com.example.toeicapplication.utilities.Utils;
 import com.example.toeicapplication.view.custom.ChooseModeBottomDialogFragment;
+import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.example.toeicapplication.view.fragment.Part1Fragment;
 import com.example.toeicapplication.view.fragment.Part2Fragment;
-import com.example.toeicapplication.view.fragment.Part3Fragment;
 import com.example.toeicapplication.view.fragment.Part5Fragment;
 import com.example.toeicapplication.view.fragment.Part7Fragment;
 import com.example.toeicapplication.viewmodels.ExamViewModel;
@@ -31,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -51,14 +55,14 @@ public class ExamActivity
 
     private int testTime = 2 * 60 * 60 * 1000;
     private int currentPart = -1;
-    private int currentQuestion = 1;
+    private int currentQuestion = 191;
     private int currentAudio;
 
-    public interface OnConfirmAnswer{
+    public interface OnConfirmAnswer {
         void onConfirm();
     }
 
-    public void setOnConfirmAnswer(OnConfirmAnswer callback){
+    public void setOnConfirmAnswer(OnConfirmAnswer callback) {
         this.callback = callback;
     }
 
@@ -127,44 +131,81 @@ public class ExamActivity
             startCountingTime();
         }
 
-        setQuestionTitle(String.valueOf(currentQuestion));
         Question question = questions.get(currentQuestion - 1);
-        openFragment(question);
+        ArrayList<Question> listQuestions = new ArrayList<>(getListQuestion(question));
+
+        openFragment(listQuestions);
     }
 
-    private void openFragment(Question question) {
-        this.currentPart = question.getPart();
-
+    private void openFragment(ArrayList<Question> listQuestion) {
         Fragment fragment = null;
 
         switch (this.currentPart) {
             case 1:
-                fragment = Part1Fragment.newInstance(this.currentQuestion, question);
+                fragment = Part1Fragment.newInstance(this.currentQuestion, listQuestion.get(0));
                 break;
             case 2:
-                fragment = Part2Fragment.newInstance(this.currentQuestion, question);
-                break;
             case 3:
             case 4:
-                fragment = Part3Fragment.newInstance("", "");
+                fragment = Part2Fragment.newInstance(this.currentQuestion, listQuestion, this.currentPart);
                 break;
             case 5:
             case 6:
-                fragment = Part5Fragment.newInstance("", "");
+                fragment = Part5Fragment.newInstance(this.currentQuestion, listQuestion);
                 break;
             case 7:
-                fragment = Part7Fragment.newInstance("", "");
+                fragment = Part7Fragment.newInstance(this.currentQuestion, listQuestion);
                 break;
             default:
                 break;
         }
+        this.currentQuestion += listQuestion.size();
 
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(binding.framelayout.getId(), fragment)
                     .commit();
         }
+    }
 
+    private ArrayList<Question> getListQuestion(Question question) {
+        ArrayList<Question> listQuestion = new ArrayList<>();
+        this.currentPart = question.getPart();
+
+        switch (this.currentPart) {
+            case 1:
+                listQuestion.add(questions.get(this.currentQuestion - 1));
+                break;
+            case 2:
+            case 3:
+            case 4:
+                listQuestion.addAll(
+                        questions
+                                .stream()
+                                .filter(q -> q.getAudioFile().equals(question.getAudioFile())
+                                        && q.getCourseID() == question.getCourseID() && q.getPart() == question.getPart())
+                                .collect(Collectors.toCollection(ArrayList::new))
+                );
+                break;
+            case 5:
+            case 6:
+                listQuestion.add(questions.get(this.currentQuestion - 1));
+                listQuestion.add(questions.get(this.currentQuestion));
+                listQuestion.add(questions.get(this.currentQuestion + 1));
+                listQuestion.add(questions.get(this.currentQuestion + 2));
+                break;
+            case 7:
+                listQuestion.addAll(
+                        questions
+                                .stream()
+                                .filter(q -> q.getDescription() != null && q.getDescription().equals(question.getDescription())
+                                        && q.getCourseID() == question.getCourseID() && q.getPart() == question.getPart())
+                                .collect(Collectors.toCollection(ArrayList::new))
+                );
+                break;
+        }
+
+        return listQuestion;
     }
 
     private void startCountingTime() {
@@ -176,11 +217,12 @@ public class ExamActivity
                     if (testTime > 0) {
                         binding.pbTime.setProgress(testTime);
                         binding.txtDisplayTime.setText(Utils.convertTime(testTime));
-                        testTime -= 1000;
+                        testTime -= 100000;
                     } else {
                         binding.pbTime.setProgress(0);
                         binding.txtDisplayTime.setText(Utils.convertTime(0));
-//                        showResultDialog(false);
+                        timer.cancel();
+                        showResult();
                     }
                 });
             }
@@ -208,24 +250,19 @@ public class ExamActivity
 
         if (id == binding.btnClick.getId()) {
             // send a callback to announce answers are selected
-            if (this.callback != null){
+            if (this.callback != null) {
                 callback.onConfirm();
             }
 
-            // refresh fragment with a new question
-            Question question = null;
-
-            switch (this.currentPart){
-                case 1:
-                    question = questions.get(this.currentQuestion++);
-                    break;
-                case 2:
-                    this.currentQuestion += 3;
-                    question = questions.get(this.currentQuestion);
-                    break;
+            // show result here
+            if (this.currentQuestion >= this.questions.size()) {
+                showResult();
+                return;
             }
-            if (question != null)
-                openFragment(question);
+
+            // refresh fragment with a new question
+            Question question = this.questions.get(this.currentQuestion - 1);
+            openFragment(getListQuestion(question));
         }
     }
 
@@ -238,7 +275,6 @@ public class ExamActivity
     protected void onDestroy() {
         if (mediaPlayer != null && mediaPlayer.isPlaying())
             mediaPlayer.stop();
-//        saveProgress(false);
         super.onDestroy();
     }
 
@@ -260,6 +296,15 @@ public class ExamActivity
         super.onRestart();
     }
 
+    private void showResult(){
+        LoadingDialog.showLoadingDialog(this);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            LoadingDialog.dismissDialog();
+            Intent intent = new Intent(ExamActivity.this, ResultActivity.class);
+            startActivity(intent);
+            this.finish();
+        }, 1000);
+    }
     private void unavailableCourseDialog() {
         new MaterialAlertDialogBuilder(this)
                 .setCancelable(false)
@@ -303,7 +348,7 @@ public class ExamActivity
         binding.btnClick.setEnabled(isEnable);
     }
 
-    public MediaPlayer getMediaPlayer(){
+    public MediaPlayer getMediaPlayer() {
         return this.mediaPlayer;
     }
 
@@ -321,7 +366,7 @@ public class ExamActivity
         }
     }
 
-    public void setQuestionTitle(String question){
+    public void setQuestionTitle(String question) {
         binding.questionId.setText(question);
     }
 }

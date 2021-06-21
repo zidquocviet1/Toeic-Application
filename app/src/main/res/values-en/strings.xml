@@ -98,7 +98,6 @@
     <string name="profile">Profile</string>
     <string name="account">Account</string>
     <string name="score">Score: %1$d</string>
-    <string name="number_question">Question %1$d</string>
     <string name="comment_title">Comments</string>
 
     // course detail activity
@@ -115,5 +114,19 @@
     <string name="overview">Overview</string>
     <string name="review">Review</string>
     <string name="no_comment">Have no comment yet!</string>
+    //
+
+    // exam activity
+    <string name="total_question" translatable="false">/%1$d</string>
+    <string name="number_question">Question %1$d</string>
+    <string name="next">Next</string>
+    <string name="your_score">Your Score</string>
+    <string name="finish">Congratulation! You have completed the test. Do you want to see the result?</string>
+    <string name="total_question_full">Total Question</string>
+    <string name="completion">Completion</string>
+    <string name="correct">Correct</string>
+    <string name="wrong">Wrong</string>
+    <string name="try_again">Try Again</string>
+    <string name="review_answer">Review Answer</string>
     //
 </resources>

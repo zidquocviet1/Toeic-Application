@@ -99,7 +99,6 @@
     <string name="title_activity_exam" translatable="false">ExamActivity</string>
     <string name="profile">Thông tin</string>
     <string name="account">Tài khoản</string>
-    <string name="score">Điểm: %1$d</string>
 
     // course detail activity
     <string name="course_description" translatable="false">LV TOEIC is an online service using real-life workplace
@@ -118,5 +117,16 @@
     // exam activity
     <string name="total_question" translatable="false">/%1$d</string>
     <string name="number_question">Câu hỏi %1$d</string>
+    <string name="next">Tiếp theo</string>
+    <string name="your_score">Điểm Của Bạn</string>
+    <string name="finish">Chúc mừng bạn đã hoàn thành cuộc thi. Có muốn xem kết quả hay không?</string>
+    <string name="total_question_full">Tổng câu hỏi</string>
+    <string name="completion">Hoàn thành</string>
+    <string name="complete_question" translatable="false">\u2022 %1$d</string>
+    <string name="complete_progress" translatable="false">\u2022 %1$d\%</string>
+    <string name="correct">Đúng</string>
+    <string name="wrong">Sai</string>
+    <string name="try_again">Thử lại</string>
+    <string name="review_answer">Xem kết quả</string>
     //
 </resources>

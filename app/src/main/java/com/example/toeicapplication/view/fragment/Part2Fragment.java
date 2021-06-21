@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -37,29 +38,32 @@ public class Part2Fragment extends Fragment
     private FragmentPart2Binding binding;
     private ExamViewModel examVM;
     private ExamActivity context;
-    private Question question;
 
     private static final String NUM_QUESTION = "numQuestion";
     private static final String QUESTION = "question";
+    private static final String PART = "part";
 
     private Drawable answerNormalState;
     private Drawable answerSelectedState;
-    private List<TextView> widgets;
+    private List<TextView> questionTitle;
+    private final List<Question> questions = new ArrayList<>();
     private Map<Integer, String> answer;
+    private Map<String, TextView> questionContent;
 
     private int numQuestion;
-
+    private int part;
 
     public Part2Fragment() {
         // Required empty public constructor
     }
 
     public static Part2Fragment newInstance(int numQuestion,
-                                            Question question) {
+                                            ArrayList<Question> question, int part) {
         Part2Fragment fragment = new Part2Fragment();
         Bundle args = new Bundle();
         args.putInt(NUM_QUESTION, numQuestion);
-        args.putParcelable(QUESTION, question);
+        args.putParcelableArrayList(QUESTION, question);
+        args.putInt(PART, part);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,7 +73,8 @@ public class Part2Fragment extends Fragment
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             numQuestion = getArguments().getInt(NUM_QUESTION);
-            question = getArguments().getParcelable(QUESTION);
+            questions.addAll(getArguments().getParcelableArrayList(QUESTION));
+            part = getArguments().getInt(PART);
         }
     }
 
@@ -100,30 +105,34 @@ public class Part2Fragment extends Fragment
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (question != null){
-            showQuestion(question);
-        }
 
-        widgets = new ArrayList<>();
+        questionTitle = new ArrayList<>();
         answer = new HashMap<>();
+        questionContent = new HashMap<>();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            widgets.addAll(List.of(binding.txt1A, binding.txt1B, binding.txt1C,
-                    binding.txt2A, binding.txt2B, binding.txt2C,
-                    binding.txt3A, binding.txt3B, binding.txt3C));
+            questionTitle.addAll(List.of(binding.question1, binding.question2, binding.question3));
         }else{
-            widgets.add(binding.txt1A);
-            widgets.add(binding.txt1B);
-            widgets.add(binding.txt1C);
-
-            widgets.add(binding.txt2A);
-            widgets.add(binding.txt2B);
-            widgets.add(binding.txt2C);
-
-            widgets.add(binding.txt3A);
-            widgets.add(binding.txt3B);
-            widgets.add(binding.txt3C);
+            questionTitle.add(binding.question1);
+            questionTitle.add(binding.question2);
+            questionTitle.add(binding.question3);
         }
+
+        questionContent.put("1A", binding.txt1A);
+        questionContent.put("1B", binding.txt1B);
+        questionContent.put("1C", binding.txt1C);
+        questionContent.put("1D", binding.txt1D);
+
+        questionContent.put("2A", binding.txt2A);
+        questionContent.put("2B", binding.txt2B);
+        questionContent.put("2C", binding.txt2C);
+        questionContent.put("2D", binding.txt2D);
+
+        questionContent.put("3A", binding.txt3A);
+        questionContent.put("3B", binding.txt3B);
+        questionContent.put("3C", binding.txt3C);
+        questionContent.put("3D", binding.txt3D);
+        showQuestion(questions);
     }
 
     @Override
@@ -136,11 +145,12 @@ public class Part2Fragment extends Fragment
         int id = v.getId();
         Integer tag = (Integer) v.getTag();
 
-        widgets.forEach(txt -> {
-            if (txt.getId() == id && txt.getTag() == tag){
+        questionContent.entrySet().forEach(item -> {
+            TextView txt = item.getValue();
+            if (txt.getId() == id && txt.getTag().equals(tag)){
                 txt.setBackground(answerSelectedState);
                 answer.put(tag, txt.getText().toString());
-            }else if (txt.getTag() == tag && txt.getId() != id){
+            }else if (txt.getTag().equals(tag) && txt.getId() != id){
                 txt.setBackground(answerNormalState);
             }
         });
@@ -152,45 +162,68 @@ public class Part2Fragment extends Fragment
         binding.txt1A.setOnClickListener(this);
         binding.txt1B.setOnClickListener(this);
         binding.txt1C.setOnClickListener(this);
+        binding.txt1D.setOnClickListener(this);
 
         binding.txt2A.setOnClickListener(this);
         binding.txt2B.setOnClickListener(this);
         binding.txt2C.setOnClickListener(this);
+        binding.txt2D.setOnClickListener(this);
 
         binding.txt3A.setOnClickListener(this);
         binding.txt3B.setOnClickListener(this);
         binding.txt3C.setOnClickListener(this);
+        binding.txt3D.setOnClickListener(this);
     }
 
-    private void showQuestion(Question question) {
+    private void showQuestion(List<Question> questions) {
         if (context.getMediaPlayer() != null && context.getMediaPlayer().isPlaying()) {
             context.getMediaPlayer().stop();
         }
 
-        context.setQuestionTitle(this.numQuestion + "-" + (this.numQuestion + 2));
+        context.setQuestionTitle(this.numQuestion + "-" + (this.numQuestion + this.questions.size() - 1));
 
-        binding.txt1A.setText(question.getQuestionA());
-        binding.txt1B.setText(question.getQuestionB());
-        binding.txt1C.setText(question.getQuestionC());
-
+        // set tag for the purpose of onClick
         binding.txt1A.setTag(this.numQuestion);
         binding.txt1B.setTag(this.numQuestion);
         binding.txt1C.setTag(this.numQuestion);
-        binding.question1.setText(context.getString(R.string.number_question, this.numQuestion++));
+        binding.txt1D.setTag(this.numQuestion);
 
-        binding.txt2A.setTag(this.numQuestion);
-        binding.txt2B.setTag(this.numQuestion);
-        binding.txt2C.setTag(this.numQuestion);
-        binding.question2.setText(context.getString(R.string.number_question, this.numQuestion++));
+        binding.txt2A.setTag(this.numQuestion + 1);
+        binding.txt2B.setTag(this.numQuestion + 1);
+        binding.txt2C.setTag(this.numQuestion + 1);
+        binding.txt2D.setTag(this.numQuestion + 1);
 
-        binding.txt3A.setTag(this.numQuestion);
-        binding.txt3B.setTag(this.numQuestion);
-        binding.txt3C.setTag(this.numQuestion);
-        binding.question3.setText(context.getString(R.string.number_question, this.numQuestion));
+        binding.txt3A.setTag(this.numQuestion + 2);
+        binding.txt3B.setTag(this.numQuestion + 2);
+        binding.txt3C.setTag(this.numQuestion + 2);
+        binding.txt3D.setTag(this.numQuestion + 2);
+
+        if (part == 2){
+            binding.question1.setText(context.getString(R.string.number_question, this.numQuestion));
+            binding.question2.setText(context.getString(R.string.number_question, this.numQuestion + 1));
+            binding.question3.setText(context.getString(R.string.number_question, this.numQuestion + 2));
+        }else if (part == 3 || part == 4){
+            binding.txt1D.setVisibility(View.VISIBLE);
+            binding.txt2D.setVisibility(View.VISIBLE);
+            binding.txt3D.setVisibility(View.VISIBLE);
+
+            for (int i = 0; i < questions.size(); i++){
+                // set question title
+                Question question = questions.get(i);
+                TextView txt = questionTitle.get(i);
+
+                txt.setText(question.getQuestion());
+
+                questionContent.get((i+1)+"A").setText(question.getQuestionA());
+                questionContent.get((i+1)+"B").setText(question.getQuestionB());
+                questionContent.get((i+1)+"C").setText(question.getQuestionC());
+                questionContent.get((i+1)+"D").setText(question.getQuestionD());
+            }
+        }
 
         if (context.getMediaPlayer() != null) {
             context.getMediaPlayer().reset();
-            context.startListening(question.getAudioFile());
+            context.startListening(questions.get(0).getAudioFile());
         }
     }
 }

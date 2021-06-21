@@ -15,4 +15,6 @@
     <color name="icon">#404870</color>
     <color name="alert">#d9534f</color>
     <color name="primary">#0275d8</color>
+    <color name="success">#5cb85c</color>
+    <color name="brown">#A6805E</color>
 </resources>
