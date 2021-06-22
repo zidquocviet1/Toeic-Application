@@ -128,5 +128,6 @@
     <string name="wrong">Wrong</string>
     <string name="try_again">Try Again</string>
     <string name="review_answer">Review Answer</string>
+    <string name="duration">Duration: %1$s</string>
     //
 </resources>

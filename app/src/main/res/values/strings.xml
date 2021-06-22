@@ -123,10 +123,11 @@
     <string name="total_question_full">Tổng câu hỏi</string>
     <string name="completion">Hoàn thành</string>
     <string name="complete_question" translatable="false">\u2022 %1$d</string>
-    <string name="complete_progress" translatable="false">\u2022 %1$d\%</string>
+    <string name="complete_progress" translatable="false">\u2022 %1$d\%%</string>
     <string name="correct">Đúng</string>
     <string name="wrong">Sai</string>
     <string name="try_again">Thử lại</string>
     <string name="review_answer">Xem kết quả</string>
+    <string name="duration">Thời lượng: %1$s</string>
     //
 </resources>
