@@ -11,4 +11,6 @@ public interface ExamRepository {
     void getListQuestionByCourseID(MutableLiveData<List<Question>> request, Long courseID);
 
     void getProgressByCourseID(MutableLiveData<Progress> request, Long courseID);
+
+    void add(Progress progress);
 }

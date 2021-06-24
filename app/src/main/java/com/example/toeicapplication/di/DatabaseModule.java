@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.room.RoomDatabase;
 
 import com.example.toeicapplication.db.MyDB;
+import com.example.toeicapplication.db.dao.ResultDAO;
 import com.example.toeicapplication.db.dao.UserDAO;
 
 import javax.inject.Singleton;
@@ -27,4 +28,10 @@ public class DatabaseModule {
     @Singleton
     @Provides
     UserDAO provideUserDAO(MyDB database){ return database.getUserDAO(); }
+
+    @Singleton
+    @Provides
+    ResultDAO provideResultDAO(MyDB database){
+        return database.getResultDAO();
+    }
 }

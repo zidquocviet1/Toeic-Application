@@ -3,17 +3,16 @@ package com.example.toeicapplication.view.fragment;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.toeicapplication.ExamActivity;
 import com.example.toeicapplication.R;
@@ -27,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -42,13 +40,15 @@ public class Part2Fragment extends Fragment
     private static final String NUM_QUESTION = "numQuestion";
     private static final String QUESTION = "question";
     private static final String PART = "part";
+    private static final String PROGRESS_ANSWER = "progressAnswer";
 
     private Drawable answerNormalState;
     private Drawable answerSelectedState;
     private List<TextView> questionTitle;
-    private final List<Question> questions = new ArrayList<>();
     private Map<Integer, String> answer;
     private Map<String, TextView> questionContent;
+    private final List<Question> questions = new ArrayList<>();
+    private final Map<Integer, String> progressAnswer = new HashMap<>();
 
     private int numQuestion;
     private int part;
@@ -58,12 +58,14 @@ public class Part2Fragment extends Fragment
     }
 
     public static Part2Fragment newInstance(int numQuestion,
-                                            ArrayList<Question> question, int part) {
+                                            ArrayList<Question> question, int part,
+                                            @Nullable HashMap<Integer, String> progressAnswer) {
         Part2Fragment fragment = new Part2Fragment();
         Bundle args = new Bundle();
         args.putInt(NUM_QUESTION, numQuestion);
         args.putParcelableArrayList(QUESTION, question);
         args.putInt(PART, part);
+        args.putSerializable(PROGRESS_ANSWER, progressAnswer);
         fragment.setArguments(args);
         return fragment;
     }
@@ -75,6 +77,11 @@ public class Part2Fragment extends Fragment
             numQuestion = getArguments().getInt(NUM_QUESTION);
             questions.addAll(getArguments().getParcelableArrayList(QUESTION));
             part = getArguments().getInt(PART);
+
+            HashMap<Integer, String> hashMap = (HashMap<Integer, String>) getArguments().getSerializable(PROGRESS_ANSWER);
+            if (hashMap != null){
+                progressAnswer.putAll(hashMap);
+            }
         }
     }
 
@@ -220,6 +227,17 @@ public class Part2Fragment extends Fragment
                 questionContent.get((i+1)+"D").setText(question.getQuestionD());
             }
         }
+
+        // show the answer are choice before
+        questionContent.entrySet().forEach(item -> {
+            TextView txt = item.getValue();
+            Integer tag = (Integer) txt.getTag();
+
+            if (txt.getText().toString().equals(progressAnswer.get(tag))) {
+                txt.setBackground(answerSelectedState);
+                answer.put(tag, txt.getText().toString());
+            }
+        });
 
         if (context.getMediaPlayer() != null) {
             context.getMediaPlayer().reset();

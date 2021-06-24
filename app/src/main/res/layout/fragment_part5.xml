@@ -7,6 +7,7 @@
     tools:context=".view.fragment.Part5Fragment">
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -15,233 +16,280 @@
             android:layout_height="wrap_content"
             android:padding="8dp">
 
-            <TextView
-                android:id="@+id/question1"
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/avenir_lt_pro_black"
-                android:tag="quest1"
-                android:text="Question 1"
-                android:textColor="@color/description"
-                android:textSize="18sp"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.9" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/txt1A"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="A"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toStartOf="@id/question1"
-                app:layout_constraintTop_toBottomOf="@id/question1"
-                app:layout_constraintWidth_percent="0.9" />
+                <TextView
+                    android:id="@+id/question1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/avenir_lt_pro_black"
+                    android:tag="quest1"
+                    android:text="Question 1"
+                    android:textColor="@color/description"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.9" />
 
-            <TextView
-                android:id="@+id/txt1B"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="B"
-                app:layout_constraintEnd_toEndOf="@id/txt1A"
-                app:layout_constraintStart_toStartOf="@id/txt1A"
-                app:layout_constraintTop_toBottomOf="@id/txt1A" />
+                <TextView
+                    android:id="@+id/txt1A"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="A"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="@id/question1"
+                    app:layout_constraintTop_toBottomOf="@id/question1"
+                    app:layout_constraintWidth_percent="0.9" />
 
-            <TextView
-                android:id="@+id/txt1C"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="C"
-                app:layout_constraintEnd_toEndOf="@id/txt1B"
-                app:layout_constraintStart_toStartOf="@id/txt1B"
-                app:layout_constraintTop_toBottomOf="@id/txt1B" />
+                <TextView
+                    android:id="@+id/txt1B"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="B"
+                    app:layout_constraintEnd_toEndOf="@id/txt1A"
+                    app:layout_constraintStart_toStartOf="@id/txt1A"
+                    app:layout_constraintTop_toBottomOf="@id/txt1A" />
 
-            <TextView
-                android:id="@+id/txt1D"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="D"
-                app:layout_constraintEnd_toEndOf="@id/txt1C"
-                app:layout_constraintStart_toStartOf="@id/txt1C"
-                app:layout_constraintTop_toBottomOf="@id/txt1C" />
+                <TextView
+                    android:id="@+id/txt1C"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="C"
+                    app:layout_constraintEnd_toEndOf="@id/txt1B"
+                    app:layout_constraintStart_toStartOf="@id/txt1B"
+                    app:layout_constraintTop_toBottomOf="@id/txt1B" />
 
-            <TextView
-                android:id="@+id/question2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:fontFamily="@font/avenir_lt_pro_black"
-                android:tag="quest2"
-                android:text="Question 2"
-                android:textColor="@color/description"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="@id/question1"
-                app:layout_constraintStart_toStartOf="@id/question1"
-                app:layout_constraintTop_toBottomOf="@id/txt1D" />
+                <TextView
+                    android:id="@+id/txt1D"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="D"
+                    app:layout_constraintEnd_toEndOf="@id/txt1C"
+                    app:layout_constraintStart_toStartOf="@id/txt1C"
+                    app:layout_constraintTop_toBottomOf="@id/txt1C" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/txt2A"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:tag="phase2"
-                android:text="A"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toStartOf="@id/question2"
-                app:layout_constraintTop_toBottomOf="@id/question2"
-                app:layout_constraintWidth_percent="0.9" />
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout1">
 
-            <TextView
-                android:id="@+id/txt2B"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="B"
-                app:layout_constraintEnd_toEndOf="@id/txt2A"
-                app:layout_constraintStart_toStartOf="@id/txt2A"
-                app:layout_constraintTop_toBottomOf="@id/txt2A" />
+                <TextView
+                    android:id="@+id/question2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/avenir_lt_pro_black"
+                    android:text="Question 2"
+                    android:textColor="@color/description"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.9" />
 
-            <TextView
-                android:id="@+id/txt2C"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="C"
-                app:layout_constraintEnd_toEndOf="@id/txt2B"
-                app:layout_constraintStart_toStartOf="@id/txt2B"
-                app:layout_constraintTop_toBottomOf="@id/txt2B" />
+                <TextView
+                    android:id="@+id/txt2A"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:tag="phase2"
+                    android:text="A"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="@id/question2"
+                    app:layout_constraintTop_toBottomOf="@id/question2"
+                    app:layout_constraintWidth_percent="0.9" />
 
-            <TextView
-                android:id="@+id/txt2D"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="D"
-                app:layout_constraintEnd_toEndOf="@id/txt2C"
-                app:layout_constraintStart_toStartOf="@id/txt2C"
-                app:layout_constraintTop_toBottomOf="@id/txt2C" />
+                <TextView
+                    android:id="@+id/txt2B"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="B"
+                    app:layout_constraintEnd_toEndOf="@id/txt2A"
+                    app:layout_constraintStart_toStartOf="@id/txt2A"
+                    app:layout_constraintTop_toBottomOf="@id/txt2A" />
 
-            <TextView
-                android:id="@+id/question3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:fontFamily="@font/avenir_lt_pro_black"
-                android:tag="quest3"
-                android:text="Question 3"
-                android:textColor="@color/description"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="@id/question2"
-                app:layout_constraintStart_toStartOf="@id/question2"
-                app:layout_constraintTop_toBottomOf="@id/txt2D" />
+                <TextView
+                    android:id="@+id/txt2C"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="C"
+                    app:layout_constraintEnd_toEndOf="@id/txt2B"
+                    app:layout_constraintStart_toStartOf="@id/txt2B"
+                    app:layout_constraintTop_toBottomOf="@id/txt2B" />
 
-            <TextView
-                android:id="@+id/txt3A"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="A"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toStartOf="@id/question3"
-                app:layout_constraintTop_toBottomOf="@id/question3"
-                app:layout_constraintWidth_percent="0.9" />
+                <TextView
+                    android:id="@+id/txt2D"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="D"
+                    app:layout_constraintEnd_toEndOf="@id/txt2C"
+                    app:layout_constraintStart_toStartOf="@id/txt2C"
+                    app:layout_constraintTop_toBottomOf="@id/txt2C" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/txt3B"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="B"
-                app:layout_constraintEnd_toEndOf="@id/txt3A"
-                app:layout_constraintStart_toStartOf="@id/txt3A"
-                app:layout_constraintTop_toBottomOf="@id/txt3A" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout3"
 
-            <TextView
-                android:id="@+id/txt3C"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="C"
-                app:layout_constraintEnd_toEndOf="@id/txt3B"
-                app:layout_constraintStart_toStartOf="@id/txt3B"
-                app:layout_constraintTop_toBottomOf="@id/txt3B" />
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout2">
 
-            <TextView
-                android:id="@+id/txt3D"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="D"
-                app:layout_constraintEnd_toEndOf="@id/txt3C"
-                app:layout_constraintStart_toStartOf="@id/txt3C"
-                app:layout_constraintTop_toBottomOf="@id/txt3C" />
+                <TextView
+                    android:id="@+id/question3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/avenir_lt_pro_black"
+                    android:text="Question 3"
+                    android:textColor="@color/description"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.9" />
 
-            <TextView
-                android:id="@+id/question4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:fontFamily="@font/avenir_lt_pro_black"
-                android:tag="quest4"
-                android:text="Question 4"
-                android:textColor="@color/description"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="@id/question3"
-                app:layout_constraintStart_toStartOf="@id/question3"
-                app:layout_constraintTop_toBottomOf="@id/txt3D" />
+                <TextView
+                    android:id="@+id/txt3A"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="A"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="@id/question3"
+                    app:layout_constraintTop_toBottomOf="@id/question3"
+                    app:layout_constraintWidth_percent="0.9" />
 
-            <TextView
-                android:id="@+id/txt4A"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="A"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toStartOf="@id/question4"
-                app:layout_constraintTop_toBottomOf="@id/question4"
-                app:layout_constraintWidth_percent="0.9" />
+                <TextView
+                    android:id="@+id/txt3B"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="B"
+                    app:layout_constraintEnd_toEndOf="@id/txt3A"
+                    app:layout_constraintStart_toStartOf="@id/txt3A"
+                    app:layout_constraintTop_toBottomOf="@id/txt3A" />
 
-            <TextView
-                android:id="@+id/txt4B"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="B"
-                app:layout_constraintEnd_toEndOf="@id/txt4A"
-                app:layout_constraintStart_toStartOf="@id/txt4A"
-                app:layout_constraintTop_toBottomOf="@id/txt4A" />
+                <TextView
+                    android:id="@+id/txt3C"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="C"
+                    app:layout_constraintEnd_toEndOf="@id/txt3B"
+                    app:layout_constraintStart_toStartOf="@id/txt3B"
+                    app:layout_constraintTop_toBottomOf="@id/txt3B" />
 
-            <TextView
-                android:id="@+id/txt4C"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="C"
-                app:layout_constraintEnd_toEndOf="@id/txt4B"
-                app:layout_constraintStart_toStartOf="@id/txt4B"
-                app:layout_constraintTop_toBottomOf="@id/txt4B" />
+                <TextView
+                    android:id="@+id/txt3D"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="D"
+                    app:layout_constraintEnd_toEndOf="@id/txt3C"
+                    app:layout_constraintStart_toStartOf="@id/txt3C"
+                    app:layout_constraintTop_toBottomOf="@id/txt3C" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/txt4D"
-                style="@style/QuestionTextView"
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout4"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="D"
-                app:layout_constraintEnd_toEndOf="@id/txt4C"
-                app:layout_constraintStart_toStartOf="@id/txt4C"
-                app:layout_constraintTop_toBottomOf="@id/txt4C" />
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout3">
+
+                <TextView
+                    android:id="@+id/question4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/avenir_lt_pro_black"
+                    android:text="Question 4"
+                    android:textColor="@color/description"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.9" />
+
+                <TextView
+                    android:id="@+id/txt4A"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="A"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="@id/question4"
+                    app:layout_constraintTop_toBottomOf="@id/question4"
+                    app:layout_constraintWidth_percent="0.9" />
+
+                <TextView
+                    android:id="@+id/txt4B"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="B"
+                    app:layout_constraintEnd_toEndOf="@id/txt4A"
+                    app:layout_constraintStart_toStartOf="@id/txt4A"
+                    app:layout_constraintTop_toBottomOf="@id/txt4A" />
+
+                <TextView
+                    android:id="@+id/txt4C"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="C"
+                    app:layout_constraintEnd_toEndOf="@id/txt4B"
+                    app:layout_constraintStart_toStartOf="@id/txt4B"
+                    app:layout_constraintTop_toBottomOf="@id/txt4B" />
+
+                <TextView
+                    android:id="@+id/txt4D"
+                    style="@style/QuestionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="D"
+                    app:layout_constraintEnd_toEndOf="@id/txt4C"
+                    app:layout_constraintStart_toStartOf="@id/txt4C"
+                    app:layout_constraintTop_toBottomOf="@id/txt4C" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </FrameLayout>

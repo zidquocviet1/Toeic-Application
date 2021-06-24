@@ -15,6 +15,9 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
+import static com.example.toeicapplication.utilities.Utils.listeningScore;
+import static com.example.toeicapplication.utilities.Utils.readingScore;
+
 @HiltViewModel
 public class ExamViewModel extends ViewModel {
     private final MutableLiveData<List<Question>> questions;
@@ -70,5 +73,50 @@ public class ExamViewModel extends ViewModel {
 
     public void getProgressByCourseID(Long courseID){
         repository.getProgressByCourseID(this.progress, courseID);
+    }
+
+    public void add(Progress progress){
+        repository.add(progress);
+    }
+
+    public Map<String, Integer> calculateAnswer(){
+        Map<String, Integer> result = new HashMap<>();
+
+        List<Question> questionList = this.questions.getValue();
+        Map<Integer, String> answer = this.selectedQuestion.getValue();
+
+        if (questionList != null && answer != null) {
+            int correctReading = 0;
+            int correctListening = 0;
+
+            for (int i = 0; i < questionList.size(); i++) {
+                Question q = questionList.get(i);
+
+                // reading phase
+                if (i < 100){
+                    if (answer.containsKey(i) && q.getAnswer().equals(answer.get(i+1))) {
+                        correctReading++;
+                    }
+                }else {
+                    if (answer.containsKey(i) && q.getAnswer().equals(answer.get(i+1))) {
+                        correctListening++;
+                    }
+                }
+            }
+
+            int readingScore = readingScore().get(correctReading);
+            int listeningScore = listeningScore().get(correctListening);
+            float percent = (Float.valueOf(answer.size()) / Float.valueOf(questionList.size())) * 100;
+
+            result.put("reading", readingScore);
+            result.put("listening", listeningScore);
+            result.put("totalScore", readingScore + listeningScore);
+            result.put("wrong", answer.size() - (correctReading + correctListening));
+            result.put("correct", correctReading + correctListening);
+            result.put("completion", (int) percent);
+            result.put("totalQuestion", questionList.size());
+            return result;
+        }
+        return null;
     }
 }

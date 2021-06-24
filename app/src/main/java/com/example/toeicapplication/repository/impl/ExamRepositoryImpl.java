@@ -52,4 +52,15 @@ public class ExamRepositoryImpl implements ExamRepository {
                 })
         );
     }
+
+    @Override
+    public void add(Progress progress) {
+        cd.add(database.getProgressDAO().add(progress)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> Log.e("TAG", "Insert the progress successfully"), throwable -> {
+                    Log.e("TAG", "Can't get the data from Progress table: " + throwable.getMessage());
+                })
+        );
+    }
 }

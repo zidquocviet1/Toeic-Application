@@ -40,6 +40,7 @@ public class Part5Fragment extends Fragment implements ExamActivity.OnConfirmAns
     private Drawable answerNormalState;
     private Drawable answerSelectedState;
     private List<TextView> questionTitle;
+    private List<ViewGroup> layouts;
     private final List<Question> questions = new ArrayList<>();
     private Map<Integer, String> answer;
     private Map<String, TextView> questionContent;
@@ -97,16 +98,23 @@ public class Part5Fragment extends Fragment implements ExamActivity.OnConfirmAns
         super.onViewCreated(view, savedInstanceState);
 
         questionTitle = new ArrayList<>();
+        layouts = new ArrayList<>();
         answer = new HashMap<>();
         questionContent = new HashMap<>();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             questionTitle.addAll(List.of(binding.question1, binding.question2, binding.question3, binding.question4));
+            layouts.addAll(List.of(binding.layout1, binding.layout2, binding.layout3, binding.layout4));
         }else{
             questionTitle.add(binding.question1);
             questionTitle.add(binding.question2);
             questionTitle.add(binding.question3);
             questionTitle.add(binding.question4);
+
+            layouts.add(binding.layout1);
+            layouts.add(binding.layout2);
+            layouts.add(binding.layout3);
+            layouts.add(binding.layout4);
         }
 
         questionContent.put("1A", binding.txt1A);
@@ -151,7 +159,7 @@ public class Part5Fragment extends Fragment implements ExamActivity.OnConfirmAns
                 txt.setBackground(answerNormalState);
             }
         });
-        if (answer.size() == 4)
+        if (answer.size() == this.questions.size())
             context.changeButtonState(true);
     }
 
@@ -163,6 +171,7 @@ public class Part5Fragment extends Fragment implements ExamActivity.OnConfirmAns
         context.setQuestionTitle(this.numQuestion + "-" + (this.numQuestion + this.questions.size() - 1));
 
         for (int i = 0; i < questions.size(); i++){
+            layouts.get(i).setVisibility(View.VISIBLE);
             // set question title
             Question question = questions.get(i);
             TextView txtTitle = questionTitle.get(i);

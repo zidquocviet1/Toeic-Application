@@ -26,6 +26,7 @@ import com.example.toeicapplication.adapters.CourseAdapter;
 import com.example.toeicapplication.adapters.WordAdapter;
 import com.example.toeicapplication.databinding.FragmentHomeBinding;
 import com.example.toeicapplication.model.Course;
+import com.example.toeicapplication.model.User;
 import com.example.toeicapplication.model.Word;
 import com.example.toeicapplication.listeners.ItemClickListener;
 import com.example.toeicapplication.view.custom.LoadingDialog;
@@ -36,11 +37,6 @@ import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 @AndroidEntryPoint
 public class HomeFragment extends Fragment
         implements ItemClickListener, View.OnClickListener {
@@ -54,12 +50,9 @@ public class HomeFragment extends Fragment
     private List<Course> courses;
     private List<Word> words;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "title";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -67,15 +60,6 @@ public class HomeFragment extends Fragment
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static HomeFragment newInstance(String param1, String param2) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
@@ -97,7 +81,6 @@ public class HomeFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
         context = (HomeActivity) getActivity();
@@ -119,9 +102,11 @@ public class HomeFragment extends Fragment
     public void onItemClick(Object object, int position) {
         if (object instanceof CourseAdapter) {
             Course course = courseAdapter.getItem(position);
+            User user = homeVM.getCacheUser().getValue();
 
             Intent intent = new Intent(context, CourseDetailActivity.class);
             intent.putExtra("course", course);
+            intent.putExtra("user", user);
 
             startActivity(intent);
         } else if (object instanceof WordAdapter) {

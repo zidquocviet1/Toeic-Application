@@ -85,6 +85,19 @@
             app:layout_constraintEnd_toEndOf="@id/txtScoreTitle"
             app:layout_constraintStart_toStartOf="@id/txtScoreTitle"
             app:layout_constraintTop_toBottomOf="@id/txtScoreTitle" />
+
+        <TextView
+            android:id="@+id/txtDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/avenir_lt_pro_black"
+            android:text="Duration: "
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:layout_marginTop="40dp"
+            app:layout_constraintTop_toBottomOf="@id/cardView3"
+            app:layout_constraintStart_toStartOf="@id/cardView3"
+            app:layout_constraintEnd_toEndOf="@id/cardView3"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -200,11 +213,10 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvTryAgain"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         app:cardCornerRadius="40dp"
-        android:background="?selectableItemBackground"
-        android:clickable="true"
+        android:foreground="?selectableItemBackground"
         android:backgroundTint="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -214,12 +226,13 @@
         app:layout_constraintVertical_bias="0.7">
 
         <ImageButton
+            android:id="@+id/imgTryAgain"
             android:clickable="true"
             android:backgroundTint="@color/white"
             android:background="@drawable/ic_replay_24"
             android:rotation="270"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"/>
     </androidx.cardview.widget.CardView>
 
@@ -236,8 +249,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvReviewAnswer"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         app:cardCornerRadius="40dp"
         android:backgroundTint="@color/brown"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -248,10 +261,11 @@
         app:layout_constraintVertical_bias="0.7">
 
         <ImageButton
+            android:id="@+id/imgReviewAnswer"
             android:backgroundTint="@color/white"
             android:background="@drawable/ic_eye_24"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"/>
     </androidx.cardview.widget.CardView>
 
@@ -268,8 +282,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvShare"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         app:cardCornerRadius="40dp"
         android:backgroundTint="@color/teal_700"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -280,10 +294,11 @@
         app:layout_constraintVertical_bias="0.7">
 
         <ImageButton
+            android:id="@+id/imgShare"
             android:backgroundTint="@color/white"
             android:background="@drawable/ic_baseline_share_24"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"/>
     </androidx.cardview.widget.CardView>
 
@@ -300,8 +315,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvTemp"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         app:cardCornerRadius="40dp"
         android:backgroundTint="@color/purple_200"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -312,8 +327,9 @@
         app:layout_constraintVertical_bias="0.85">
 
         <ImageButton
-            android:layout_width="41dp"
-            android:layout_height="36dp"
+            android:id="@+id/imgTemp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"
             android:background="@drawable/ic_favorite"
             android:backgroundTint="@color/white" />
@@ -332,8 +348,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvHome"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         app:cardCornerRadius="40dp"
         android:backgroundTint="@color/alert"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -344,10 +360,11 @@
         app:layout_constraintVertical_bias="0.85">
 
         <ImageButton
+            android:id="@+id/imgHome"
             android:backgroundTint="@color/white"
             android:background="@drawable/ic_home_24"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"/>
     </androidx.cardview.widget.CardView>
 
@@ -364,8 +381,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvLeaderboard"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         app:cardCornerRadius="40dp"
         android:backgroundTint="@color/icon"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -376,10 +393,11 @@
         app:layout_constraintVertical_bias="0.85">
 
         <ImageButton
+            android:id="@+id/imgLeaderboard"
             android:backgroundTint="@color/white"
             android:background="@drawable/ic_leaderboard_24"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"/>
     </androidx.cardview.widget.CardView>
 

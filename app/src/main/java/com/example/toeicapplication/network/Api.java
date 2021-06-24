@@ -4,6 +4,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.toeicapplication.network.service.ResultService;
 import com.example.toeicapplication.network.service.UserService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -77,5 +78,9 @@ public class Api {
 
     public UserService userService() {
         return retrofit.create(UserService.class);
+    }
+
+    public ResultService resultService() {
+        return retrofit.create(ResultService.class);
     }
 }

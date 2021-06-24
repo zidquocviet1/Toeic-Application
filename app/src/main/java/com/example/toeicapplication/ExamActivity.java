@@ -1,5 +1,6 @@
 package com.example.toeicapplication;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -17,6 +18,8 @@ import com.example.toeicapplication.databinding.ActivityExamBinding;
 import com.example.toeicapplication.model.Course;
 import com.example.toeicapplication.model.Progress;
 import com.example.toeicapplication.model.Question;
+import com.example.toeicapplication.model.Result;
+import com.example.toeicapplication.model.User;
 import com.example.toeicapplication.utilities.Utils;
 import com.example.toeicapplication.view.custom.ChooseModeBottomDialogFragment;
 import com.example.toeicapplication.view.custom.LoadingDialog;
@@ -26,8 +29,10 @@ import com.example.toeicapplication.view.fragment.Part5Fragment;
 import com.example.toeicapplication.view.fragment.Part7Fragment;
 import com.example.toeicapplication.viewmodels.ExamViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.dialog.MaterialDialogs;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +51,8 @@ public class ExamActivity
     private ExamViewModel examVM;
     private MediaPlayer mediaPlayer;
     private Progress progress;
+    private Course course;
+    private User user;
 
     private List<Question> questions;
     private Map<Integer, String> progressQuestion;
@@ -53,9 +60,10 @@ public class ExamActivity
 
     private boolean isCounting = true;
 
+    private static final int FIX_TIME = 2 * 60 * 60 * 1000;
     private int testTime = 2 * 60 * 60 * 1000;
     private int currentPart = -1;
-    private int currentQuestion = 191;
+    private int currentQuestion = 1;
     private int currentAudio;
 
     public interface OnConfirmAnswer {
@@ -72,7 +80,9 @@ public class ExamActivity
         binding = ActivityExamBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Course course = getIntent().getParcelableExtra("course");
+        Intent intent = getIntent();
+        course = intent.getParcelableExtra("course");
+        user = intent.getParcelableExtra("user");
 
         observeViewModel();
         loadListQuestion(course.getId());
@@ -125,19 +135,58 @@ public class ExamActivity
 
     // start exam executed only one time
     private void startExam() {
-        if (isCounting) {
-            binding.layoutTime.setVisibility(View.VISIBLE);
-            binding.pbTime.setVisibility(View.VISIBLE);
-            startCountingTime();
-        }
+        setupUIWithCountDown(isCounting);
 
         Question question = questions.get(currentQuestion - 1);
         ArrayList<Question> listQuestions = new ArrayList<>(getListQuestion(question));
 
-        openFragment(listQuestions);
+        openFragment(listQuestions, null);
     }
 
-    private void openFragment(ArrayList<Question> listQuestion) {
+    private void restartExam(){
+        isCounting = progress.isCounting();
+        testTime = progress.getRemainTime().intValue();
+        progressQuestion = new HashMap<>(progress.getQuestions());
+
+        examVM.postSelectedQuestion(progressQuestion);
+
+        setupUIWithCountDown(isCounting);
+
+        int progressQuestionIndex = progressQuestion.size();
+
+        Question question = questions.get(progressQuestionIndex);
+        ArrayList<Question> questionList = getListQuestion(question);
+        HashMap<Integer, String> progressAnswer = new HashMap<>();
+
+        /*
+            In here we have 2 cases:
+                - First one, the index of question (progressQuestionIndex) is correct
+                with the first index of bunch of question. Like (11, 12, 13), the current index is 11.
+                So when we open the fragment of part 2 it will show the order of question are correctly.
+
+                - Second one, the index of question at this time is not expected. As you see the example above,
+                the current index is 12, the user was stopped taking the exam and select the question 11 at that time.
+                So we have to get the punch of question and then update the current question. After that, make sure
+                set the result which is the user has selected.
+        */
+
+        if (questions.indexOf(questionList.get(0)) != progressQuestionIndex){
+            this.currentQuestion = questions.indexOf(questionList.get(0)) + 1;
+        }else{
+            this.currentQuestion = progressQuestionIndex + 1;
+        }
+
+        for (Question q : questionList){
+            int index = questions.indexOf(q);
+
+            if (progressQuestion.containsKey(index + 1)){
+                progressAnswer.put(index + 1, progressQuestion.get(index + 1));
+            }
+        }
+        openFragment(questionList, progressAnswer);
+    }
+
+    private void openFragment(ArrayList<Question> listQuestion, @Nullable HashMap<Integer, String> progressAnswer) {
         Fragment fragment = null;
 
         switch (this.currentPart) {
@@ -147,14 +196,14 @@ public class ExamActivity
             case 2:
             case 3:
             case 4:
-                fragment = Part2Fragment.newInstance(this.currentQuestion, listQuestion, this.currentPart);
+                fragment = Part2Fragment.newInstance(this.currentQuestion, listQuestion, this.currentPart, progressAnswer);
                 break;
             case 5:
             case 6:
                 fragment = Part5Fragment.newInstance(this.currentQuestion, listQuestion);
                 break;
             case 7:
-                fragment = Part7Fragment.newInstance(this.currentQuestion, listQuestion);
+                fragment = Part7Fragment.newInstance(this.currentQuestion, listQuestion, progressAnswer);
                 break;
             default:
                 break;
@@ -174,7 +223,7 @@ public class ExamActivity
 
         switch (this.currentPart) {
             case 1:
-                listQuestion.add(questions.get(this.currentQuestion - 1));
+                listQuestion.add(question);
                 break;
             case 2:
             case 3:
@@ -189,10 +238,13 @@ public class ExamActivity
                 break;
             case 5:
             case 6:
-                listQuestion.add(questions.get(this.currentQuestion - 1));
-                listQuestion.add(questions.get(this.currentQuestion));
-                listQuestion.add(questions.get(this.currentQuestion + 1));
-                listQuestion.add(questions.get(this.currentQuestion + 2));
+                for (int i = 0; i < 4; i++){
+                    Question q = questions.get(this.questions.indexOf(question) + i);
+
+                    if (q.getPart() == 5 || q.getPart() == 6){
+                        listQuestion.add(q);
+                    }
+                }
                 break;
             case 7:
                 listQuestion.addAll(
@@ -208,16 +260,24 @@ public class ExamActivity
         return listQuestion;
     }
 
+    private void setupUIWithCountDown(boolean isCounting){
+        if (isCounting) {
+            binding.layoutTime.setVisibility(View.VISIBLE);
+            binding.pbTime.setVisibility(View.VISIBLE);
+            startCountingTime();
+        }
+    }
+
     private void startCountingTime() {
         Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 runOnUiThread(() -> {
                     if (testTime > 0) {
                         binding.pbTime.setProgress(testTime);
                         binding.txtDisplayTime.setText(Utils.convertTime(testTime));
-                        testTime -= 100000;
+                        testTime -= 1000;
                     } else {
                         binding.pbTime.setProgress(0);
                         binding.txtDisplayTime.setText(Utils.convertTime(0));
@@ -230,7 +290,12 @@ public class ExamActivity
     }
 
     private boolean checkProgress() {
-        return progress != null && progress.getRemainTime() > 0;
+        // the progress has been checked complete or not.
+        // So we don't need to check the size of answer
+        return progress != null
+                && progress.getRemainTime() > 0
+                && progress.getQuestions() != null
+                && progress.getQuestions().size() < this.questions.size();
     }
 
     @Override
@@ -262,7 +327,7 @@ public class ExamActivity
 
             // refresh fragment with a new question
             Question question = this.questions.get(this.currentQuestion - 1);
-            openFragment(getListQuestion(question));
+            openFragment(getListQuestion(question), null);
         }
     }
 
@@ -296,15 +361,72 @@ public class ExamActivity
         super.onRestart();
     }
 
-    private void showResult(){
+    @Override
+    public void onBackPressed() {
+        stopExamDialog();
+    }
+
+    private void addProgress(){
+        Progress progress = new Progress(this.progress != null ? this.progress.getId() : null,
+                this.course.getId(),
+                (long) this.testTime,
+                examVM.getSelectedQuestion().getValue(),
+                isCounting);
+        examVM.add(progress);
+    }
+
+    private void showResult() {
+        addProgress();
         LoadingDialog.showLoadingDialog(this);
+
+        Result result = null;
+        Map<String, Integer> resultMap = examVM.calculateAnswer();
+        Long userId = user != null ? user.getId() : null;
+
+        if (resultMap != null) {
+            result = new Result(null,
+                    userId,
+                    this.course.getId(),
+                    resultMap.get("totalScore"),
+                    resultMap.get("reading"),
+                    resultMap.get("listening"),
+                    resultMap.get("correct"),
+                    resultMap.get("wrong"),
+                    resultMap.get("totalQuestion"),
+                    resultMap.get("completion"),
+                    testTime <= 0 ? FIX_TIME : FIX_TIME - testTime,
+                    LocalDateTime.now());
+        }
+
+        Intent intent = new Intent(ExamActivity.this, ResultActivity.class);
+        intent.putExtra("result", result);
+        intent.putExtra("user", user);
+        intent.putExtra("course", course);
+
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             LoadingDialog.dismissDialog();
-            Intent intent = new Intent(ExamActivity.this, ResultActivity.class);
             startActivity(intent);
             this.finish();
         }, 1000);
     }
+
+    private void stopExamDialog(){
+        new MaterialAlertDialogBuilder(this)
+                .setCancelable(false)
+                .setTitle(R.string.account_title)
+                .setMessage(R.string.exit_testing_message)
+                .setPositiveButton(R.string.yes, (dialog, which) -> {
+                    dialog.dismiss();
+
+                    addProgress();
+
+                    this.finish();
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+    }
+
     private void unavailableCourseDialog() {
         new MaterialAlertDialogBuilder(this)
                 .setCancelable(false)
@@ -329,11 +451,7 @@ public class ExamActivity
                 })
                 .setPositiveButton(R.string.yes, (dialog, which) -> {
                     dialog.dismiss();
-                    isCounting = progress.isCounting();
-                    testTime = progress.getRemainTime().intValue();
-                    progressQuestion = new HashMap<>(progress.getQuestions());
-
-                    startExam();
+                    restartExam();
                 }).create().show();
     }
 

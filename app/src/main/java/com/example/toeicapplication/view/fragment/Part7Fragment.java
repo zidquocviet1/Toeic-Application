@@ -38,13 +38,15 @@ public class Part7Fragment extends Fragment implements ExamActivity.OnConfirmAns
 
     private static final String NUM_QUESTION = "numQuestion";
     private static final String QUESTION = "question";
+    private static final String PROGRESS_ANSWER = "progressAnswer";
 
     private Drawable answerNormalState;
     private Drawable answerSelectedState;
     private List<TextView> questionTitle;
-    private final List<Question> questions = new ArrayList<>();
     private Map<Integer, String> answer;
     private Map<String, TextView> questionContent;
+    private final List<Question> questions = new ArrayList<>();
+    private final Map<Integer, String> progressAnswer = new HashMap<>();
 
     private int numQuestion;
 
@@ -53,11 +55,13 @@ public class Part7Fragment extends Fragment implements ExamActivity.OnConfirmAns
     }
 
     public static Part7Fragment newInstance(int numQuestion,
-                                            ArrayList<Question> question) {
+                                            ArrayList<Question> question,
+                                            @Nullable HashMap<Integer, String> progressAnswer) {
         Part7Fragment fragment = new Part7Fragment();
         Bundle args = new Bundle();
         args.putInt(NUM_QUESTION, numQuestion);
         args.putParcelableArrayList(QUESTION, question);
+        args.putSerializable(PROGRESS_ANSWER, progressAnswer);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,6 +72,11 @@ public class Part7Fragment extends Fragment implements ExamActivity.OnConfirmAns
         if (getArguments() != null) {
             numQuestion = getArguments().getInt(NUM_QUESTION);
             questions.addAll(getArguments().getParcelableArrayList(QUESTION));
+
+            HashMap<Integer, String> hashMap = (HashMap<Integer, String>) getArguments().getSerializable(PROGRESS_ANSWER);
+            if (hashMap != null){
+                progressAnswer.putAll(hashMap);
+            }
         }
     }
 
@@ -199,6 +208,17 @@ public class Part7Fragment extends Fragment implements ExamActivity.OnConfirmAns
             txtC.setText(question.getQuestionC());
             txtD.setText(question.getQuestionD());
         }
+
+        // show the answer are choice before
+        questionContent.entrySet().forEach(item -> {
+            TextView txt = item.getValue();
+            Integer tag = (Integer) txt.getTag();
+
+            if (txt.getText().toString().equals(progressAnswer.get(tag))) {
+                txt.setBackground(answerSelectedState);
+                answer.put(tag, txt.getText().toString());
+            }
+        });
     }
 
     private void setupEvent() {

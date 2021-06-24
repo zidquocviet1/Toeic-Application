@@ -13,6 +13,7 @@ import com.example.toeicapplication.adapters.CourseAdapter;
 import com.example.toeicapplication.adapters.CourseDetailAdapter;
 import com.example.toeicapplication.databinding.ActivityCourseDetailBinding;
 import com.example.toeicapplication.model.Course;
+import com.example.toeicapplication.model.User;
 import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -20,6 +21,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 public class CourseDetailActivity extends AppCompatActivity {
     private ActivityCourseDetailBinding binding;
     private Course course;
+    private User user;
     private CourseDetailAdapter courseDetailAdapter;
 
     @Override
@@ -28,7 +30,10 @@ public class CourseDetailActivity extends AppCompatActivity {
         binding = ActivityCourseDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        course = getIntent().getParcelableExtra("course");
+        Intent intent = getIntent();
+
+        course = intent.getParcelableExtra("course");
+        user = intent.getParcelableExtra("user");
 
         if (course != null) {
             setupUI(course);
@@ -60,8 +65,10 @@ public class CourseDetailActivity extends AppCompatActivity {
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             LoadingDialog.dismissDialog();
+
             Intent intent = new Intent(CourseDetailActivity.this, ExamActivity.class);
             intent.putExtra("course", course);
+            intent.putExtra("user", user);
 
             startActivity(intent);
             this.finish();
