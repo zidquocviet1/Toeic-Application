@@ -22,7 +22,6 @@ public class CourseDetailActivity extends AppCompatActivity {
     private ActivityCourseDetailBinding binding;
     private Course course;
     private User user;
-    private CourseDetailAdapter courseDetailAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +47,8 @@ public class CourseDetailActivity extends AppCompatActivity {
 
         TabLayout tab = binding.tabLayout;
 
-        courseDetailAdapter = new CourseDetailAdapter(getSupportFragmentManager(), getLifecycle(), 2, course);
+        CourseDetailAdapter courseDetailAdapter = new CourseDetailAdapter(getSupportFragmentManager(),
+                getLifecycle(), 2, course);
         binding.viewPager.setAdapter(courseDetailAdapter);
         binding.viewPager.setUserInputEnabled(false);
         new TabLayoutMediator(tab, binding.viewPager, (tab1, position) -> {
@@ -61,17 +61,18 @@ public class CourseDetailActivity extends AppCompatActivity {
     }
 
     public void enrollCourse(View view) {
-        LoadingDialog.showLoadingDialog(this);
-
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            LoadingDialog.dismissDialog();
+        if (!isFinishing()) {
+            LoadingDialog.showLoadingDialog(this);
 
             Intent intent = new Intent(CourseDetailActivity.this, ExamActivity.class);
             intent.putExtra("course", course);
             intent.putExtra("user", user);
 
-            startActivity(intent);
-            this.finish();
-        }, 500);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                LoadingDialog.dismissDialog();
+                startActivity(intent);
+                this.finish();
+            }, 500);
+        }
     }
 }
