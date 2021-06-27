@@ -121,7 +121,9 @@
     <string name="number_question">Question %1$d</string>
     <string name="next">Next</string>
     <string name="your_score">Your Score</string>
-    <string name="finish">Congratulation! You have completed the test. Do you want to see the result?</string>
+    <string name="finish_message">Congratulation! You have completed the test. Do you want to see the result?</string>
+    <string name="finish">Finish</string>
+    <string name="early_finish">Have not been finished yet. Are you sure you want to submit?</string>
     <string name="total_question_full">Total Question</string>
     <string name="completion">Completion</string>
     <string name="correct">Correct</string>

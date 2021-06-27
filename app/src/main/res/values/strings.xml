@@ -119,7 +119,9 @@
     <string name="number_question">Câu hỏi %1$d</string>
     <string name="next">Tiếp theo</string>
     <string name="your_score">Điểm Của Bạn</string>
-    <string name="finish">Chúc mừng bạn đã hoàn thành cuộc thi. Có muốn xem kết quả hay không?</string>
+    <string name="finish_message">Chúc mừng bạn đã hoàn thành cuộc thi. Có muốn xem kết quả hay không?</string>
+    <string name="finish">Kết thúc</string>
+    <string name="early_finish">Chưa hoàn thành cuộc thi. Bạn có chắc chắn nộp bài hay không?</string>
     <string name="total_question_full">Tổng câu hỏi</string>
     <string name="completion">Hoàn thành</string>
     <string name="complete_question" translatable="false">\u2022 %1$d</string>
