@@ -1,6 +1,7 @@
 package com.example.toeicapplication.di;
 
 import com.example.toeicapplication.network.Api;
+import com.example.toeicapplication.network.service.ResultService;
 import com.example.toeicapplication.network.service.UserService;
 import javax.inject.Singleton;
 import dagger.Module;
@@ -17,4 +18,9 @@ public class NetworkModule {
         return Api.getInstance().userService();
     }
 
+    @Singleton
+    @Provides
+    public ResultService provideResultService(){
+        return Api.getInstance().resultService();
+    }
 }
