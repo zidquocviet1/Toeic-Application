@@ -36,6 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:hint="@string/password"
+        app:endIconMode="password_toggle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias=".5"
@@ -44,7 +45,6 @@
         app:layout_constraintVertical_bias="0"
         app:layout_constraintWidth_percent=".8"
         app:startIconDrawable="@drawable/ic_key_24"
-        app:endIconMode="password_toggle"
         app:startIconTint="@color/icon">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -88,47 +88,71 @@
         app:layout_constraintTop_toBottomOf="@id/txtForget"
         app:layout_constraintVertical_bias="0" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_google"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvFacebook"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="10dp"
+        android:foreground="?selectableItemBackground"
+        app:cardCornerRadius="40dp"
+        app:layout_constraintBottom_toBottomOf="@id/cvGoogle"
+        app:layout_constraintEnd_toStartOf="@id/cvGoogle"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/cvGoogle">
+
+        <ImageButton
+            android:id="@+id/imgFacebook"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_facebook"
+            android:clickable="true" />
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvGoogle"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginTop="60dp"
-        android:backgroundTint="@color/white"
-        android:elevation="35dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_google"
+        android:foreground="?selectableItemBackground"
+        app:cardCornerRadius="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnLogin"
-        app:layout_constraintVertical_bias="0" />
+        app:layout_constraintVertical_bias="0">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_facebook"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:backgroundTint="@color/white"
-        android:elevation="35dp"
-        android:src="@drawable/ic_facebook"
-        app:layout_constraintBottom_toBottomOf="@id/fab_google"
-        app:layout_constraintEnd_toStartOf="@id/fab_google"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/fab_google"/>
+        <ImageButton
+            android:id="@+id/imgGoogle"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_google"
+            android:clickable="true" />
+    </androidx.cardview.widget.CardView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_twitter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvTwitter"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginStart="10dp"
-        android:backgroundTint="@color/white"
-        android:elevation="35dp"
-        android:src="@drawable/ic_twitter"
-        app:layout_constraintBottom_toBottomOf="@id/fab_google"
+        android:foreground="?selectableItemBackground"
+        app:cardCornerRadius="40dp"
+        app:layout_constraintBottom_toBottomOf="@id/cvGoogle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@id/fab_google"
-        app:layout_constraintTop_toTopOf="@id/fab_google"
-        app:layout_constraintVertical_bias="0" />
+        app:layout_constraintStart_toEndOf="@id/cvGoogle"
+        app:layout_constraintTop_toTopOf="@id/cvGoogle"
+        app:layout_constraintVertical_bias="0">
+
+        <ImageButton
+            android:id="@+id/imgTwitter"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_twitter"
+            android:clickable="true" />
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
