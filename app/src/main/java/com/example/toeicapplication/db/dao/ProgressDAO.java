@@ -1,6 +1,7 @@
 package com.example.toeicapplication.db.dao;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -17,4 +18,7 @@ public interface ProgressDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable add(Progress progress);
+
+    @Query("delete from Progress where courseID = :id")
+    Completable delete(Long id);
 }
