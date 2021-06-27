@@ -1,10 +1,5 @@
 package com.example.toeicapplication;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
@@ -12,7 +7,13 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.toeicapplication.databinding.ActivityExamBinding;
 import com.example.toeicapplication.model.Course;
@@ -29,7 +30,6 @@ import com.example.toeicapplication.view.fragment.Part5Fragment;
 import com.example.toeicapplication.view.fragment.Part7Fragment;
 import com.example.toeicapplication.viewmodels.ExamViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.dialog.MaterialDialogs;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -90,11 +90,19 @@ public class ExamActivity
 
         binding.txtTitle.setText(course.getName());
         binding.btnClick.setOnClickListener(this);
+        binding.btnFinish.setOnClickListener(this);
         binding.btnClick.setEnabled(false);
+        binding.btnFinish.setEnabled(false);
     }
 
     private void observeViewModel() {
         examVM = new ViewModelProvider(this).get(ExamViewModel.class);
+
+        examVM.getProgress().observe(this, progress -> {
+            if (progress != null) {
+                this.progress = progress;
+            }
+        });
 
         examVM.getQuestions().observe(this, questionList -> {
             if (questionList != null && !questionList.isEmpty()) {
@@ -108,12 +116,6 @@ public class ExamActivity
                 }
             } else {
                 unavailableCourseDialog();
-            }
-        });
-
-        examVM.getProgress().observe(this, progress -> {
-            if (progress != null) {
-                this.progress = progress;
             }
         });
     }
@@ -135,6 +137,7 @@ public class ExamActivity
 
     // start exam executed only one time
     private void startExam() {
+        binding.btnFinish.setEnabled(true);
         setupUIWithCountDown(isCounting);
 
         Question question = questions.get(currentQuestion - 1);
@@ -143,7 +146,8 @@ public class ExamActivity
         openFragment(listQuestions, null);
     }
 
-    private void restartExam(){
+    private void restartExam() {
+        binding.btnFinish.setEnabled(true);
         isCounting = progress.isCounting();
         testTime = progress.getRemainTime().intValue();
         progressQuestion = new HashMap<>(progress.getQuestions());
@@ -170,16 +174,16 @@ public class ExamActivity
                 set the result which is the user has selected.
         */
 
-        if (questions.indexOf(questionList.get(0)) != progressQuestionIndex){
+        if (questions.indexOf(questionList.get(0)) != progressQuestionIndex) {
             this.currentQuestion = questions.indexOf(questionList.get(0)) + 1;
-        }else{
+        } else {
             this.currentQuestion = progressQuestionIndex + 1;
         }
 
-        for (Question q : questionList){
+        for (Question q : questionList) {
             int index = questions.indexOf(q);
 
-            if (progressQuestion.containsKey(index + 1)){
+            if (progressQuestion.containsKey(index + 1)) {
                 progressAnswer.put(index + 1, progressQuestion.get(index + 1));
             }
         }
@@ -238,10 +242,10 @@ public class ExamActivity
                 break;
             case 5:
             case 6:
-                for (int i = 0; i < 4; i++){
+                for (int i = 0; i < 4; i++) {
                     Question q = questions.get(this.questions.indexOf(question) + i);
 
-                    if (q.getPart() == 5 || q.getPart() == 6){
+                    if (q.getPart() == 5 || q.getPart() == 6) {
                         listQuestion.add(q);
                     }
                 }
@@ -260,7 +264,7 @@ public class ExamActivity
         return listQuestion;
     }
 
-    private void setupUIWithCountDown(boolean isCounting){
+    private void setupUIWithCountDown(boolean isCounting) {
         if (isCounting) {
             binding.layoutTime.setVisibility(View.VISIBLE);
             binding.pbTime.setVisibility(View.VISIBLE);
@@ -274,15 +278,17 @@ public class ExamActivity
             @Override
             public void run() {
                 runOnUiThread(() -> {
-                    if (testTime > 0) {
-                        binding.pbTime.setProgress(testTime);
-                        binding.txtDisplayTime.setText(Utils.convertTime(testTime));
-                        testTime -= 1000;
-                    } else {
-                        binding.pbTime.setProgress(0);
-                        binding.txtDisplayTime.setText(Utils.convertTime(0));
-                        timer.cancel();
-                        showResult();
+                    if (binding != null) {
+                        if (testTime > 0) {
+                            binding.pbTime.setProgress(testTime);
+                            binding.txtDisplayTime.setText(Utils.convertTime(testTime));
+                            testTime -= 1000;
+                        } else {
+                            binding.pbTime.setProgress(0);
+                            binding.txtDisplayTime.setText(Utils.convertTime(0));
+                            timer.cancel();
+                            showResult(false);
+                        }
                     }
                 });
             }
@@ -321,13 +327,15 @@ public class ExamActivity
 
             // show result here
             if (this.currentQuestion >= this.questions.size()) {
-                showResult();
+                showResult(false);
                 return;
             }
 
             // refresh fragment with a new question
             Question question = this.questions.get(this.currentQuestion - 1);
             openFragment(getListQuestion(question), null);
+        } else if (id == binding.btnFinish.getId()) {
+            earlyFinishExamDialog();
         }
     }
 
@@ -340,7 +348,9 @@ public class ExamActivity
     protected void onDestroy() {
         if (mediaPlayer != null && mediaPlayer.isPlaying())
             mediaPlayer.stop();
+        binding = null;
         super.onDestroy();
+        Log.e("TAG", "ExamActivity onDestroy called");
     }
 
     @Override
@@ -366,7 +376,7 @@ public class ExamActivity
         stopExamDialog();
     }
 
-    private void addProgress(){
+    private void addProgress() {
         Progress progress = new Progress(this.progress != null ? this.progress.getId() : null,
                 this.course.getId(),
                 (long) this.testTime,
@@ -375,8 +385,11 @@ public class ExamActivity
         examVM.add(progress);
     }
 
-    private void showResult() {
-        addProgress();
+    private void showResult(boolean isEarlyStop) {
+        if (!isEarlyStop)
+            addProgress();
+        else examVM.delete(course.getId());
+
         LoadingDialog.showLoadingDialog(this);
 
         Result result = null;
@@ -410,7 +423,7 @@ public class ExamActivity
         }, 1000);
     }
 
-    private void stopExamDialog(){
+    private void stopExamDialog() {
         new MaterialAlertDialogBuilder(this)
                 .setCancelable(false)
                 .setTitle(R.string.account_title)
@@ -421,6 +434,21 @@ public class ExamActivity
                     addProgress();
 
                     this.finish();
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+    }
+
+    private void earlyFinishExamDialog() {
+        new MaterialAlertDialogBuilder(this)
+                .setCancelable(false)
+                .setTitle(R.string.account_title)
+                .setMessage(R.string.early_finish)
+                .setPositiveButton(R.string.yes, (dialog, which) -> {
+                    dialog.dismiss();
+
+                    showResult(true);
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
                 .create()
