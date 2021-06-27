@@ -44,4 +44,10 @@ public class ResultViewModel extends ViewModel {
                 })
         );
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        cd.dispose();
+    }
 }
