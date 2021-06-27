@@ -6,13 +6,23 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.toeicapplication.R;
 import com.example.toeicapplication.model.User;
-import com.example.toeicapplication.repository.impl.LoginRepositoryImpl;
+import com.example.toeicapplication.network.response.Response;
+import com.example.toeicapplication.repository.LoginRepository;
 import com.example.toeicapplication.utilities.DataState;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
 public class LoginViewModel extends ViewModel {
@@ -35,7 +45,7 @@ public class LoginViewModel extends ViewModel {
     private final MutableLiveData<DataState<User>> stateResponse;
 
     @Inject
-    LoginRepositoryImpl repository;
+    LoginRepository repository;
 
     @Inject
     public LoginViewModel() {
@@ -52,7 +62,6 @@ public class LoginViewModel extends ViewModel {
         rePasswordError = new MutableLiveData<>();
         loginUserNameError = new MutableLiveData<>();
         loginPasswordError = new MutableLiveData<>();
-
         stateResponse = new MutableLiveData<>();
 
         userName.setValue("");
@@ -173,12 +182,76 @@ public class LoginViewModel extends ViewModel {
         return networkState;
     }
 
+    private void setStateResponse(DataState<User> response){
+        this.stateResponse.postValue(response);
+    }
 
     public void login(User user, Context context) {
-        repository.login(user, context, this.getStateResponse());
+        repository.login(user)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .timeout(5, TimeUnit.SECONDS)
+                .subscribe(new Observer<Response<User>>() {
+                    @Override
+                    public void onSubscribe(@NotNull Disposable d) {
+                        setStateResponse(DataState.Loading(null));
+                    }
+
+                    @Override
+                    public void onNext(@NotNull Response<User> userPostResponse) {
+                        if (userPostResponse.isStatus()) {
+                            User data = userPostResponse.getData();
+
+                            setStateResponse(DataState.Success(data));
+                        }else{
+                            setStateResponse(DataState.Error(userPostResponse.getMessage()));
+                        }
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                        setStateResponse(DataState.Error(context.getString(R.string.server_error)));
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
     }
 
     public void signUp(User user, Context context) {
-        repository.signUp(user, context, this.getStateResponse());
+        repository.signUp(user)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .timeout(5, TimeUnit.SECONDS)
+                .subscribe(new Observer<Response<User>>() {
+                    @Override
+                    public void onSubscribe(@NotNull Disposable d) {
+                        setStateResponse(DataState.Loading(null));
+                    }
+
+                    @Override
+                    public void onNext(@NotNull Response<User> userPostResponse) {
+                        if (userPostResponse.isStatus()) {
+                            User data = userPostResponse.getData();
+
+                            setStateResponse(DataState.Success(data));
+                        }else{
+                            setStateResponse(DataState.Error(userPostResponse.getMessage()));
+                        }
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                        setStateResponse(DataState.Error(context.getString(R.string.server_error)));
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 }

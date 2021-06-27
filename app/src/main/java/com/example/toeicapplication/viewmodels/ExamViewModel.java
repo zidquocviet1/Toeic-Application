@@ -1,11 +1,17 @@
 package com.example.toeicapplication.viewmodels;
 
+import android.util.Log;
+
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.toeicapplication.model.Progress;
 import com.example.toeicapplication.model.Question;
 import com.example.toeicapplication.repository.ExamRepository;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,72 +20,143 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.example.toeicapplication.utilities.Utils.listeningScore;
 import static com.example.toeicapplication.utilities.Utils.readingScore;
 
 @HiltViewModel
-public class ExamViewModel extends ViewModel {
+public class ExamViewModel extends ViewModel implements LifecycleObserver {
     private final MutableLiveData<List<Question>> questions;
-    private final MutableLiveData<Progress> progress;
     private final MutableLiveData<Map<Integer, String>> selectedQuestion;
+    private final MutableLiveData<Progress> progress;
 
     private final ExamRepository repository;
+    private final CompositeDisposable cd;
 
-    @Inject
-    public ExamViewModel(ExamRepository repository){
+    @Inject // don't inject the compositeDisposable with the SingletonScope
+    public ExamViewModel(ExamRepository repository) {
+        Log.e("TAG", "Initialize ExamViewModel");
         questions = new MutableLiveData<>();
         selectedQuestion = new MutableLiveData<>();
         progress = new MutableLiveData<>();
-
+        this.cd = new CompositeDisposable();
         this.repository = repository;
+
         selectedQuestion.setValue(new HashMap<>());
     }
 
-    public MutableLiveData<List<Question>> getQuestions() {
+    public LiveData<List<Question>> getQuestions() {
         return questions;
     }
 
-    public MutableLiveData<Progress> getProgress() {
+    public LiveData<Progress> getProgress() {
         return progress;
     }
 
-    public MutableLiveData<Map<Integer, String>> getSelectedQuestion() {
+    public LiveData<Map<Integer, String>> getSelectedQuestion() {
         return selectedQuestion;
     }
 
-    public void postSelectedQuestion(int numQuestion, String answer){
-        Map<Integer, String> selected = this.getSelectedQuestion().getValue();
-
-        if (selected == null) selected  = new HashMap<>();
-
-        selected.put(numQuestion, answer);
-        this.getSelectedQuestion().postValue(selected);
+    private void setProgress(Progress progress) {
+        this.progress.setValue(progress);
     }
 
-    public void postSelectedQuestion(Map<Integer, String> answer){
+    private void setQuestionList(List<Question> questionList) {
+        this.questions.setValue(questionList);
+    }
+
+    public void postSelectedQuestion(int numQuestion, String answer) {
         Map<Integer, String> selected = this.getSelectedQuestion().getValue();
 
-        if (selected == null) selected  = new HashMap<>();
+        if (selected == null) selected = new HashMap<>();
+
+        selected.put(numQuestion, answer);
+        this.selectedQuestion.postValue(selected);
+    }
+
+    public void postSelectedQuestion(Map<Integer, String> answer) {
+        Map<Integer, String> selected = this.getSelectedQuestion().getValue();
+
+        if (selected == null) selected = new HashMap<>();
 
         selected.putAll(answer);
 
-        this.getSelectedQuestion().postValue(selected);
+        this.selectedQuestion.postValue(selected);
     }
 
-    public void getListQuestionByCourseID(Long courseID){
-        repository.getListQuestionByCourseID(this.questions, courseID);
+    // this snippet is used for cache and remote call
+    public void getListQuestionByCourseID(Long courseID) {
+        // this observable will only run on time in the lifecycle of compositeDisposable
+        cd.add(repository.getListQuestionByCourseID(courseID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<List<Question>>() {
+                    @Override
+                    public void onSuccess(@NotNull List<Question> questionList) {
+                        setQuestionList(questionList);
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                        setQuestionList(null);
+                    }
+                }));
     }
 
-    public void getProgressByCourseID(Long courseID){
-        repository.getProgressByCourseID(this.progress, courseID);
+    public void getProgressByCourseID(Long courseID) {
+        repository.getProgressByCourseID(courseID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableSingleObserver<Progress>() {
+                    @Override
+                    public void onSuccess(@NotNull Progress progress) {
+                        Log.e("TAG", progress.toString());
+                        setProgress(progress);
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                        setProgress(null);
+                        Log.e("TAG", "Can't get the data from Progress table: " + e.getMessage());
+                    }
+                });
     }
 
-    public void add(Progress progress){
-        repository.add(progress);
+    public void add(Progress progress) {
+        cd.add(repository.add(progress)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> Log.e("TAG", "Insert the progress successfully"), throwable -> {
+                    Log.e("TAG", "Can't get the data from Progress table: " + throwable.getMessage());
+                })
+        );
     }
 
-    public Map<String, Integer> calculateAnswer(){
+    public void delete(Long id) {
+        cd.add(repository.delete(id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.e("TAG", "Delete the progress successfully");
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                        Log.e("TAG", "The id is not exists in the scope: " + e.getMessage());
+                    }
+                })
+        );
+    }
+
+    public Map<String, Integer> calculateAnswer() {
         Map<String, Integer> result = new HashMap<>();
 
         List<Question> questionList = this.questions.getValue();
@@ -93,12 +170,12 @@ public class ExamViewModel extends ViewModel {
                 Question q = questionList.get(i);
 
                 // reading phase
-                if (i < 100){
-                    if (answer.containsKey(i) && q.getAnswer().equals(answer.get(i+1))) {
+                if (i < 100) {
+                    if (answer.containsKey(i) && q.getAnswer().equals(answer.get(i + 1))) {
                         correctReading++;
                     }
-                }else {
-                    if (answer.containsKey(i) && q.getAnswer().equals(answer.get(i+1))) {
+                } else {
+                    if (answer.containsKey(i) && q.getAnswer().equals(answer.get(i + 1))) {
                         correctListening++;
                     }
                 }
@@ -118,5 +195,14 @@ public class ExamViewModel extends ViewModel {
             return result;
         }
         return null;
+    }
+
+    @Override
+    protected void onCleared() {
+        Log.e("TAG", "ExamViewModel onCleared");
+        super.onCleared();
+        if (cd != null) {
+            cd.dispose();
+        }
     }
 }

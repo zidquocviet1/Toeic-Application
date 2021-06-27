@@ -1,16 +1,19 @@
 package com.example.toeicapplication.repository;
 
-import androidx.lifecycle.MutableLiveData;
-
 import com.example.toeicapplication.model.Progress;
 import com.example.toeicapplication.model.Question;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.Single;
+
 public interface ExamRepository {
-    void getListQuestionByCourseID(MutableLiveData<List<Question>> request, Long courseID);
+    Single<List<Question>> getListQuestionByCourseID(Long courseID);
 
-    void getProgressByCourseID(MutableLiveData<Progress> request, Long courseID);
+    Single<Progress> getProgressByCourseID(Long courseID);
 
-    void add(Progress progress);
+    Completable add(Progress progress);
+
+    Completable delete(Long id);
 }
