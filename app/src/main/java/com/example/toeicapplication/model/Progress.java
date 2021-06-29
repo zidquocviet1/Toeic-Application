@@ -8,7 +8,7 @@ import com.example.toeicapplication.db.converter.HashMapConverter;
 
 import java.util.Map;
 
-@Entity
+@Entity(tableName = "progress")
 public class Progress {
     @PrimaryKey(autoGenerate = true)
     private Long id;
@@ -16,9 +16,9 @@ public class Progress {
     private Long remainTime;
     @TypeConverters(HashMapConverter.class)
     private Map<Integer, String> questions;
-    private boolean isCounting;
+    private Boolean isCounting;
 
-    public Progress(Long id, Long courseID, Long remainTime, Map<Integer, String> questions, boolean isCounting) {
+    public Progress(Long id, Long courseID, Long remainTime, Map<Integer, String> questions, Boolean isCounting) {
         this.id = id;
         this.courseID = courseID;
         this.remainTime = remainTime;
@@ -58,11 +58,11 @@ public class Progress {
         this.questions = questions;
     }
 
-    public boolean isCounting() {
+    public Boolean isCounting() {
         return isCounting;
     }
 
-    public void setCounting(boolean counting) {
+    public void setCounting(Boolean counting) {
         isCounting = counting;
     }
 }
