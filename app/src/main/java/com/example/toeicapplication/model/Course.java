@@ -17,17 +17,17 @@ import java.util.ArrayList;
 @Entity(tableName = "course")
 public class Course implements Parcelable {
     @PrimaryKey(autoGenerate = true)
-    private long id;
+    private Long id;
     @NonNull
     private String name;
     @NonNull
     private String description;
-    @ColumnInfo(defaultValue = "5")
-    private float rating;
+    @ColumnInfo(defaultValue = "null")
+    private Float rating;
     @TypeConverters(ArrayListConverter.class)
     private ArrayList<Comment> comment;
 
-    public Course(long id, @NonNull String name, @NonNull String description, float rating) {
+    public Course(Long id, @NonNull String name, @NonNull String description, Float rating) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -35,7 +35,7 @@ public class Course implements Parcelable {
     }
 
     @Ignore
-    public Course(long id, @NonNull String name, @NonNull String description, float rating, ArrayList<Comment> comment) {
+    public Course(Long id, @NonNull String name, @NonNull String description, Float rating, ArrayList<Comment> comment) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -45,10 +45,19 @@ public class Course implements Parcelable {
 
 
     protected Course(Parcel in) {
-        id = in.readLong();
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readLong();
+        }
         name = in.readString();
         description = in.readString();
-        rating = in.readFloat();
+        if (in.readByte() == 0) {
+            rating = null;
+        } else {
+            rating = in.readFloat();
+        }
+        comment = in.createTypedArrayList(Comment.CREATOR);
     }
 
     public static final Creator<Course> CREATOR = new Creator<Course>() {
@@ -63,11 +72,11 @@ public class Course implements Parcelable {
         }
     };
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -89,11 +98,11 @@ public class Course implements Parcelable {
         this.description = description;
     }
 
-    public float getRating() {
+    public Float getRating() {
         return rating;
     }
 
-    public void setRating(float rating) {
+    public void setRating(Float rating) {
         this.rating = rating;
     }
 
@@ -106,12 +115,17 @@ public class Course implements Parcelable {
     }
 
     public static final Course[] courses = {
-            new Course(0, "Toeic 750", "Mục tiêu 750 điểm", 0),
-            new Course(0, "Toeic 550", "Mục tiêu 550 điểm", 0),
-            new Course(0, "Toeic 850", "Mục tiêu 850 điểm", 0),
-            new Course(0, "Toeic 990", "Mục tiêu 990 điểm", 0),
-            new Course(0, "Toeic 650", "Mục tiêu 650 điểm", 0)
+            new Course(null, "Toeic 750", "Mục tiêu 750 điểm", null),
+            new Course(null, "Toeic 550", "Mục tiêu 550 điểm", null),
+            new Course(null, "Toeic 850", "Mục tiêu 850 điểm", null),
+            new Course(null, "Toeic 990", "Mục tiêu 990 điểm", null),
+            new Course(null, "Toeic 650", "Mục tiêu 650 điểm", null)
     };
+
+    @Override
+    public String toString() {
+        return name;
+    }
 
     @Override
     public int describeContents() {
@@ -120,14 +134,20 @@ public class Course implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(id);
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
         dest.writeString(name);
         dest.writeString(description);
-        dest.writeFloat(rating);
-    }
-
-    @Override
-    public String toString() {
-        return name;
+        if (rating == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeFloat(rating);
+        }
+        dest.writeTypedList(comment);
     }
 }

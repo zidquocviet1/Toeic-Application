@@ -12,10 +12,7 @@ import androidx.room.TypeConverters;
 import com.example.toeicapplication.db.converter.LocalDateTimeConverter;
 import com.google.gson.annotations.SerializedName;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-import javax.annotation.Nonnull;
 
 @Entity(tableName = "user_info")
 @TypeConverters(LocalDateTimeConverter.class)
@@ -39,10 +36,10 @@ public class User implements Parcelable {
 
     @ColumnInfo(name = "login")
     @SerializedName(value = "login")
-    private boolean isLogin;
+    private Boolean isLogin;
 
     public User(Long id, String userName, String password,
-                String displayName, LocalDateTime timestamp, boolean isLogin) {
+                String displayName, LocalDateTime timestamp, Boolean isLogin) {
         this.id = id;
         this.userName = userName;
         this.password = password;
@@ -53,7 +50,7 @@ public class User implements Parcelable {
 
     @Ignore
     public User(String userName, String password, String displayName,
-                LocalDateTime timestamp, boolean isLogin) {
+                LocalDateTime timestamp, Boolean isLogin) {
         this.userName = userName;
         this.password = password;
         this.displayName = displayName;
@@ -86,8 +83,8 @@ public class User implements Parcelable {
         userName = in.readString();
         password = in.readString();
         displayName = in.readString();
-        isLogin = in.readByte() != 0;
-        timestamp = (LocalDateTime) in.readSerializable();
+        byte tmpIsLogin = in.readByte();
+        isLogin = tmpIsLogin == 0 ? null : tmpIsLogin == 1;
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -142,11 +139,11 @@ public class User implements Parcelable {
         this.timestamp = timestamp;
     }
 
-    public boolean isLogin() {
+    public Boolean isLogin() {
         return isLogin;
     }
 
-    public void setLogin(boolean login) {
+    public void setLogin(Boolean login) {
         isLogin = login;
     }
 
@@ -166,7 +163,6 @@ public class User implements Parcelable {
         dest.writeString(userName);
         dest.writeString(password);
         dest.writeString(displayName);
-        dest.writeByte((byte) (isLogin ? 1 : 0));
-        dest.writeSerializable(timestamp);
+        dest.writeByte((byte) (isLogin == null ? 0 : isLogin ? 1 : 2));
     }
 }
