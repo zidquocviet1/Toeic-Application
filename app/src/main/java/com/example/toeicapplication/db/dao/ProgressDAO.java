@@ -5,7 +5,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.example.toeicapplication.model.Progress;
+import com.example.toeicapplication.model.entity.Progress;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;

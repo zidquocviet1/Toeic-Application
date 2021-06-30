@@ -5,7 +5,7 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.toeicapplication.model.Result;
+import com.example.toeicapplication.model.entity.Result;
 import com.example.toeicapplication.repository.ResultRepository;
 
 import javax.inject.Inject;
@@ -48,6 +48,6 @@ public class ResultViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-        cd.dispose();
+        cd.clear(); // this is not accept new observable
     }
 }

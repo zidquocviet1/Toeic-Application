@@ -15,7 +15,7 @@ import com.example.toeicapplication.HomeActivity;
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.adapters.CourseAdapter;
 import com.example.toeicapplication.databinding.FragmentCourseBinding;
-import com.example.toeicapplication.model.Course;
+import com.example.toeicapplication.model.entity.Course;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
 
 import java.util.ArrayList;

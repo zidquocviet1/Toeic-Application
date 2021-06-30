@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.toeicapplication.R;
-import com.example.toeicapplication.model.Course;
+import com.example.toeicapplication.model.entity.Course;
 import com.example.toeicapplication.listeners.ItemClickListener;
 
 import org.jetbrains.annotations.NotNull;

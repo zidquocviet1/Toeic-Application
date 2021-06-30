@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.toeicapplication.model.User;
+import com.example.toeicapplication.model.entity.User;
 
 import java.util.List;
 

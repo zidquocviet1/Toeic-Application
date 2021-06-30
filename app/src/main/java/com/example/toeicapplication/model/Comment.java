@@ -3,6 +3,9 @@ package com.example.toeicapplication.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.toeicapplication.model.entity.Course;
+import com.example.toeicapplication.model.entity.User;
+
 public class Comment implements Parcelable {
     private int id;
     private String content;

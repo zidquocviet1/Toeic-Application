@@ -1,6 +1,6 @@
 package com.example.toeicapplication.repository;
 
-import com.example.toeicapplication.model.User;
+import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.network.response.Response;
 
 import io.reactivex.Observable;

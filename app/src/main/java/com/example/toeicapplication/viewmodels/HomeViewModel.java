@@ -3,9 +3,9 @@ package com.example.toeicapplication.viewmodels;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.toeicapplication.model.Course;
-import com.example.toeicapplication.model.User;
-import com.example.toeicapplication.model.Word;
+import com.example.toeicapplication.model.entity.Course;
+import com.example.toeicapplication.model.entity.User;
+import com.example.toeicapplication.model.entity.Word;
 import com.example.toeicapplication.repository.HomeRepository;
 import com.example.toeicapplication.utilities.DataState;
 
@@ -14,6 +14,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.disposables.CompositeDisposable;
 
 @HiltViewModel
 public class HomeViewModel extends ViewModel {
@@ -28,6 +29,7 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<DataState<User>> remoteUser;
 
     private final HomeRepository repository;
+    private final CompositeDisposable cd;
 
     @Inject
     public HomeViewModel(HomeRepository repository) {
@@ -41,6 +43,7 @@ public class HomeViewModel extends ViewModel {
         recentLogOutUser = new MutableLiveData<>();
 
         this.repository = repository;
+        cd = new CompositeDisposable();
         networkState.setValue(false);
     }
 
@@ -126,5 +129,10 @@ public class HomeViewModel extends ViewModel {
 
     public void getRecentLogOutUser(){
         repository.getRecentLogOutUser(this.recentLogOutUser);
+    }
+
+    // RankFragment
+    public void getRankByCourse(Course course){
+        repository.getRankByCourse(course);
     }
 }

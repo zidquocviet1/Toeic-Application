@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.toeicapplication.R;
-import com.example.toeicapplication.model.User;
+import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.network.response.Response;
 import com.example.toeicapplication.repository.LoginRepository;
 import com.example.toeicapplication.utilities.DataState;

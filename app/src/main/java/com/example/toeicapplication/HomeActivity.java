@@ -22,8 +22,8 @@ import android.view.View;
 import android.widget.PopupMenu;
 
 import com.example.toeicapplication.databinding.ActivityHomeBinding;
-import com.example.toeicapplication.model.User;
-import com.example.toeicapplication.model.Word;
+import com.example.toeicapplication.model.entity.User;
+import com.example.toeicapplication.model.entity.Word;
 import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.example.toeicapplication.view.fragment.CourseFragment;
 import com.example.toeicapplication.view.fragment.HomeFragment;

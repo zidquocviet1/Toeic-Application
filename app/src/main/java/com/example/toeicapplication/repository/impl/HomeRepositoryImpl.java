@@ -8,9 +8,12 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.db.MyDB;
-import com.example.toeicapplication.model.Course;
-import com.example.toeicapplication.model.User;
-import com.example.toeicapplication.model.Word;
+import com.example.toeicapplication.model.entity.Course;
+import com.example.toeicapplication.model.entity.Rank;
+import com.example.toeicapplication.model.relations.CourseWithRanks;
+import com.example.toeicapplication.model.entity.User;
+import com.example.toeicapplication.model.relations.UserWithResults;
+import com.example.toeicapplication.model.entity.Word;
 import com.example.toeicapplication.network.response.Response;
 import com.example.toeicapplication.network.service.UserService;
 import com.example.toeicapplication.repository.HomeRepository;
@@ -24,11 +27,11 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
-import io.reactivex.Observer;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -209,5 +212,57 @@ public class HomeRepositoryImpl implements HomeRepository {
                             throwable.printStackTrace();
                         })
         );
+    }
+
+    @Override
+    public void getRankByCourse(Course course) {
+        if (course != null) {
+            getCourse(course.getId())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .map(courseAndRank -> courseAndRank.rankList)
+                    .flatMap(new Function<List<Rank>, ObservableSource<Rank>>() {
+                        @Override
+                        public ObservableSource<Rank> apply(@NotNull List<Rank> ranks) throws Exception {
+                            return Observable.fromIterable(ranks);
+                        }
+                    })
+                    .flatMap(new Function<Rank, ObservableSource<UserWithResults>>() {
+                        @Override
+                        public ObservableSource<UserWithResults> apply(@NotNull Rank rank) throws Exception {
+                            return getResult(rank.getUserId());
+                        }
+                    })
+                    .subscribe(new DisposableObserver<UserWithResults>() {
+                        @Override
+                        public void onNext(@NotNull UserWithResults userAndResult) {
+                            Log.d("TAG", "OnNext");
+                        }
+
+                        @Override
+                        public void onError(@NotNull Throwable e) {
+                            Log.d("TAG", e.getMessage());
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            Log.d("TAG", "OnComplete");
+                        }
+                    });
+        }
+    }
+
+    private Observable<CourseWithRanks> getCourse(Long courseId){
+        return database.getRankDAO().getRankByCourse(courseId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .toObservable();
+    }
+
+    private Observable<UserWithResults> getResult(Long userId){
+        return database.getRankDAO().getResultByUser(userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .toObservable();
     }
 }

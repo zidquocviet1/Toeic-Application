@@ -7,9 +7,9 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.example.toeicapplication.db.MyDB;
-import com.example.toeicapplication.model.Course;
-import com.example.toeicapplication.model.Question;
-import com.example.toeicapplication.model.Word;
+import com.example.toeicapplication.model.entity.Course;
+import com.example.toeicapplication.model.entity.Question;
+import com.example.toeicapplication.model.entity.Word;
 import com.example.toeicapplication.utilities.Utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

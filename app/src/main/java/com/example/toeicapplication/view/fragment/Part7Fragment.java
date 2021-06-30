@@ -18,7 +18,7 @@ import android.widget.TextView;
 import com.example.toeicapplication.ExamActivity;
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.databinding.FragmentPart7Binding;
-import com.example.toeicapplication.model.Question;
+import com.example.toeicapplication.model.entity.Question;
 import com.example.toeicapplication.viewmodels.ExamViewModel;
 
 import org.jetbrains.annotations.NotNull;

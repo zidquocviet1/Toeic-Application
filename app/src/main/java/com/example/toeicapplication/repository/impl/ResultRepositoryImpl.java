@@ -1,7 +1,7 @@
 package com.example.toeicapplication.repository.impl;
 
 import com.example.toeicapplication.db.dao.ResultDAO;
-import com.example.toeicapplication.model.Result;
+import com.example.toeicapplication.model.entity.Result;
 import com.example.toeicapplication.network.service.ResultService;
 import com.example.toeicapplication.repository.ResultRepository;
 

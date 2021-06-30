@@ -11,25 +11,20 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.toeicapplication.CourseDetailActivity;
-import com.example.toeicapplication.ExamActivity;
 import com.example.toeicapplication.HomeActivity;
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.adapters.CourseAdapter;
 import com.example.toeicapplication.adapters.WordAdapter;
 import com.example.toeicapplication.databinding.FragmentHomeBinding;
-import com.example.toeicapplication.model.Course;
-import com.example.toeicapplication.model.User;
-import com.example.toeicapplication.model.Word;
+import com.example.toeicapplication.model.entity.Course;
+import com.example.toeicapplication.model.entity.User;
+import com.example.toeicapplication.model.entity.Word;
 import com.example.toeicapplication.listeners.ItemClickListener;
-import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
 
 import java.util.ArrayList;

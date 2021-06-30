@@ -1,8 +1,8 @@
 package com.example.toeicapplication.repository.impl;
 
 import com.example.toeicapplication.db.MyDB;
-import com.example.toeicapplication.model.Progress;
-import com.example.toeicapplication.model.Question;
+import com.example.toeicapplication.model.entity.Progress;
+import com.example.toeicapplication.model.entity.Question;
 import com.example.toeicapplication.repository.ExamRepository;
 
 import java.util.List;

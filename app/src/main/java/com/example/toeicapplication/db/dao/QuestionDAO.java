@@ -4,7 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.example.toeicapplication.model.Question;
+import com.example.toeicapplication.model.entity.Question;
 
 import java.util.List;
 

@@ -1,7 +1,6 @@
 package com.example.toeicapplication.adapters;
 
 import android.content.Context;
-import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.toeicapplication.R;
-import com.example.toeicapplication.model.Word;
+import com.example.toeicapplication.model.entity.Word;
 import com.example.toeicapplication.listeners.ItemClickListener;
 
 import org.jetbrains.annotations.NotNull;

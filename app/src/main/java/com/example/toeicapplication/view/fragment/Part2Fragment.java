@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.toeicapplication.ExamActivity;
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.databinding.FragmentPart2Binding;
-import com.example.toeicapplication.model.Question;
+import com.example.toeicapplication.model.entity.Question;
 import com.example.toeicapplication.viewmodels.ExamViewModel;
 
 import org.jetbrains.annotations.NotNull;

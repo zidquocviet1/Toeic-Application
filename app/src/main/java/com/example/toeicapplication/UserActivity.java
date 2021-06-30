@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.toeicapplication.databinding.ActivityUserBinding;
-import com.example.toeicapplication.model.User;
+import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.view.fragment.UserInfoFragment;
 
 public class UserActivity extends AppCompatActivity {

@@ -1,10 +1,11 @@
-package com.example.toeicapplication.model;
+package com.example.toeicapplication.model.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
@@ -12,7 +13,18 @@ import com.example.toeicapplication.db.converter.LocalDateTimeConverter;
 
 import java.time.LocalDateTime;
 
-@Entity(tableName = "result")
+@Entity(tableName = "result", foreignKeys = {
+        @ForeignKey(
+                entity = User.class,
+                parentColumns = "id",
+                childColumns = "userId"
+        ),
+        @ForeignKey(
+                entity = Course.class,
+                parentColumns = "id",
+                childColumns = "courseId"
+        )
+})
 public class Result implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     private Long id;

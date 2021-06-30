@@ -3,8 +3,6 @@ package com.example.toeicapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,15 +13,12 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.example.toeicapplication.databinding.ActivityResultBinding;
-import com.example.toeicapplication.model.Course;
-import com.example.toeicapplication.model.Result;
-import com.example.toeicapplication.model.User;
-import com.example.toeicapplication.utilities.NetworkController;
+import com.example.toeicapplication.model.entity.Course;
+import com.example.toeicapplication.model.entity.Result;
+import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.utilities.Utils;
 import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.example.toeicapplication.viewmodels.ResultViewModel;
-
-import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
 

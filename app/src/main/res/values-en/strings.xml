@@ -132,4 +132,8 @@
     <string name="review_answer">Review Answer</string>
     <string name="duration">Duration: %1$s</string>
     //
+
+    // rank fragment
+    <string name="all">All</string>
+    //
 </resources>

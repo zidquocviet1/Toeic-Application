@@ -1,4 +1,4 @@
-package com.example.toeicapplication.model;
+package com.example.toeicapplication.model.entity;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

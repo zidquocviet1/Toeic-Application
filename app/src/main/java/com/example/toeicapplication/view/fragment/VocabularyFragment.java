@@ -17,13 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.toeicapplication.HomeActivity;
-import com.example.toeicapplication.R;
-import com.example.toeicapplication.adapters.CourseAdapter;
 import com.example.toeicapplication.adapters.WordAdapter;
-import com.example.toeicapplication.databinding.FragmentCourseBinding;
 import com.example.toeicapplication.databinding.FragmentVocabularyBinding;
-import com.example.toeicapplication.model.Course;
-import com.example.toeicapplication.model.Word;
+import com.example.toeicapplication.model.entity.Word;
 import com.example.toeicapplication.utilities.DataState;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
 

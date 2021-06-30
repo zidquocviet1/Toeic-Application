@@ -16,11 +16,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.toeicapplication.databinding.ActivityExamBinding;
-import com.example.toeicapplication.model.Course;
-import com.example.toeicapplication.model.Progress;
-import com.example.toeicapplication.model.Question;
-import com.example.toeicapplication.model.Result;
-import com.example.toeicapplication.model.User;
+import com.example.toeicapplication.model.entity.Course;
+import com.example.toeicapplication.model.entity.Progress;
+import com.example.toeicapplication.model.entity.Question;
+import com.example.toeicapplication.model.entity.Result;
+import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.utilities.Utils;
 import com.example.toeicapplication.view.custom.ChooseModeBottomDialogFragment;
 import com.example.toeicapplication.view.custom.LoadingDialog;

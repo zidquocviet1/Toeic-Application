@@ -1,6 +1,6 @@
 package com.example.toeicapplication.repository.impl;
 
-import com.example.toeicapplication.model.User;
+import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.network.response.Response;
 import com.example.toeicapplication.network.service.UserService;
 import com.example.toeicapplication.repository.LoginRepository;

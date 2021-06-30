@@ -7,8 +7,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.toeicapplication.model.Progress;
-import com.example.toeicapplication.model.Question;
+import com.example.toeicapplication.model.entity.Progress;
+import com.example.toeicapplication.model.entity.Question;
 import com.example.toeicapplication.repository.ExamRepository;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +22,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;

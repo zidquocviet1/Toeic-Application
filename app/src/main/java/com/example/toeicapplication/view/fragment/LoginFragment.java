@@ -16,10 +16,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.toeicapplication.LoginActivity;
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.databinding.TabLoginFragmentBinding;
-import com.example.toeicapplication.model.User;
+import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.utilities.DataState;
 import com.example.toeicapplication.utilities.EncryptPassword;
-import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.example.toeicapplication.viewmodels.LoginViewModel;
 
 import org.jetbrains.annotations.NotNull;

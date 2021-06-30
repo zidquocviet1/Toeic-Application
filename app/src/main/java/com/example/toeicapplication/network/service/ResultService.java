@@ -1,6 +1,6 @@
 package com.example.toeicapplication.network.service;
 
-import com.example.toeicapplication.model.Result;
+import com.example.toeicapplication.model.entity.Result;
 import com.example.toeicapplication.network.response.Response;
 
 import io.reactivex.Observable;
