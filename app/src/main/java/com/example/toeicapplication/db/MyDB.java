@@ -6,11 +6,15 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
+import com.example.toeicapplication.db.converter.CommentArrayConverter;
+import com.example.toeicapplication.db.converter.LocalDateTimeConverter;
+import com.example.toeicapplication.db.converter.ResultArrayConverter;
 import com.example.toeicapplication.db.dao.CourseDAO;
 import com.example.toeicapplication.db.dao.ProgressDAO;
 import com.example.toeicapplication.db.dao.QuestionDAO;
@@ -32,7 +36,8 @@ import org.jetbrains.annotations.NotNull;
 @Database(entities = {User.class, Result.class,
         Course.class, Rank.class,
         Word.class, Question.class,
-        Progress.class}, exportSchema = false, version = 6)
+        Progress.class}, version = 1)
+@TypeConverters({LocalDateTimeConverter.class, CommentArrayConverter.class, ResultArrayConverter.class})
 public abstract class MyDB extends RoomDatabase {
     private static MyDB instance;
 
