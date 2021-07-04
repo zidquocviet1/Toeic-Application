@@ -2,7 +2,7 @@ package com.example.toeicapplication.network.response;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Response<T> {
+public class MyResponse<T> {
     @SerializedName("status")
     private boolean status;
 
@@ -12,10 +12,10 @@ public class Response<T> {
     @SerializedName("data")
     private T data;
 
-    public Response() {
+    public MyResponse() {
     }
 
-    public Response(boolean status, T data, String message) {
+    public MyResponse(boolean status, T data, String message) {
         this.status = status;
         this.data = data;
         this.message = message;
