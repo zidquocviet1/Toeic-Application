@@ -1,12 +1,6 @@
 package com.example.toeicapplication.view.fragment;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
@@ -16,55 +10,44 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.toeicapplication.HomeActivity;
 import com.example.toeicapplication.adapters.WordAdapter;
 import com.example.toeicapplication.databinding.FragmentVocabularyBinding;
 import com.example.toeicapplication.model.entity.Word;
-import com.example.toeicapplication.utilities.DataState;
+import com.example.toeicapplication.utilities.Status;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link VocabularyFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 @AndroidEntryPoint
-public class VocabularyFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-    private FragmentVocabularyBinding binding;
-    private List<Word> words;
+public class VocabularyFragment extends BaseFragment<HomeViewModel, FragmentVocabularyBinding> implements TextWatcher {
     private WordAdapter wordAdapter;
     private HomeActivity context;
-    private HomeViewModel homeVM;
 
+    private List<Word> words;
+
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
     private static final long DELAY = 500;
+
+    private String mParam1;
+    private String mParam2;
 
     public VocabularyFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment VocabularyFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static VocabularyFragment newInstance(String param1, String param2) {
         VocabularyFragment fragment = new VocabularyFragment();
         Bundle args = new Bundle();
@@ -84,61 +67,57 @@ public class VocabularyFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public FragmentVocabularyBinding bindingInflater(LayoutInflater inflater, ViewGroup container, boolean attachToParent) {
+        return FragmentVocabularyBinding.inflate(inflater, container, attachToParent);
+    }
 
-        binding = FragmentVocabularyBinding.inflate(inflater, container, false);
+    @Override
+    public Class<HomeViewModel> getViewModel() {
+        return HomeViewModel.class;
+    }
+
+    @Override
+    public FragmentActivity getFragmentActivity() {
+        return requireActivity();
+    }
+
+    @Override
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = (HomeActivity) getActivity();
-        homeVM = new ViewModelProvider(context).get(HomeViewModel.class);
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
 
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         setupRecyclerView();
 
-        if (homeVM.getWords().getValue() == null
-                || homeVM.getWords().getValue().getData() == null
-                || homeVM.getWords().getValue().getData().isEmpty()){
+        if (mVM.getWords().getValue() == null
+                || mVM.getWords().getValue().getData() == null
+                || mVM.getWords().getValue().getData().isEmpty()){
             setupObserve();
         }else{
             setData();
         }
 
         // chua xong phan nay
-        binding.input.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (wordAdapter != null) {
-                    wordAdapter.getFilter().filter(s);
-                    Log.e("TAG", s.toString());
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        return binding.getRoot();
+        mBinding.input.addTextChangedListener(this);
     }
 
     private void setupObserve(){
-        homeVM.getWords().observe(getViewLifecycleOwner(), wordsSate -> {
+        mVM.getWords().observe(getViewLifecycleOwner(), wordsSate -> {
             if (wordsSate != null){
-                if (wordsSate.getStatus() == DataState.Status.LOADING){
+                if (wordsSate.getStatus() == Status.LOADING){
                     context.displayLoading(true, DELAY);
                 }
 
-                if (wordsSate.getStatus() == DataState.Status.SUCCESS){
+                if (wordsSate.getStatus() == Status.SUCCESS){
                     context.displayLoading(false, DELAY);
                     new Handler(Looper.getMainLooper())
                             .postDelayed(() -> wordAdapter.setData(wordsSate.getData()), DELAY);
                 }
 
-                if (wordsSate.getStatus() == DataState.Status.ERROR){
+                if (wordsSate.getStatus() == Status.ERROR){
                     context.displayLoading(false, DELAY);
                     Log.e("Vocabulary Fragment", wordsSate.getMessage());
                 }
@@ -147,7 +126,7 @@ public class VocabularyFragment extends Fragment {
     }
 
     private void setData(){
-        wordAdapter.setData(homeVM.getWords().getValue().getData());
+        if (mVM.getWords().getValue() != null) wordAdapter.setData(mVM.getWords().getValue().getData());
     }
 
     private void setupRecyclerView(){
@@ -155,9 +134,27 @@ public class VocabularyFragment extends Fragment {
 
         wordAdapter = new WordAdapter(context, words);
 
-        binding.rvVocab.setAdapter(wordAdapter);
-        binding.rvVocab.setLayoutManager(new LinearLayoutManager(context,
+        mBinding.rvVocab.setAdapter(wordAdapter);
+        mBinding.rvVocab.setLayoutManager(new LinearLayoutManager(context,
                 RecyclerView.VERTICAL, false));
-        binding.rvVocab.setHasFixedSize(true);
+        mBinding.rvVocab.setHasFixedSize(true);
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (wordAdapter != null) {
+            wordAdapter.getFilter().filter(s);
+            Log.e("TAG", s.toString());
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 }

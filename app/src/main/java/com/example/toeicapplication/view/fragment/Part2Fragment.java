@@ -11,8 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.toeicapplication.ExamActivity;
 import com.example.toeicapplication.R;
@@ -30,11 +29,8 @@ import java.util.Map;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class Part2Fragment extends Fragment
+public class Part2Fragment extends BaseFragment<ExamViewModel, FragmentPart2Binding>
         implements ExamActivity.OnConfirmAnswer, View.OnClickListener {
-
-    private FragmentPart2Binding binding;
-    private ExamViewModel examVM;
     private ExamActivity context;
 
     private static final String NUM_QUESTION = "numQuestion";
@@ -86,11 +82,24 @@ public class Part2Fragment extends Fragment
     }
 
     @Override
+    public FragmentPart2Binding bindingInflater(LayoutInflater inflater, ViewGroup container, boolean attachToParent) {
+        return FragmentPart2Binding.inflate(inflater, container, attachToParent);
+    }
+
+    @Override
+    public Class<ExamViewModel> getViewModel() {
+        return ExamViewModel.class;
+    }
+
+    @Override
+    public FragmentActivity getFragmentActivity() {
+        return requireActivity();
+    }
+
+    @Override
     public View onCreateView(@NotNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentPart2Binding.inflate(inflater,
-                container, false);
         context = (ExamActivity) getActivity();
 
         if (context != null) {
@@ -101,50 +110,46 @@ public class Part2Fragment extends Fragment
             answerSelectedState = ContextCompat.getDrawable(context,
                     R.drawable.answer_selected);
         }
-
-        setupEvent();
-        examVM = new ViewModelProvider(requireActivity()).
-                get(ExamViewModel.class);
-
-        return binding.getRoot();
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupEvent();
 
         questionTitle = new ArrayList<>();
         answer = new HashMap<>();
         questionContent = new HashMap<>();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            questionTitle.addAll(List.of(binding.question1, binding.question2, binding.question3));
+            questionTitle.addAll(List.of(mBinding.question1, mBinding.question2, mBinding.question3));
         }else{
-            questionTitle.add(binding.question1);
-            questionTitle.add(binding.question2);
-            questionTitle.add(binding.question3);
+            questionTitle.add(mBinding.question1);
+            questionTitle.add(mBinding.question2);
+            questionTitle.add(mBinding.question3);
         }
 
-        questionContent.put("1A", binding.txt1A);
-        questionContent.put("1B", binding.txt1B);
-        questionContent.put("1C", binding.txt1C);
-        questionContent.put("1D", binding.txt1D);
+        questionContent.put("1A", mBinding.txt1A);
+        questionContent.put("1B", mBinding.txt1B);
+        questionContent.put("1C", mBinding.txt1C);
+        questionContent.put("1D", mBinding.txt1D);
 
-        questionContent.put("2A", binding.txt2A);
-        questionContent.put("2B", binding.txt2B);
-        questionContent.put("2C", binding.txt2C);
-        questionContent.put("2D", binding.txt2D);
+        questionContent.put("2A", mBinding.txt2A);
+        questionContent.put("2B", mBinding.txt2B);
+        questionContent.put("2C", mBinding.txt2C);
+        questionContent.put("2D", mBinding.txt2D);
 
-        questionContent.put("3A", binding.txt3A);
-        questionContent.put("3B", binding.txt3B);
-        questionContent.put("3C", binding.txt3C);
-        questionContent.put("3D", binding.txt3D);
+        questionContent.put("3A", mBinding.txt3A);
+        questionContent.put("3B", mBinding.txt3B);
+        questionContent.put("3C", mBinding.txt3C);
+        questionContent.put("3D", mBinding.txt3D);
         showQuestion(questions);
     }
 
     @Override
     public void onConfirm() {
-        examVM.postSelectedQuestion(answer);
+        mVM.postSelectedQuestion(answer);
     }
 
     @Override
@@ -166,20 +171,20 @@ public class Part2Fragment extends Fragment
     }
 
     private void setupEvent() {
-        binding.txt1A.setOnClickListener(this);
-        binding.txt1B.setOnClickListener(this);
-        binding.txt1C.setOnClickListener(this);
-        binding.txt1D.setOnClickListener(this);
+        mBinding.txt1A.setOnClickListener(this);
+        mBinding.txt1B.setOnClickListener(this);
+        mBinding.txt1C.setOnClickListener(this);
+        mBinding.txt1D.setOnClickListener(this);
 
-        binding.txt2A.setOnClickListener(this);
-        binding.txt2B.setOnClickListener(this);
-        binding.txt2C.setOnClickListener(this);
-        binding.txt2D.setOnClickListener(this);
+        mBinding.txt2A.setOnClickListener(this);
+        mBinding.txt2B.setOnClickListener(this);
+        mBinding.txt2C.setOnClickListener(this);
+        mBinding.txt2D.setOnClickListener(this);
 
-        binding.txt3A.setOnClickListener(this);
-        binding.txt3B.setOnClickListener(this);
-        binding.txt3C.setOnClickListener(this);
-        binding.txt3D.setOnClickListener(this);
+        mBinding.txt3A.setOnClickListener(this);
+        mBinding.txt3B.setOnClickListener(this);
+        mBinding.txt3C.setOnClickListener(this);
+        mBinding.txt3D.setOnClickListener(this);
     }
 
     private void showQuestion(List<Question> questions) {
@@ -190,29 +195,29 @@ public class Part2Fragment extends Fragment
         context.setQuestionTitle(this.numQuestion + "-" + (this.numQuestion + this.questions.size() - 1));
 
         // set tag for the purpose of onClick
-        binding.txt1A.setTag(this.numQuestion);
-        binding.txt1B.setTag(this.numQuestion);
-        binding.txt1C.setTag(this.numQuestion);
-        binding.txt1D.setTag(this.numQuestion);
+        mBinding.txt1A.setTag(this.numQuestion);
+        mBinding.txt1B.setTag(this.numQuestion);
+        mBinding.txt1C.setTag(this.numQuestion);
+        mBinding.txt1D.setTag(this.numQuestion);
 
-        binding.txt2A.setTag(this.numQuestion + 1);
-        binding.txt2B.setTag(this.numQuestion + 1);
-        binding.txt2C.setTag(this.numQuestion + 1);
-        binding.txt2D.setTag(this.numQuestion + 1);
+        mBinding.txt2A.setTag(this.numQuestion + 1);
+        mBinding.txt2B.setTag(this.numQuestion + 1);
+        mBinding.txt2C.setTag(this.numQuestion + 1);
+        mBinding.txt2D.setTag(this.numQuestion + 1);
 
-        binding.txt3A.setTag(this.numQuestion + 2);
-        binding.txt3B.setTag(this.numQuestion + 2);
-        binding.txt3C.setTag(this.numQuestion + 2);
-        binding.txt3D.setTag(this.numQuestion + 2);
+        mBinding.txt3A.setTag(this.numQuestion + 2);
+        mBinding.txt3B.setTag(this.numQuestion + 2);
+        mBinding.txt3C.setTag(this.numQuestion + 2);
+        mBinding.txt3D.setTag(this.numQuestion + 2);
 
         if (part == 2){
-            binding.question1.setText(context.getString(R.string.number_question, this.numQuestion));
-            binding.question2.setText(context.getString(R.string.number_question, this.numQuestion + 1));
-            binding.question3.setText(context.getString(R.string.number_question, this.numQuestion + 2));
+            mBinding.question1.setText(context.getString(R.string.number_question, this.numQuestion));
+            mBinding.question2.setText(context.getString(R.string.number_question, this.numQuestion + 1));
+            mBinding.question3.setText(context.getString(R.string.number_question, this.numQuestion + 2));
         }else if (part == 3 || part == 4){
-            binding.txt1D.setVisibility(View.VISIBLE);
-            binding.txt2D.setVisibility(View.VISIBLE);
-            binding.txt3D.setVisibility(View.VISIBLE);
+            mBinding.txt1D.setVisibility(View.VISIBLE);
+            mBinding.txt2D.setVisibility(View.VISIBLE);
+            mBinding.txt3D.setVisibility(View.VISIBLE);
 
             for (int i = 0; i < questions.size(); i++){
                 // set question title

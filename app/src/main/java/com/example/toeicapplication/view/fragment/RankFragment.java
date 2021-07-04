@@ -2,13 +2,6 @@ package com.example.toeicapplication.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +9,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+
 import com.example.toeicapplication.R;
+import com.example.toeicapplication.adapters.RankAdapter;
 import com.example.toeicapplication.databinding.FragmentRankBinding;
 import com.example.toeicapplication.model.entity.Course;
+import com.example.toeicapplication.utilities.AppConstants;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
 
 import org.jetbrains.annotations.NotNull;
@@ -29,11 +29,10 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class RankFragment extends Fragment
-        implements AdapterView.OnItemClickListener{
-    private FragmentRankBinding binding;
-    private HomeViewModel homeVM;
-    private ArrayAdapter itemAdapter;
+public class RankFragment extends BaseFragment<HomeViewModel, FragmentRankBinding>
+        implements AdapterView.OnItemClickListener {
+    private ArrayAdapter<String> itemAdapter;
+    private RankAdapter rankAdapter;
     private Context context;
 
     private List<String> items;
@@ -69,37 +68,62 @@ public class RankFragment extends Fragment
     }
 
     @Override
-    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentRankBinding.inflate(inflater, container, false);
+    public FragmentRankBinding bindingInflater(LayoutInflater inflater, ViewGroup container, boolean attachToParent) {
+        return FragmentRankBinding.inflate(inflater, container, attachToParent);
+    }
+
+    @Override
+    public Class<HomeViewModel> getViewModel() {
+        return HomeViewModel.class;
+    }
+
+    @Override
+    public FragmentActivity getFragmentActivity() {
+        return requireActivity();
+    }
+
+    @Override
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = getActivity();
-        return binding.getRoot();
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        setupRecyclerView();
         setupObserve();
     }
 
-    private void setupObserve() {
-        homeVM = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+    private void setupRecyclerView(){
+        rankAdapter = new RankAdapter(context);
 
-        homeVM.getCourses().observe(getViewLifecycleOwner(), courseList -> {
-            if (courseList != null){
+        mBinding.rvRankUser.setAdapter(rankAdapter);
+        mBinding.rvRankUser.setHasFixedSize(true);
+    }
+
+    private void setupObserve() {
+        mVM.getCourses().observe(getViewLifecycleOwner(), courseList -> {
+            if (courseList != null) {
                 courses = new ArrayList<>(courseList);
                 items = new ArrayList<>();
 
                 items.add(getString(R.string.all));
                 courseList.forEach(c -> items.add(c.getName()));
 
-                itemAdapter = new ArrayAdapter(context, R.layout.list_item_course, items);
+                itemAdapter = new ArrayAdapter<>(context, R.layout.list_item_course, items);
 
-                binding.txt.setAdapter(itemAdapter);
-                binding.txt.setDropDownBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.layout_course_detail));
-                binding.txt.setText(itemAdapter.getItem(DEFAULT_INDEX).toString(), false);
-                binding.txt.setOnItemClickListener(this);
+                mBinding.txt.setAdapter(itemAdapter);
+                mBinding.txt.setDropDownBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.layout_course_detail));
+                mBinding.txt.setText(itemAdapter.getItem(DEFAULT_INDEX), false);
+                mBinding.txt.setOnItemClickListener(this);
+            }
+        });
+
+        mVM.getListRankInfo().observe(getViewLifecycleOwner(), rankInfoList -> {
+            if (rankInfoList != null) {
+                rankAdapter.submitList(rankInfoList);
             }
         });
     }
@@ -113,13 +137,13 @@ public class RankFragment extends Fragment
                 .findFirst()
                 .orElse(null);
 
-        if (course == null){
+        if (course == null) {
             // get all top user in the initialize
-            Log.d("TAG", "All of top users");
-        }else{
-            homeVM.getRankByCourse(course);
+            Log.d(AppConstants.TAG, "All of top users");
+        } else {
+            mVM.getRankByCourse(course);
             // get rank of user by course id
-            Log.d("TAG", course.toString());
+            Log.d(AppConstants.TAG, course.toString());
         }
     }
 }

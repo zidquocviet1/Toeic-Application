@@ -2,7 +2,6 @@ package com.example.toeicapplication.view.fragment;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,15 +9,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.toeicapplication.LoginActivity;
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.databinding.TabSignupFragmentBinding;
 import com.example.toeicapplication.model.entity.User;
-import com.example.toeicapplication.utilities.DataState;
 import com.example.toeicapplication.utilities.EncryptPassword;
+import com.example.toeicapplication.utilities.Status;
 import com.example.toeicapplication.viewmodels.LoginViewModel;
 
 import org.jetbrains.annotations.NotNull;
@@ -27,20 +25,31 @@ import java.time.LocalDateTime;
 
 import static android.os.Looper.getMainLooper;
 
-public class SignUpFragment extends Fragment implements View.OnClickListener {
-    private TabSignupFragmentBinding binding;
+public class SignUpFragment extends BaseFragment<LoginViewModel, TabSignupFragmentBinding> implements View.OnClickListener {
     private LoginActivity context;
-    private LoginViewModel loginVM;
 
     private boolean isNetwork = false;
+
+    @Override
+    public TabSignupFragmentBinding bindingInflater(LayoutInflater inflater, ViewGroup container, boolean attachToParent) {
+        return TabSignupFragmentBinding.inflate(inflater, container, attachToParent);
+    }
+
+    @Override
+    public Class<LoginViewModel> getViewModel() {
+        return LoginViewModel.class;
+    }
+
+    @Override
+    public FragmentActivity getFragmentActivity() {
+        return requireActivity();
+    }
 
     @Nullable
     @org.jetbrains.annotations.Nullable
     @Override
     public View onCreateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        binding = TabSignupFragmentBinding.inflate(inflater, container, false);
-        Log.e("Sign Up Frag: ", "onCreateView");
-        return binding.getRoot();
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
@@ -48,76 +57,73 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
 
         context = (LoginActivity) getActivity();
-        Log.e("Sign Up Frag: ", "onViewCreated");
-        binding.btnSignup.setOnClickListener(this);
-        loginVM = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
-
+        mBinding.btnSignup.setOnClickListener(this);
         setupVMAndObserve();
     }
 
     private void setupVMAndObserve() {
-        loginVM.getUserName().observe(getViewLifecycleOwner(),
-                userName -> binding.layoutUsername.getEditText().setText(userName));
-        loginVM.getPassword().observe(getViewLifecycleOwner(),
-                password -> binding.layoutPassword.getEditText().setText(password));
-        loginVM.getDisplayName().observe(getViewLifecycleOwner(),
-                displayName -> binding.layoutFullName.getEditText().setText(displayName));
-        loginVM.getRePassword().observe(getViewLifecycleOwner(),
-                password -> binding.layoutRePassword.getEditText().setText(password));
+        mVM.getUserName().observe(getViewLifecycleOwner(),
+                userName -> mBinding.layoutUsername.getEditText().setText(userName));
+        mVM.getPassword().observe(getViewLifecycleOwner(),
+                password -> mBinding.layoutPassword.getEditText().setText(password));
+        mVM.getDisplayName().observe(getViewLifecycleOwner(),
+                displayName -> mBinding.layoutFullName.getEditText().setText(displayName));
+        mVM.getRePassword().observe(getViewLifecycleOwner(),
+                password -> mBinding.layoutRePassword.getEditText().setText(password));
 
 
-        loginVM.getUserError().observe(getViewLifecycleOwner(), error -> {
+        mVM.getUserError().observe(getViewLifecycleOwner(), error -> {
             if (!error.equals("")) {
-                binding.layoutUsername.setError(error);
-                binding.layoutUsername.getEditText().requestFocus();
-                binding.layoutFullName.setErrorEnabled(false);
+                mBinding.layoutUsername.setError(error);
+                mBinding.layoutUsername.getEditText().requestFocus();
+                mBinding.layoutFullName.setErrorEnabled(false);
             }
         });
-        loginVM.getDisplayNameError().observe(getViewLifecycleOwner(), error -> {
+        mVM.getDisplayNameError().observe(getViewLifecycleOwner(), error -> {
             if (!error.equals("")) {
-                binding.layoutFullName.setError(error);
-                binding.layoutFullName.getEditText().requestFocus();
-                binding.layoutPassword.setErrorEnabled(false);
+                mBinding.layoutFullName.setError(error);
+                mBinding.layoutFullName.getEditText().requestFocus();
+                mBinding.layoutPassword.setErrorEnabled(false);
             }
         });
-        loginVM.getPasswordError().observe(getViewLifecycleOwner(), error -> {
+        mVM.getPasswordError().observe(getViewLifecycleOwner(), error -> {
             if (!error.equals("")) {
-                binding.layoutPassword.setError(error);
-                binding.layoutPassword.getEditText().requestFocus();
-                binding.layoutRePassword.setErrorEnabled(false);
+                mBinding.layoutPassword.setError(error);
+                mBinding.layoutPassword.getEditText().requestFocus();
+                mBinding.layoutRePassword.setErrorEnabled(false);
             }
         });
-        loginVM.getRePasswordError().observe(getViewLifecycleOwner(), error -> {
+        mVM.getRePasswordError().observe(getViewLifecycleOwner(), error -> {
             if (!error.equals("")) {
-                binding.layoutRePassword.setError(error);
-                binding.layoutRePassword.getEditText().requestFocus();
-                binding.layoutPassword.setErrorEnabled(false);
+                mBinding.layoutRePassword.setError(error);
+                mBinding.layoutRePassword.getEditText().requestFocus();
+                mBinding.layoutPassword.setErrorEnabled(false);
             }
         });
-        loginVM.getStateResponse().observe(getViewLifecycleOwner(), userDataState -> {
+        mVM.getStateResponse().observe(getViewLifecycleOwner(), userDataState -> {
             if (isResumed()) {
-                if (userDataState.getStatus() == DataState.Status.LOADING) {
+                if (userDataState.getStatus() == Status.LOADING) {
                     context.displayLoading(true);
                 }
 
-                if (userDataState.getStatus() == DataState.Status.SUCCESS) {
+                if (userDataState.getStatus() == Status.SUCCESS) {
                     context.displayLoading(false);
 
                     new Handler(getMainLooper()).postDelayed(() -> {
                         Toast.makeText(context, R.string.signup_success,
                                 Toast.LENGTH_SHORT).show();
 
-                        String userName = binding.layoutUsername.getEditText().getText().toString();
-                        String password = binding.layoutPassword.getEditText().getText().toString();
+                        String userName = mBinding.layoutUsername.getEditText().getText().toString();
+                        String password = mBinding.layoutPassword.getEditText().getText().toString();
 
-                        loginVM.setLoginUserName(userName);
-                        loginVM.setLoginPassword(password);
+                        mVM.setLoginUserName(userName);
+                        mVM.setLoginPassword(password);
 
                         context.navigateTabLogin();
                     }, 1000);
                 }
 
-                if (userDataState.getStatus() == DataState.Status.ERROR) {
+                if (userDataState.getStatus() == Status.ERROR) {
                     context.displayLoading(false);
                     new Handler(getMainLooper()).postDelayed(() -> {
                         resetState();
@@ -128,59 +134,59 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
             }
         });
 
-        loginVM.getNetworkState().observe(getViewLifecycleOwner(), status -> this.isNetwork = status);
+        mVM.getNetworkState().observe(getViewLifecycleOwner(), status -> this.isNetwork = status);
     }
 
     private boolean validateUserNameAndPassword(String userName, String password,
                                                 String displayName, String rePassword) {
         if (userName.length() < 8) {
-            binding.layoutUsername.setError(getText(R.string.username_error));
-            binding.layoutUsername.getEditText().requestFocus();
-            binding.layoutFullName.setErrorEnabled(false);
-            loginVM.setUserNameError(getText(R.string.username_error).toString());
+            mBinding.layoutUsername.setError(getText(R.string.username_error));
+            mBinding.layoutUsername.getEditText().requestFocus();
+            mBinding.layoutFullName.setErrorEnabled(false);
+            mVM.setUserNameError(getText(R.string.username_error).toString());
             return false;
         }
         if (displayName.length() == 0) {
-            binding.layoutFullName.setError(getText(R.string.display_name_error));
-            binding.layoutFullName.getEditText().requestFocus();
-            binding.layoutUsername.setErrorEnabled(false);
-            loginVM.setDisplayNameError(getText(R.string.display_name_error).toString());
+            mBinding.layoutFullName.setError(getText(R.string.display_name_error));
+            mBinding.layoutFullName.getEditText().requestFocus();
+            mBinding.layoutUsername.setErrorEnabled(false);
+            mVM.setDisplayNameError(getText(R.string.display_name_error).toString());
             return false;
         }
         if (password.length() < 8) {
-            binding.layoutPassword.setError(getText(R.string.password_error));
-            binding.layoutPassword.getEditText().requestFocus();
-            binding.layoutFullName.setErrorEnabled(false);
-            binding.layoutUsername.setErrorEnabled(false);
-            loginVM.setPasswordError(getText(R.string.password_error).toString());
+            mBinding.layoutPassword.setError(getText(R.string.password_error));
+            mBinding.layoutPassword.getEditText().requestFocus();
+            mBinding.layoutFullName.setErrorEnabled(false);
+            mBinding.layoutUsername.setErrorEnabled(false);
+            mVM.setPasswordError(getText(R.string.password_error).toString());
             return false;
         }
         if (rePassword.length() < 8 || !rePassword.equals(password)) {
-            binding.layoutRePassword.setError(getText(R.string.re_password));
-            binding.layoutRePassword.getEditText().requestFocus();
-            binding.layoutPassword.setErrorEnabled(false);
-            binding.layoutFullName.setErrorEnabled(false);
-            binding.layoutUsername.setErrorEnabled(false);
-            loginVM.setRePasswordError(getText(R.string.re_password).toString());
+            mBinding.layoutRePassword.setError(getText(R.string.re_password));
+            mBinding.layoutRePassword.getEditText().requestFocus();
+            mBinding.layoutPassword.setErrorEnabled(false);
+            mBinding.layoutFullName.setErrorEnabled(false);
+            mBinding.layoutUsername.setErrorEnabled(false);
+            mVM.setRePasswordError(getText(R.string.re_password).toString());
             return false;
         }
-        binding.layoutUsername.setErrorEnabled(false);
-        binding.layoutPassword.setErrorEnabled(false);
-        binding.layoutFullName.setErrorEnabled(false);
-        binding.layoutRePassword.setErrorEnabled(false);
+        mBinding.layoutUsername.setErrorEnabled(false);
+        mBinding.layoutPassword.setErrorEnabled(false);
+        mBinding.layoutFullName.setErrorEnabled(false);
+        mBinding.layoutRePassword.setErrorEnabled(false);
         return true;
     }
 
     private void resetState() {
-        loginVM.setUserName("");
-        loginVM.setDisplayName("");
-        loginVM.setPassword("");
-        loginVM.setRePassword("");
-        loginVM.setUserNameError("");
-        loginVM.setDisplayNameError("");
-        loginVM.setPasswordError("");
-        loginVM.setRePasswordError("");
-        binding.layoutUsername.getEditText().requestFocus();
+        mVM.setUserName("");
+        mVM.setDisplayName("");
+        mVM.setPassword("");
+        mVM.setRePassword("");
+        mVM.setUserNameError("");
+        mVM.setDisplayNameError("");
+        mVM.setPasswordError("");
+        mVM.setRePasswordError("");
+        mBinding.layoutUsername.getEditText().requestFocus();
     }
 
     private void signUp(String userName, String password,
@@ -195,7 +201,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                         Toast.LENGTH_SHORT).show();
                 return;
             }
-            loginVM.signUp(user, context);
+            mVM.signUp(user, context);
         }
     }
 
@@ -203,16 +209,16 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         int id = v.getId();
 
-        if (id == binding.btnSignup.getId()) {
-            String userName = binding.layoutUsername.getEditText().getText().toString();
-            String password = binding.layoutPassword.getEditText().getText().toString();
-            String displayName = binding.layoutFullName.getEditText().getText().toString();
-            String rePassword = binding.layoutRePassword.getEditText().getText().toString();
+        if (id == mBinding.btnSignup.getId()) {
+            String userName = mBinding.layoutUsername.getEditText().getText().toString();
+            String password = mBinding.layoutPassword.getEditText().getText().toString();
+            String displayName = mBinding.layoutFullName.getEditText().getText().toString();
+            String rePassword = mBinding.layoutRePassword.getEditText().getText().toString();
 
-            loginVM.setUserName(userName);
-            loginVM.setPassword(password);
-            loginVM.setRePassword(rePassword);
-            loginVM.setDisplayName(displayName);
+            mVM.setUserName(userName);
+            mVM.setPassword(password);
+            mVM.setRePassword(rePassword);
+            mVM.setDisplayName(displayName);
 
             signUp(userName, password, displayName, rePassword, context);
         }

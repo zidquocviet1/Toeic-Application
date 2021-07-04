@@ -3,17 +3,15 @@ package com.example.toeicapplication.view.fragment;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.toeicapplication.ExamActivity;
 import com.example.toeicapplication.R;
@@ -28,10 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Part5Fragment extends Fragment implements ExamActivity.OnConfirmAnswer, View.OnClickListener {
-
-    private FragmentPart5Binding binding;
-    private ExamViewModel examVM;
+public class Part5Fragment extends BaseFragment<ExamViewModel, FragmentPart5Binding>
+        implements ExamActivity.OnConfirmAnswer, View.OnClickListener {
     private ExamActivity context;
 
     private static final String NUM_QUESTION = "numQuestion";
@@ -71,10 +67,23 @@ public class Part5Fragment extends Fragment implements ExamActivity.OnConfirmAns
     }
 
     @Override
+    public FragmentPart5Binding bindingInflater(LayoutInflater inflater, ViewGroup container, boolean attachToParent) {
+        return FragmentPart5Binding.inflate(inflater, container, attachToParent);
+    }
+
+    @Override
+    public Class<ExamViewModel> getViewModel() {
+        return ExamViewModel.class;
+    }
+
+    @Override
+    public FragmentActivity getFragmentActivity() {
+        return requireActivity();
+    }
+
+    @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentPart5Binding.inflate(inflater,
-                container, false);
         context = (ExamActivity) getActivity();
 
         if (context != null) {
@@ -86,16 +95,13 @@ public class Part5Fragment extends Fragment implements ExamActivity.OnConfirmAns
                     R.drawable.answer_selected);
         }
 
-        setupEvent();
-        examVM = new ViewModelProvider(requireActivity()).
-                get(ExamViewModel.class);
-
-        return binding.getRoot();
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupEvent();
 
         questionTitle = new ArrayList<>();
         layouts = new ArrayList<>();
@@ -103,45 +109,45 @@ public class Part5Fragment extends Fragment implements ExamActivity.OnConfirmAns
         questionContent = new HashMap<>();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            questionTitle.addAll(List.of(binding.question1, binding.question2, binding.question3, binding.question4));
-            layouts.addAll(List.of(binding.layout1, binding.layout2, binding.layout3, binding.layout4));
+            questionTitle.addAll(List.of(mBinding.question1, mBinding.question2, mBinding.question3, mBinding.question4));
+            layouts.addAll(List.of(mBinding.layout1, mBinding.layout2, mBinding.layout3, mBinding.layout4));
         }else{
-            questionTitle.add(binding.question1);
-            questionTitle.add(binding.question2);
-            questionTitle.add(binding.question3);
-            questionTitle.add(binding.question4);
+            questionTitle.add(mBinding.question1);
+            questionTitle.add(mBinding.question2);
+            questionTitle.add(mBinding.question3);
+            questionTitle.add(mBinding.question4);
 
-            layouts.add(binding.layout1);
-            layouts.add(binding.layout2);
-            layouts.add(binding.layout3);
-            layouts.add(binding.layout4);
+            layouts.add(mBinding.layout1);
+            layouts.add(mBinding.layout2);
+            layouts.add(mBinding.layout3);
+            layouts.add(mBinding.layout4);
         }
 
-        questionContent.put("1A", binding.txt1A);
-        questionContent.put("1B", binding.txt1B);
-        questionContent.put("1C", binding.txt1C);
-        questionContent.put("1D", binding.txt1D);
+        questionContent.put("1A", mBinding.txt1A);
+        questionContent.put("1B", mBinding.txt1B);
+        questionContent.put("1C", mBinding.txt1C);
+        questionContent.put("1D", mBinding.txt1D);
 
-        questionContent.put("2A", binding.txt2A);
-        questionContent.put("2B", binding.txt2B);
-        questionContent.put("2C", binding.txt2C);
-        questionContent.put("2D", binding.txt2D);
+        questionContent.put("2A", mBinding.txt2A);
+        questionContent.put("2B", mBinding.txt2B);
+        questionContent.put("2C", mBinding.txt2C);
+        questionContent.put("2D", mBinding.txt2D);
 
-        questionContent.put("3A", binding.txt3A);
-        questionContent.put("3B", binding.txt3B);
-        questionContent.put("3C", binding.txt3C);
-        questionContent.put("3D", binding.txt3D);
+        questionContent.put("3A", mBinding.txt3A);
+        questionContent.put("3B", mBinding.txt3B);
+        questionContent.put("3C", mBinding.txt3C);
+        questionContent.put("3D", mBinding.txt3D);
 
-        questionContent.put("4A", binding.txt4A);
-        questionContent.put("4B", binding.txt4B);
-        questionContent.put("4C", binding.txt4C);
-        questionContent.put("4D", binding.txt4D);
+        questionContent.put("4A", mBinding.txt4A);
+        questionContent.put("4B", mBinding.txt4B);
+        questionContent.put("4C", mBinding.txt4C);
+        questionContent.put("4D", mBinding.txt4D);
         showQuestion(questions);
     }
 
     @Override
     public void onConfirm() {
-        examVM.postSelectedQuestion(answer);
+        mVM.postSelectedQuestion(answer);
     }
 
     @Override
@@ -189,45 +195,45 @@ public class Part5Fragment extends Fragment implements ExamActivity.OnConfirmAns
     }
 
     private void setupEvent() {
-        binding.txt1A.setOnClickListener(this);
-        binding.txt1B.setOnClickListener(this);
-        binding.txt1C.setOnClickListener(this);
-        binding.txt1D.setOnClickListener(this);
+        mBinding.txt1A.setOnClickListener(this);
+        mBinding.txt1B.setOnClickListener(this);
+        mBinding.txt1C.setOnClickListener(this);
+        mBinding.txt1D.setOnClickListener(this);
 
-        binding.txt2A.setOnClickListener(this);
-        binding.txt2B.setOnClickListener(this);
-        binding.txt2C.setOnClickListener(this);
-        binding.txt2D.setOnClickListener(this);
+        mBinding.txt2A.setOnClickListener(this);
+        mBinding.txt2B.setOnClickListener(this);
+        mBinding.txt2C.setOnClickListener(this);
+        mBinding.txt2D.setOnClickListener(this);
 
-        binding.txt3A.setOnClickListener(this);
-        binding.txt3B.setOnClickListener(this);
-        binding.txt3C.setOnClickListener(this);
-        binding.txt3D.setOnClickListener(this);
+        mBinding.txt3A.setOnClickListener(this);
+        mBinding.txt3B.setOnClickListener(this);
+        mBinding.txt3C.setOnClickListener(this);
+        mBinding.txt3D.setOnClickListener(this);
 
-        binding.txt4A.setOnClickListener(this);
-        binding.txt4B.setOnClickListener(this);
-        binding.txt4C.setOnClickListener(this);
-        binding.txt4D.setOnClickListener(this);
+        mBinding.txt4A.setOnClickListener(this);
+        mBinding.txt4B.setOnClickListener(this);
+        mBinding.txt4C.setOnClickListener(this);
+        mBinding.txt4D.setOnClickListener(this);
 
         // set tag for the purpose of onClick
-        binding.txt1A.setTag(this.numQuestion);
-        binding.txt1B.setTag(this.numQuestion);
-        binding.txt1C.setTag(this.numQuestion);
-        binding.txt1D.setTag(this.numQuestion);
+        mBinding.txt1A.setTag(this.numQuestion);
+        mBinding.txt1B.setTag(this.numQuestion);
+        mBinding.txt1C.setTag(this.numQuestion);
+        mBinding.txt1D.setTag(this.numQuestion);
 
-        binding.txt2A.setTag(this.numQuestion + 1);
-        binding.txt2B.setTag(this.numQuestion + 1);
-        binding.txt2C.setTag(this.numQuestion + 1);
-        binding.txt2D.setTag(this.numQuestion + 1);
+        mBinding.txt2A.setTag(this.numQuestion + 1);
+        mBinding.txt2B.setTag(this.numQuestion + 1);
+        mBinding.txt2C.setTag(this.numQuestion + 1);
+        mBinding.txt2D.setTag(this.numQuestion + 1);
 
-        binding.txt3A.setTag(this.numQuestion + 2);
-        binding.txt3B.setTag(this.numQuestion + 2);
-        binding.txt3C.setTag(this.numQuestion + 2);
-        binding.txt3D.setTag(this.numQuestion + 2);
+        mBinding.txt3A.setTag(this.numQuestion + 2);
+        mBinding.txt3B.setTag(this.numQuestion + 2);
+        mBinding.txt3C.setTag(this.numQuestion + 2);
+        mBinding.txt3D.setTag(this.numQuestion + 2);
 
-        binding.txt4A.setTag(this.numQuestion + 3);
-        binding.txt4B.setTag(this.numQuestion + 3);
-        binding.txt4C.setTag(this.numQuestion + 3);
-        binding.txt4D.setTag(this.numQuestion + 3);
+        mBinding.txt4A.setTag(this.numQuestion + 3);
+        mBinding.txt4B.setTag(this.numQuestion + 3);
+        mBinding.txt4C.setTag(this.numQuestion + 3);
+        mBinding.txt4D.setTag(this.numQuestion + 3);
     }
 }

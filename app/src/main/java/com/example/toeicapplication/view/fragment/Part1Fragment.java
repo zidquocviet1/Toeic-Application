@@ -3,17 +3,15 @@ package com.example.toeicapplication.view.fragment;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.toeicapplication.ExamActivity;
 import com.example.toeicapplication.R;
@@ -31,10 +29,9 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class Part1Fragment extends Fragment implements View.OnClickListener, ExamActivity.OnConfirmAnswer {
-    private FragmentPart1Binding binding;
+public class Part1Fragment extends BaseFragment<ExamViewModel, FragmentPart1Binding>
+        implements View.OnClickListener, ExamActivity.OnConfirmAnswer {
     private ExamActivity context;
-    private ExamViewModel examVM;
     private Question question;
 
     private static final String NUM_QUESTION = "numQuestion";
@@ -70,10 +67,22 @@ public class Part1Fragment extends Fragment implements View.OnClickListener, Exa
     }
 
     @Override
-    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public FragmentPart1Binding bindingInflater(LayoutInflater inflater, ViewGroup container, boolean attachToParent) {
+        return FragmentPart1Binding.inflate(inflater, container, attachToParent);
+    }
 
-        binding = FragmentPart1Binding.inflate(inflater, container, false);
+    @Override
+    public Class<ExamViewModel> getViewModel() {
+        return ExamViewModel.class;
+    }
+
+    @Override
+    public FragmentActivity getFragmentActivity() {
+        return requireActivity();
+    }
+
+    @Override
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = (ExamActivity) getActivity();
 
         if (context != null) {
@@ -82,16 +91,14 @@ public class Part1Fragment extends Fragment implements View.OnClickListener, Exa
             answerNormalState = ContextCompat.getDrawable(context, R.drawable.answer_1);
             answerSelectedState = ContextCompat.getDrawable(context, R.drawable.answer_selected);
         }
-
-        setupEvent();
-        examVM = new ViewModelProvider(requireActivity()).get(ExamViewModel.class);
-
-        return binding.getRoot();
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupEvent();
+
         if (question != null){
             showQuestion(question);
         }
@@ -99,12 +106,12 @@ public class Part1Fragment extends Fragment implements View.OnClickListener, Exa
         widgets = new ArrayList<>();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            widgets.addAll(List.of(binding.txtA, binding.txtB, binding.txtC, binding.txtD));
+            widgets.addAll(List.of(mBinding.txtA, mBinding.txtB, mBinding.txtC, mBinding.txtD));
         }else{
-            widgets.add(binding.txtA);
-            widgets.add(binding.txtB);
-            widgets.add(binding.txtC);
-            widgets.add(binding.txtD);
+            widgets.add(mBinding.txtA);
+            widgets.add(mBinding.txtB);
+            widgets.add(mBinding.txtC);
+            widgets.add(mBinding.txtD);
         }
     }
 
@@ -125,14 +132,14 @@ public class Part1Fragment extends Fragment implements View.OnClickListener, Exa
 
     @Override
     public void onConfirm() {
-        examVM.postSelectedQuestion(numQuestion, answer);
+        mVM.postSelectedQuestion(numQuestion, answer);
     }
 
     private void setupEvent() {
-        binding.txtA.setOnClickListener(this);
-        binding.txtB.setOnClickListener(this);
-        binding.txtC.setOnClickListener(this);
-        binding.txtD.setOnClickListener(this);
+        mBinding.txtA.setOnClickListener(this);
+        mBinding.txtB.setOnClickListener(this);
+        mBinding.txtC.setOnClickListener(this);
+        mBinding.txtD.setOnClickListener(this);
     }
 
     private void showQuestion(Question question) {
@@ -143,17 +150,17 @@ public class Part1Fragment extends Fragment implements View.OnClickListener, Exa
             if (question.getDescription() != null) {
                 InputStream is = context.getAssets().open(question.getDescription());
                 Drawable drawable = Drawable.createFromStream(is, null);
-                binding.image.setImageDrawable(drawable);
+                mBinding.image.setImageDrawable(drawable);
                 context.setQuestionTitle(String.valueOf(numQuestion));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        binding.txtA.setText(question.getQuestionA());
-        binding.txtB.setText(question.getQuestionB());
-        binding.txtC.setText(question.getQuestionC());
-        binding.txtD.setText(question.getQuestionD());
+        mBinding.txtA.setText(question.getQuestionA());
+        mBinding.txtB.setText(question.getQuestionB());
+        mBinding.txtC.setText(question.getQuestionC());
+        mBinding.txtD.setText(question.getQuestionD());
 
         if (context.getMediaPlayer() != null) {
             context.getMediaPlayer().reset();

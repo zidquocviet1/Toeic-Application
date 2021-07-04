@@ -4,13 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,10 @@ import com.example.toeicapplication.model.entity.Course;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.model.entity.Word;
 import com.example.toeicapplication.listeners.ItemClickListener;
+import com.example.toeicapplication.utilities.AppConstants;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +37,9 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class HomeFragment extends Fragment
+public class HomeFragment extends BaseFragment<HomeViewModel, FragmentHomeBinding>
         implements ItemClickListener, View.OnClickListener {
-    private FragmentHomeBinding binding;
-    private HomeViewModel homeVM;
     private HomeActivity context;
-
     private CourseAdapter courseAdapter;
     private WordAdapter wordsAdapter;
 
@@ -74,30 +75,39 @@ public class HomeFragment extends Fragment
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
-
-        context = (HomeActivity) getActivity();
-        binding.btnViewAll.setOnClickListener(this);
-
-        observeViewModel();
-        initRecyclerView();
-
-        return binding.getRoot();
+    public FragmentHomeBinding bindingInflater(LayoutInflater inflater, ViewGroup container, boolean attachToParent) {
+        return FragmentHomeBinding.inflate(inflater, container, attachToParent);
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    public Class<HomeViewModel> getViewModel() {
+        return HomeViewModel.class;
+    }
+
+    @Override
+    public FragmentActivity getFragmentActivity() {
+        return requireActivity();
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        context = (HomeActivity) getActivity();
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mBinding.btnViewAll.setOnClickListener(this);
+        observeViewModel();
+        initRecyclerView();
     }
 
     @Override
     public void onItemClick(Object object, int position) {
         if (object instanceof CourseAdapter) {
             Course course = courseAdapter.getItem(position);
-            User user = homeVM.getCacheUser().getValue();
+            User user = mVM.getCacheUser().getValue();
 
             Intent intent = new Intent(context, CourseDetailActivity.class);
             intent.putExtra("course", course);
@@ -106,6 +116,7 @@ public class HomeFragment extends Fragment
             startActivity(intent);
         } else if (object instanceof WordAdapter) {
             // open WordInfoActivity
+            Log.d(AppConstants.TAG, "Open WordInfo");
         }
     }
 
@@ -117,22 +128,20 @@ public class HomeFragment extends Fragment
     }
 
     private void observeViewModel() {
-        homeVM = new ViewModelProvider(context).get(HomeViewModel.class);
-
-        homeVM.getCacheUser().observe(getViewLifecycleOwner(), user -> {
+        mVM.getCacheUser().observe(getViewLifecycleOwner(), user -> {
             if (user != null)
-                binding.txtHello.setText(getString(R.string.hello, user.getDisplayName()));
+                mBinding.txtHello.setText(getString(R.string.hello, user.getDisplayName()));
             else
-                binding.txtHello.setText(getString(R.string.hello, "Guys"));
+                mBinding.txtHello.setText(getString(R.string.hello, "Guys"));
         });
 
-        homeVM.getTop30Words().observe(getViewLifecycleOwner(), words -> {
+        mVM.getTop30Words().observe(getViewLifecycleOwner(), words -> {
             if (words != null){
                 wordsAdapter.setData(words);
             }
         });
 
-        homeVM.getCourses().observe(getViewLifecycleOwner(), courses -> {
+        mVM.getCourses().observe(getViewLifecycleOwner(), courses -> {
             if (courses != null){
                 courseAdapter.setData(courses);
             }
@@ -149,14 +158,14 @@ public class HomeFragment extends Fragment
         courseAdapter.setOnItemClickListener(this);
         wordsAdapter.setOnItemClickListener(this);
 
-        binding.rvCourse.setAdapter(courseAdapter);
-        binding.rvCourse.setHasFixedSize(false);
-        binding.rvCourse.setLayoutManager(new GridLayoutManager(context, 1,
+        mBinding.rvCourse.setAdapter(courseAdapter);
+        mBinding.rvCourse.setHasFixedSize(false);
+        mBinding.rvCourse.setLayoutManager(new GridLayoutManager(context, 1,
                 RecyclerView.HORIZONTAL, false));
 
-        binding.rvVocab.setAdapter(wordsAdapter);
-        binding.rvVocab.setHasFixedSize(false);
-        binding.rvVocab.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
-        binding.rvVocab.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
+        mBinding.rvVocab.setAdapter(wordsAdapter);
+        mBinding.rvVocab.setHasFixedSize(false);
+        mBinding.rvVocab.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+        mBinding.rvVocab.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
     }
 }
