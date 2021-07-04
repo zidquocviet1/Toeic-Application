@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/layout_course_detail"
+    android:padding="4dp"
+    android:layout_margin="6dp"
+    android:elevation="16dp">
+
+    <TextView
+        android:id="@+id/txtRank"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="4th"
+        android:fontFamily="@font/avenir_lt_pro_black"
+        android:textColor="@color/description"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:visibility="gone"
+        android:id="@+id/icIncrease"
+        app:layout_constraintTop_toBottomOf="@id/txtRank"
+        app:layout_constraintStart_toStartOf="@id/txtRank"
+        app:layout_constraintEnd_toEndOf="@id/txtRank"
+        android:background="@drawable/ic_triangle"
+        android:backgroundTint="@color/success"
+        android:rotation="225"
+        android:layout_width="10dp"
+        android:layout_height="10dp"/>
+
+    <View
+        android:id="@+id/icDecrease"
+        app:layout_constraintTop_toBottomOf="@id/txtRank"
+        app:layout_constraintStart_toStartOf="@id/txtRank"
+        app:layout_constraintEnd_toEndOf="@id/txtRank"
+        android:background="@drawable/ic_triangle"
+        android:backgroundTint="@color/alert"
+        android:rotation="45"
+        android:layout_width="10dp"
+        android:layout_height="10dp"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv1"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="20dp"
+        android:foreground="?selectableItemBackground"
+        app:cardCornerRadius="60dp"
+        app:layout_constraintBottom_toBottomOf="@id/txtRank"
+        app:layout_constraintStart_toEndOf="@id/txtRank"
+        app:layout_constraintTop_toTopOf="@id/txtRank">
+
+        <ImageView
+            android:id="@+id/imgUser"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/profile_avatar"
+            android:clickable="true"
+            android:foreground="#10000000"
+            android:scaleType="centerCrop"
+            android:src="@drawable/user_5" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/txtDisplayName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="Mai Quoc Viet"
+        android:fontFamily="@font/avenir_lt_pro_black"
+        android:textColor="@color/description"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/cv1"
+        app:layout_constraintStart_toEndOf="@id/cv1"
+        app:layout_constraintTop_toTopOf="@id/cv1" />
+
+    <TextView
+        android:id="@+id/txtScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="990"
+        android:fontFamily="@font/avenir_lt_pro_black"
+        android:textColor="@color/ic_launcher_lv_toeic_background"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/txtDisplayName"
+        app:layout_constraintStart_toEndOf="@id/txtDisplayName"
+        app:layout_constraintTop_toTopOf="@id/txtDisplayName" />
+</androidx.constraintlayout.widget.ConstraintLayout>
