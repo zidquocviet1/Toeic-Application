@@ -20,8 +20,8 @@ import org.jetbrains.annotations.NotNull;
 public abstract class BasePartFragment<VM extends ViewModel, VB extends ViewBinding>
         extends BaseFragment<VM, VB>{
 
-    public Drawable answerNormalState;
-    public Drawable answerSelectedState;
+    protected Drawable answerNormalState;
+    protected Drawable answerSelectedState;
 
     @Nullable
     @org.jetbrains.annotations.Nullable

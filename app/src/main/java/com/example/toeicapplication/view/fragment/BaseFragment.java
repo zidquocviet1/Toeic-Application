@@ -16,8 +16,8 @@ import androidx.viewbinding.ViewBinding;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class BaseFragment<VM extends ViewModel, VB extends ViewBinding> extends Fragment {
-    public VM mVM;
-    public VB mBinding;
+    protected VM mVM;
+    protected VB mBinding;
 
     public abstract VB bindingInflater(LayoutInflater inflater, ViewGroup container, boolean attachToParent);
     public abstract Class<VM> getViewModel();
