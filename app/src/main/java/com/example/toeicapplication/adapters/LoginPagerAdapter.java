@@ -11,10 +11,10 @@ import com.example.toeicapplication.view.fragment.SignUpFragment;
 
 import org.jetbrains.annotations.NotNull;
 
-public class LoginAdapter extends FragmentStateAdapter {
+public class LoginPagerAdapter extends FragmentStateAdapter {
     private final int NUM_PAGES;
 
-    public LoginAdapter(FragmentManager fm, Lifecycle lifecycle, int NUM_PAGES){
+    public LoginPagerAdapter(FragmentManager fm, Lifecycle lifecycle, int NUM_PAGES){
         super(fm, lifecycle);
         this.NUM_PAGES = NUM_PAGES;
     }
