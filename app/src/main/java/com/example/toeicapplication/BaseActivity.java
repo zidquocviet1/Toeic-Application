@@ -48,5 +48,11 @@ public abstract class BaseActivity<VM extends ViewModel, VB extends ViewBinding>
         setupObserver();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mBinding = null;
+    }
+
     public abstract void setupObserver();
 }
