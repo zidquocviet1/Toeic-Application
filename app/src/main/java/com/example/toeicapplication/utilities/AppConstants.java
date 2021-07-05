@@ -8,4 +8,7 @@ public class AppConstants {
 
     // LOGGING
     public static final String TAG = "Toeic Application";
+
+    // DATABASE
+    public static final String DB_NAME = "toeic_database";
 }
