@@ -10,11 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.toeicapplication.ExamActivity;
-import com.example.toeicapplication.R;
 import com.example.toeicapplication.databinding.FragmentPart1Binding;
 import com.example.toeicapplication.model.entity.Question;
 import com.example.toeicapplication.viewmodels.ExamViewModel;
@@ -29,16 +27,14 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class Part1Fragment extends BaseFragment<ExamViewModel, FragmentPart1Binding>
+public class Part1Fragment extends BasePartFragment<ExamViewModel, FragmentPart1Binding>
         implements View.OnClickListener, ExamActivity.OnConfirmAnswer {
-    private ExamActivity context;
+    private ExamActivity examActivity;
     private Question question;
 
     private static final String NUM_QUESTION = "numQuestion";
     private static final String QUESTION = "question";
 
-    private Drawable answerNormalState;
-    private Drawable answerSelectedState;
     private List<TextView> widgets;
 
     private int numQuestion;
@@ -83,13 +79,11 @@ public class Part1Fragment extends BaseFragment<ExamViewModel, FragmentPart1Bind
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        context = (ExamActivity) getActivity();
+        examActivity = (ExamActivity) getActivity();
 
-        if (context != null) {
-            context.setOnConfirmAnswer(this);
-            context.changeButtonState(false);
-            answerNormalState = ContextCompat.getDrawable(context, R.drawable.answer_1);
-            answerSelectedState = ContextCompat.getDrawable(context, R.drawable.answer_selected);
+        if (examActivity != null) {
+            examActivity.setOnConfirmAnswer(this);
+            examActivity.changeButtonState(false);
         }
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -127,7 +121,7 @@ public class Part1Fragment extends BaseFragment<ExamViewModel, FragmentPart1Bind
                 txt.setBackground(answerNormalState);
             }
         });
-        context.changeButtonState(true);
+        examActivity.changeButtonState(true);
     }
 
     @Override
@@ -143,15 +137,15 @@ public class Part1Fragment extends BaseFragment<ExamViewModel, FragmentPart1Bind
     }
 
     private void showQuestion(Question question) {
-        if (context.getMediaPlayer() != null && context.getMediaPlayer().isPlaying()) {
-            context.getMediaPlayer().stop();
+        if (examActivity.getMediaPlayer() != null && examActivity.getMediaPlayer().isPlaying()) {
+            examActivity.getMediaPlayer().stop();
         }
         try {
             if (question.getDescription() != null) {
-                InputStream is = context.getAssets().open(question.getDescription());
+                InputStream is = examActivity.getAssets().open(question.getDescription());
                 Drawable drawable = Drawable.createFromStream(is, null);
                 mBinding.image.setImageDrawable(drawable);
-                context.setQuestionTitle(String.valueOf(numQuestion));
+                examActivity.setQuestionTitle(String.valueOf(numQuestion));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -162,9 +156,9 @@ public class Part1Fragment extends BaseFragment<ExamViewModel, FragmentPart1Bind
         mBinding.txtC.setText(question.getQuestionC());
         mBinding.txtD.setText(question.getQuestionD());
 
-        if (context.getMediaPlayer() != null) {
-            context.getMediaPlayer().reset();
-            context.startListening(question.getAudioFile());
+        if (examActivity.getMediaPlayer() != null) {
+            examActivity.getMediaPlayer().reset();
+            examActivity.startListening(question.getAudioFile());
         }
     }
 }

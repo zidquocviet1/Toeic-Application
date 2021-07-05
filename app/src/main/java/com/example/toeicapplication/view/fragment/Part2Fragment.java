@@ -1,6 +1,5 @@
 package com.example.toeicapplication.view.fragment;
 
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,7 +9,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.toeicapplication.ExamActivity;
@@ -29,17 +27,15 @@ import java.util.Map;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class Part2Fragment extends BaseFragment<ExamViewModel, FragmentPart2Binding>
+public class Part2Fragment extends BasePartFragment<ExamViewModel, FragmentPart2Binding>
         implements ExamActivity.OnConfirmAnswer, View.OnClickListener {
-    private ExamActivity context;
+    private ExamActivity examActivity;
 
     private static final String NUM_QUESTION = "numQuestion";
     private static final String QUESTION = "question";
     private static final String PART = "part";
     private static final String PROGRESS_ANSWER = "progressAnswer";
 
-    private Drawable answerNormalState;
-    private Drawable answerSelectedState;
     private List<TextView> questionTitle;
     private Map<Integer, String> answer;
     private Map<String, TextView> questionContent;
@@ -100,15 +96,11 @@ public class Part2Fragment extends BaseFragment<ExamViewModel, FragmentPart2Bind
     public View onCreateView(@NotNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        context = (ExamActivity) getActivity();
+        examActivity = (ExamActivity) getActivity();
 
-        if (context != null) {
-            context.setOnConfirmAnswer(this);
-            context.changeButtonState(false);
-            answerNormalState = ContextCompat.getDrawable(context,
-                    R.drawable.answer_1);
-            answerSelectedState = ContextCompat.getDrawable(context,
-                    R.drawable.answer_selected);
+        if (examActivity != null) {
+            examActivity.setOnConfirmAnswer(this);
+            examActivity.changeButtonState(false);
         }
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -167,7 +159,7 @@ public class Part2Fragment extends BaseFragment<ExamViewModel, FragmentPart2Bind
             }
         });
         if (answer.size() == 3)
-            context.changeButtonState(true);
+            examActivity.changeButtonState(true);
     }
 
     private void setupEvent() {
@@ -188,11 +180,11 @@ public class Part2Fragment extends BaseFragment<ExamViewModel, FragmentPart2Bind
     }
 
     private void showQuestion(List<Question> questions) {
-        if (context.getMediaPlayer() != null && context.getMediaPlayer().isPlaying()) {
-            context.getMediaPlayer().stop();
+        if (examActivity.getMediaPlayer() != null && examActivity.getMediaPlayer().isPlaying()) {
+            examActivity.getMediaPlayer().stop();
         }
 
-        context.setQuestionTitle(this.numQuestion + "-" + (this.numQuestion + this.questions.size() - 1));
+        examActivity.setQuestionTitle(this.numQuestion + "-" + (this.numQuestion + this.questions.size() - 1));
 
         // set tag for the purpose of onClick
         mBinding.txt1A.setTag(this.numQuestion);
@@ -211,9 +203,9 @@ public class Part2Fragment extends BaseFragment<ExamViewModel, FragmentPart2Bind
         mBinding.txt3D.setTag(this.numQuestion + 2);
 
         if (part == 2){
-            mBinding.question1.setText(context.getString(R.string.number_question, this.numQuestion));
-            mBinding.question2.setText(context.getString(R.string.number_question, this.numQuestion + 1));
-            mBinding.question3.setText(context.getString(R.string.number_question, this.numQuestion + 2));
+            mBinding.question1.setText(examActivity.getString(R.string.number_question, this.numQuestion));
+            mBinding.question2.setText(examActivity.getString(R.string.number_question, this.numQuestion + 1));
+            mBinding.question3.setText(examActivity.getString(R.string.number_question, this.numQuestion + 2));
         }else if (part == 3 || part == 4){
             mBinding.txt1D.setVisibility(View.VISIBLE);
             mBinding.txt2D.setVisibility(View.VISIBLE);
@@ -244,9 +236,9 @@ public class Part2Fragment extends BaseFragment<ExamViewModel, FragmentPart2Bind
             }
         });
 
-        if (context.getMediaPlayer() != null) {
-            context.getMediaPlayer().reset();
-            context.startListening(questions.get(0).getAudioFile());
+        if (examActivity.getMediaPlayer() != null) {
+            examActivity.getMediaPlayer().reset();
+            examActivity.startListening(questions.get(0).getAudioFile());
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.toeicapplication.view.fragment;
 
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,11 +9,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.toeicapplication.ExamActivity;
-import com.example.toeicapplication.R;
 import com.example.toeicapplication.databinding.FragmentPart5Binding;
 import com.example.toeicapplication.model.entity.Question;
 import com.example.toeicapplication.viewmodels.ExamViewModel;
@@ -26,15 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Part5Fragment extends BaseFragment<ExamViewModel, FragmentPart5Binding>
+public class Part5Fragment extends BasePartFragment<ExamViewModel, FragmentPart5Binding>
         implements ExamActivity.OnConfirmAnswer, View.OnClickListener {
-    private ExamActivity context;
+    private ExamActivity examActivity;
 
     private static final String NUM_QUESTION = "numQuestion";
     private static final String QUESTION = "question";
 
-    private Drawable answerNormalState;
-    private Drawable answerSelectedState;
     private List<TextView> questionTitle;
     private List<ViewGroup> layouts;
     private final List<Question> questions = new ArrayList<>();
@@ -84,15 +79,11 @@ public class Part5Fragment extends BaseFragment<ExamViewModel, FragmentPart5Bind
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        context = (ExamActivity) getActivity();
+        examActivity = (ExamActivity) getActivity();
 
-        if (context != null) {
-            context.setOnConfirmAnswer(this);
-            context.changeButtonState(false);
-            answerNormalState = ContextCompat.getDrawable(context,
-                    R.drawable.answer_1);
-            answerSelectedState = ContextCompat.getDrawable(context,
-                    R.drawable.answer_selected);
+        if (examActivity != null) {
+            examActivity.setOnConfirmAnswer(this);
+            examActivity.changeButtonState(false);
         }
 
         return super.onCreateView(inflater, container, savedInstanceState);
@@ -166,15 +157,15 @@ public class Part5Fragment extends BaseFragment<ExamViewModel, FragmentPart5Bind
             }
         });
         if (answer.size() == this.questions.size())
-            context.changeButtonState(true);
+            examActivity.changeButtonState(true);
     }
 
     private void showQuestion(List<Question> questions) {
-        if (context.getMediaPlayer() != null && context.getMediaPlayer().isPlaying()) {
-            context.getMediaPlayer().stop();
+        if (examActivity.getMediaPlayer() != null && examActivity.getMediaPlayer().isPlaying()) {
+            examActivity.getMediaPlayer().stop();
         }
 
-        context.setQuestionTitle(this.numQuestion + "-" + (this.numQuestion + this.questions.size() - 1));
+        examActivity.setQuestionTitle(this.numQuestion + "-" + (this.numQuestion + this.questions.size() - 1));
 
         for (int i = 0; i < questions.size(); i++){
             layouts.get(i).setVisibility(View.VISIBLE);
