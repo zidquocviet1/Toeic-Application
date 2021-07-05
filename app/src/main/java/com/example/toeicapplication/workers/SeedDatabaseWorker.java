@@ -22,10 +22,17 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 public class SeedDatabaseWorker extends Worker {
+    private final MyDB db;
+
+    @Inject
     public SeedDatabaseWorker(@NonNull @NotNull Context context,
-                              @NonNull @NotNull WorkerParameters workerParams) {
+                              @NonNull @NotNull WorkerParameters workerParams,
+                              MyDB db) {
         super(context, workerParams);
+        this.db = db;
     }
 
     @NonNull
@@ -34,8 +41,6 @@ public class SeedDatabaseWorker extends Worker {
     public Result doWork() {
         try {
             Context context = getApplicationContext();
-
-            MyDB db = MyDB.getInstance(context);
 
             List<Word> words = getWordFromAssets(context);
             List<Question> questions = getQuestionFromAssets(context);
