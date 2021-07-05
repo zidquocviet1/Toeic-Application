@@ -86,11 +86,11 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
         if (owner == Owner.COURSE_FRAGMENT){
             holder.itemView.setOnClickListener(null);
-            holder.rbStar.setRating(course.getRating());
+            holder.rbStar.setRating(course.getRating() == null ? 0.0f : course.getRating());
             holder.txtComment.setText(context.getString(R.string.comment,
                                         course.getComment() == null ? 0: course.getComment().size()));
             holder.txtRatio.setText(context.getString(R.string.comment_ratio, String.format(Locale.getDefault(),
-                    "%.1f", course.getRating())));
+                    "%.1f", course.getRating() == null ? 0.0 : course.getRating())));
 
             holder.txtViewAll.setOnClickListener(l -> {
                 if (callback != null){
@@ -98,8 +98,6 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 }
             });
         }
-
-
     }
 
     @Override
