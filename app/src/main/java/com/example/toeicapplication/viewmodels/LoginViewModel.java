@@ -8,9 +8,9 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.model.entity.User;
-import com.example.toeicapplication.network.response.Response;
+import com.example.toeicapplication.network.response.MyResponse;
 import com.example.toeicapplication.repository.LoginRepository;
-import com.example.toeicapplication.utilities.DataState;
+import com.example.toeicapplication.utilities.Resource;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -42,7 +42,7 @@ public class LoginViewModel extends ViewModel {
 
     private final MutableLiveData<Boolean> networkState;
 
-    private final MutableLiveData<DataState<User>> stateResponse;
+    private final MutableLiveData<Resource<User>> stateResponse;
 
     @Inject
     LoginRepository repository;
@@ -174,7 +174,7 @@ public class LoginViewModel extends ViewModel {
         this.loginPasswordError.setValue(password);
     }
 
-    public MutableLiveData<DataState<User>> getStateResponse() {
+    public MutableLiveData<Resource<User>> getStateResponse() {
         return stateResponse;
     }
 
@@ -182,7 +182,7 @@ public class LoginViewModel extends ViewModel {
         return networkState;
     }
 
-    private void setStateResponse(DataState<User> response){
+    private void setStateResponse(Resource<User> response){
         this.stateResponse.postValue(response);
     }
 
@@ -191,26 +191,26 @@ public class LoginViewModel extends ViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .timeout(5, TimeUnit.SECONDS)
-                .subscribe(new Observer<Response<User>>() {
+                .subscribe(new Observer<MyResponse<User>>() {
                     @Override
                     public void onSubscribe(@NotNull Disposable d) {
-                        setStateResponse(DataState.Loading(null));
+                        setStateResponse(Resource.Loading(null));
                     }
 
                     @Override
-                    public void onNext(@NotNull Response<User> userPostResponse) {
+                    public void onNext(@NotNull MyResponse<User> userPostResponse) {
                         if (userPostResponse.isStatus()) {
                             User data = userPostResponse.getData();
 
-                            setStateResponse(DataState.Success(data));
+                            setStateResponse(Resource.Success(data));
                         }else{
-                            setStateResponse(DataState.Error(userPostResponse.getMessage()));
+                            setStateResponse(Resource.Error(userPostResponse.getMessage()));
                         }
                     }
 
                     @Override
                     public void onError(@NotNull Throwable e) {
-                        setStateResponse(DataState.Error(context.getString(R.string.server_error)));
+                        setStateResponse(Resource.Error(context.getString(R.string.server_error)));
                     }
 
                     @Override
@@ -226,26 +226,26 @@ public class LoginViewModel extends ViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .timeout(5, TimeUnit.SECONDS)
-                .subscribe(new Observer<Response<User>>() {
+                .subscribe(new Observer<MyResponse<User>>() {
                     @Override
                     public void onSubscribe(@NotNull Disposable d) {
-                        setStateResponse(DataState.Loading(null));
+                        setStateResponse(Resource.Loading(null));
                     }
 
                     @Override
-                    public void onNext(@NotNull Response<User> userPostResponse) {
+                    public void onNext(@NotNull MyResponse<User> userPostResponse) {
                         if (userPostResponse.isStatus()) {
                             User data = userPostResponse.getData();
 
-                            setStateResponse(DataState.Success(data));
+                            setStateResponse(Resource.Success(data));
                         }else{
-                            setStateResponse(DataState.Error(userPostResponse.getMessage()));
+                            setStateResponse(Resource.Error(userPostResponse.getMessage()));
                         }
                     }
 
                     @Override
                     public void onError(@NotNull Throwable e) {
-                        setStateResponse(DataState.Error(context.getString(R.string.server_error)));
+                        setStateResponse(Resource.Error(context.getString(R.string.server_error)));
                     }
 
                     @Override

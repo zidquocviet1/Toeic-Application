@@ -40,7 +40,6 @@ public class ExamViewModel extends ViewModel implements LifecycleObserver {
 
     @Inject // don't inject the compositeDisposable with the SingletonScope
     public ExamViewModel(ExamRepository repository) {
-        Log.e("TAG", "Initialize ExamViewModel");
         questions = new MutableLiveData<>();
         selectedQuestion = new MutableLiveData<>();
         progress = new MutableLiveData<>();
@@ -50,6 +49,7 @@ public class ExamViewModel extends ViewModel implements LifecycleObserver {
         selectedQuestion.setValue(new HashMap<>());
     }
 
+    // GETTER
     public LiveData<List<Question>> getQuestions() {
         return questions;
     }
@@ -62,12 +62,19 @@ public class ExamViewModel extends ViewModel implements LifecycleObserver {
         return selectedQuestion;
     }
 
+    // PRIVATE METHOD
     private void setProgress(Progress progress) {
         this.progress.setValue(progress);
     }
 
     private void setQuestionList(List<Question> questionList) {
         this.questions.setValue(questionList);
+    }
+
+    // PUBLIC METHOD
+    public void loadListQuestion(Long courseID) {
+        getProgressByCourseID(courseID);
+        getListQuestionByCourseID(courseID);
     }
 
     public void postSelectedQuestion(int numQuestion, String answer) {
@@ -87,72 +94,6 @@ public class ExamViewModel extends ViewModel implements LifecycleObserver {
         selected.putAll(answer);
 
         this.selectedQuestion.postValue(selected);
-    }
-
-    // this snippet is used for cache and remote call
-    public void getListQuestionByCourseID(Long courseID) {
-        // this observable will only run on time in the lifecycle of compositeDisposable
-        cd.add(repository.getListQuestionByCourseID(courseID)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<Question>>() {
-                    @Override
-                    public void onSuccess(@NotNull List<Question> questionList) {
-                        setQuestionList(questionList);
-                    }
-
-                    @Override
-                    public void onError(@NotNull Throwable e) {
-                        setQuestionList(null);
-                    }
-                }));
-    }
-
-    public void getProgressByCourseID(Long courseID) {
-        repository.getProgressByCourseID(courseID)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableSingleObserver<Progress>() {
-                    @Override
-                    public void onSuccess(@NotNull Progress progress) {
-                        Log.e("TAG", progress.toString());
-                        setProgress(progress);
-                    }
-
-                    @Override
-                    public void onError(@NotNull Throwable e) {
-                        setProgress(null);
-                        Log.e("TAG", "Can't get the data from Progress table: " + e.getMessage());
-                    }
-                });
-    }
-
-    public void add(Progress progress) {
-        cd.add(repository.add(progress)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> Log.e("TAG", "Insert the progress successfully"), throwable -> {
-                    Log.e("TAG", "Can't get the data from Progress table: " + throwable.getMessage());
-                })
-        );
-    }
-
-    public void delete(Long id) {
-        cd.add(repository.delete(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        Log.e("TAG", "Delete the progress successfully");
-                    }
-
-                    @Override
-                    public void onError(@NotNull Throwable e) {
-                        Log.e("TAG", "The id is not exists in the scope: " + e.getMessage());
-                    }
-                })
-        );
     }
 
     public Map<String, Integer> calculateAnswer() {
@@ -196,9 +137,74 @@ public class ExamViewModel extends ViewModel implements LifecycleObserver {
         return null;
     }
 
+    // this snippet is used for cache and remote call
+    private void getListQuestionByCourseID(Long courseID) {
+        // this observable will only run on time in the lifecycle of compositeDisposable
+        cd.add(repository.getListQuestionByCourseID(courseID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<List<Question>>() {
+                    @Override
+                    public void onSuccess(@NotNull List<Question> questionList) {
+                        setQuestionList(questionList);
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                        setQuestionList(null);
+                    }
+                }));
+    }
+
+    private void getProgressByCourseID(Long courseID) {
+        repository.getProgressByCourseID(courseID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableSingleObserver<Progress>() {
+                    @Override
+                    public void onSuccess(@NotNull Progress progress) {
+                        Log.e("TAG", progress.toString());
+                        setProgress(progress);
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                        setProgress(null);
+                        Log.e("TAG", "Can't get the data from Progress table: " + e.getMessage());
+                    }
+                });
+    }
+
+    public void add(Progress progress) {
+        cd.add(repository.add(progress)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> Log.e("TAG", "Insert the progress successfully"), throwable ->
+                    Log.e("TAG", "Can't get the data from Progress table: " + throwable.getMessage())
+                )
+        );
+    }
+
+    public void delete(Long id) {
+        cd.add(repository.delete(id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.e("TAG", "Delete the progress successfully");
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                        Log.e("TAG", "The id is not exists in the scope: " + e.getMessage());
+                    }
+                })
+        );
+    }
+
     @Override
     protected void onCleared() {
-        Log.e("TAG", "ExamViewModel onCleared");
         super.onCleared();
         if (cd != null) {
             cd.dispose();
