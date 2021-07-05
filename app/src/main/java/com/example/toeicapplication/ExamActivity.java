@@ -7,13 +7,11 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.toeicapplication.databinding.ActivityExamBinding;
 import com.example.toeicapplication.model.entity.Course;
@@ -31,6 +29,8 @@ import com.example.toeicapplication.view.fragment.Part7Fragment;
 import com.example.toeicapplication.viewmodels.ExamViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,10 +45,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class ExamActivity
-        extends AppCompatActivity
+        extends BaseActivity<ExamViewModel, ActivityExamBinding>
         implements ChooseModeBottomDialogFragment.ChooseModeListener, View.OnClickListener, MediaPlayer.OnPreparedListener {
-    private ActivityExamBinding binding;
-    private ExamViewModel examVM;
     private MediaPlayer mediaPlayer;
     private Progress progress;
     private Course course;
@@ -74,50 +72,65 @@ public class ExamActivity
         this.callback = callback;
     }
 
+    @NonNull
+    @NotNull
+    @Override
+    public Class<ExamViewModel> getViewModel() {
+        return ExamViewModel.class;
+    }
+
+    @Override
+    public int getLayoutRes() {
+        return R.layout.activity_exam;
+    }
+
+    @Override
+    public ActivityExamBinding bindingInflater() {
+        return ActivityExamBinding.inflate(getLayoutInflater());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityExamBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
 
         Intent intent = getIntent();
         course = intent.getParcelableExtra("course");
         user = intent.getParcelableExtra("user");
 
-        observeViewModel();
-        loadListQuestion(course.getId());
+        mVM.loadListQuestion(course.getId());
         initMediaPlayer();
 
-        binding.txtTitle.setText(course.getName());
-        binding.btnClick.setOnClickListener(this);
-        binding.btnFinish.setOnClickListener(this);
-        binding.btnClick.setEnabled(false);
-        binding.btnFinish.setEnabled(false);
+        mBinding.txtTitle.setText(course.getName());
+        mBinding.btnClick.setOnClickListener(this);
+        mBinding.btnFinish.setOnClickListener(this);
+        mBinding.btnClick.setEnabled(false);
+        mBinding.btnFinish.setEnabled(false);
     }
 
-    private void observeViewModel() {
-        examVM = new ViewModelProvider(this).get(ExamViewModel.class);
-
-        examVM.getProgress().observe(this, progress -> {
-            if (progress != null) {
-                this.progress = progress;
-            }
-        });
-
-        examVM.getQuestions().observe(this, questionList -> {
-            if (questionList != null && !questionList.isEmpty()) {
-                questions = new ArrayList<>(questionList);
-                binding.txtTotal.setText(getString(R.string.total_question, questions.size()));
-
-                if (checkProgress()) {
-                    restartProgressDialog();
-                } else {
-                    bottomSheetDialog();
+    @Override
+    public void setupObserver() {
+        if (mVM != null){
+            mVM.getProgress().observe(this, progress -> {
+                if (progress != null) {
+                    this.progress = progress;
                 }
-            } else {
-                unavailableCourseDialog();
-            }
-        });
+            });
+
+            mVM.getQuestions().observe(this, questionList -> {
+                if (questionList != null && !questionList.isEmpty()) {
+                    questions = new ArrayList<>(questionList);
+                    mBinding.txtTotal.setText(getString(R.string.total_question, questions.size()));
+
+                    if (checkProgress()) {
+                        restartProgressDialog();
+                    } else {
+                        bottomSheetDialog();
+                    }
+                } else {
+                    unavailableCourseDialog();
+                }
+            });
+        }
     }
 
     private void initMediaPlayer() {
@@ -128,16 +141,9 @@ public class ExamActivity
         mediaPlayer.setOnPreparedListener(this);
     }
 
-    private void loadListQuestion(Long courseID) {
-        if (examVM != null) {
-            examVM.getProgressByCourseID(courseID);
-            examVM.getListQuestionByCourseID(courseID);
-        }
-    }
-
     // start exam executed only one time
     private void startExam() {
-        binding.btnFinish.setEnabled(true);
+        mBinding.btnFinish.setEnabled(true);
         setupUIWithCountDown(isCounting);
 
         Question question = questions.get(currentQuestion - 1);
@@ -147,12 +153,12 @@ public class ExamActivity
     }
 
     private void restartExam() {
-        binding.btnFinish.setEnabled(true);
+        mBinding.btnFinish.setEnabled(true);
         isCounting = progress.isCounting();
         testTime = progress.getRemainTime().intValue();
         progressQuestion = new HashMap<>(progress.getQuestions());
 
-        examVM.postSelectedQuestion(progressQuestion);
+        mVM.postSelectedQuestion(progressQuestion);
 
         setupUIWithCountDown(isCounting);
 
@@ -216,7 +222,7 @@ public class ExamActivity
 
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(binding.framelayout.getId(), fragment)
+                    .replace(mBinding.framelayout.getId(), fragment)
                     .commit();
         }
     }
@@ -266,8 +272,8 @@ public class ExamActivity
 
     private void setupUIWithCountDown(boolean isCounting) {
         if (isCounting) {
-            binding.layoutTime.setVisibility(View.VISIBLE);
-            binding.pbTime.setVisibility(View.VISIBLE);
+            mBinding.layoutTime.setVisibility(View.VISIBLE);
+            mBinding.pbTime.setVisibility(View.VISIBLE);
             startCountingTime();
         }
     }
@@ -278,14 +284,14 @@ public class ExamActivity
             @Override
             public void run() {
                 runOnUiThread(() -> {
-                    if (binding != null) {
+                    if (mBinding != null) {
                         if (testTime > 0) {
-                            binding.pbTime.setProgress(testTime);
-                            binding.txtDisplayTime.setText(Utils.convertTime(testTime));
+                            mBinding.pbTime.setProgress(testTime);
+                            mBinding.txtDisplayTime.setText(Utils.convertTime(testTime));
                             testTime -= 1000;
                         } else {
-                            binding.pbTime.setProgress(0);
-                            binding.txtDisplayTime.setText(Utils.convertTime(0));
+                            mBinding.pbTime.setProgress(0);
+                            mBinding.txtDisplayTime.setText(Utils.convertTime(0));
                             timer.cancel();
                             showResult(false);
                         }
@@ -319,7 +325,7 @@ public class ExamActivity
     public void onClick(View v) {
         int id = v.getId();
 
-        if (id == binding.btnClick.getId()) {
+        if (id == mBinding.btnClick.getId()) {
             // send a callback to announce answers are selected
             if (this.callback != null) {
                 callback.onConfirm();
@@ -334,7 +340,7 @@ public class ExamActivity
             // refresh fragment with a new question
             Question question = this.questions.get(this.currentQuestion - 1);
             openFragment(getListQuestion(question), null);
-        } else if (id == binding.btnFinish.getId()) {
+        } else if (id == mBinding.btnFinish.getId()) {
             earlyFinishExamDialog();
         }
     }
@@ -348,9 +354,7 @@ public class ExamActivity
     protected void onDestroy() {
         if (mediaPlayer != null && mediaPlayer.isPlaying())
             mediaPlayer.stop();
-        binding = null;
         super.onDestroy();
-        Log.e("TAG", "ExamActivity onDestroy called");
     }
 
     @Override
@@ -380,20 +384,20 @@ public class ExamActivity
         Progress progress = new Progress(this.progress != null ? this.progress.getId() : null,
                 this.course.getId(),
                 (long) this.testTime,
-                examVM.getSelectedQuestion().getValue(),
+                mVM.getSelectedQuestion().getValue(),
                 isCounting);
-        examVM.add(progress);
+        mVM.add(progress);
     }
 
     private void showResult(boolean isEarlyStop) {
         if (!isEarlyStop)
             addProgress();
-        else examVM.delete(course.getId());
+        else mVM.delete(course.getId());
 
         LoadingDialog.showLoadingDialog(this);
 
         Result result = null;
-        Map<String, Integer> resultMap = examVM.calculateAnswer();
+        Map<String, Integer> resultMap = mVM.calculateAnswer();
         Long userId = user != null ? user.getId() : null;
 
         if (resultMap != null) {
@@ -491,7 +495,7 @@ public class ExamActivity
     }
 
     public void changeButtonState(boolean isEnable) {
-        binding.btnClick.setEnabled(isEnable);
+        mBinding.btnClick.setEnabled(isEnable);
     }
 
     public MediaPlayer getMediaPlayer() {
@@ -513,6 +517,6 @@ public class ExamActivity
     }
 
     public void setQuestionTitle(String question) {
-        binding.questionId.setText(question);
+        mBinding.questionId.setText(question);
     }
 }

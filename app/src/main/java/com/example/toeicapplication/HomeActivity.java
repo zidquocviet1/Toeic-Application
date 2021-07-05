@@ -1,18 +1,9 @@
 package com.example.toeicapplication;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
-import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,20 +12,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.view.GravityCompat;
+import androidx.fragment.app.Fragment;
+
 import com.example.toeicapplication.databinding.ActivityHomeBinding;
+import com.example.toeicapplication.listeners.PopupItemClickListener;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.model.entity.Word;
+import com.example.toeicapplication.utilities.NetworkController;
+import com.example.toeicapplication.utilities.Status;
 import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.example.toeicapplication.view.fragment.CourseFragment;
 import com.example.toeicapplication.view.fragment.HomeFragment;
-import com.example.toeicapplication.listeners.PopupItemClickListener;
-import com.example.toeicapplication.utilities.DataState;
-import com.example.toeicapplication.utilities.NetworkController;
 import com.example.toeicapplication.view.fragment.RankFragment;
 import com.example.toeicapplication.view.fragment.VocabularyFragment;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -42,111 +40,67 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class HomeActivity
-        extends BaseActivity
+        extends BaseActivity<HomeViewModel, ActivityHomeBinding>
         implements NavigationView.OnNavigationItemSelectedListener,
         View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener, PopupItemClickListener {
-
-    private static final String TAG = "MainActivity";
-
-    private ActivityHomeBinding binding;
-    private HomeViewModel homeVM;
 
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            homeVM.getNetworkState().postValue(NetworkController.isOnline(context));
+            mVM.getNetworkState().postValue(NetworkController.isOnline(context));
         }
     };
 
     @Override
+    public ActivityHomeBinding bindingInflater() {
+        return ActivityHomeBinding.inflate(getLayoutInflater());
+    }
+
+    @NonNull
+    @NotNull
+    @Override
+    public Class<HomeViewModel> getViewModel() {
+        return HomeViewModel.class;
+    }
+
+    @Override
+    public int getLayoutRes() {
+        return R.layout.activity_home;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityHomeBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
 
         registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
         registerOnClickEvent();
-        setupViewModel();
-        setupObserves();
-        loadData();
-    }
-
-    private void setupViewModel() {
-        homeVM = new ViewModelProvider(this).get(HomeViewModel.class);
-    }
-
-    private void setupObserves() {
-        if (homeVM != null) {
-            // show cache user
-            homeVM.getUsers().observe(this, users -> {
-                if (users != null && !users.isEmpty()) {
-                    // get the first user with state is login
-                    users.stream()
-                            .filter(u -> u != null && u.isLogin())
-                            .findFirst()
-                            .map(user -> {
-                                homeVM.getCacheUser().postValue(user);
-                                if (isNetwork())
-                                    homeVM.callRemoteUser(user.getId());
-                                return user;
-                            })
-                            .orElseGet(() -> {
-                                homeVM.getCacheUser().postValue(null);
-                                return null;
-                            });
-                }
-            });
-
-            homeVM.getCourses().observe(this, courses -> {
-                openFragment(HomeFragment.class, getString(R.string.home), R.id.mnHome);
-            });
-
-            homeVM.getRemoteUser().observe(this, stateUser -> {
-                if (stateUser != null){
-                    if (stateUser.getStatus() == DataState.Status.SUCCESS) {
-                        homeVM.getCacheUser().postValue(stateUser.getData());
-                        loadRemoteUser(stateUser.getData());
-                    }
-                }
-            });
-        }
     }
 
     private boolean isNetwork(){
-        return homeVM.getNetworkState().getValue() != null
-                && homeVM.getNetworkState().getValue();
+        return mVM.getNetworkState().getValue() != null
+                && mVM.getNetworkState().getValue();
     }
 
     private void registerOnClickEvent() {
-        binding.imageView.setOnClickListener(this);
-        binding.imgAvatar.setOnClickListener(this);
-        binding.bottomNav.setOnNavigationItemSelectedListener(this);
+        mBinding.imageView.setOnClickListener(this);
+        mBinding.imgAvatar.setOnClickListener(this);
+        mBinding.bottomNav.setOnNavigationItemSelectedListener(this);
     }
 
     private void initDrawerLayout() {
-        binding.navView.bringToFront();
+        mBinding.navView.bringToFront();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
-                binding.drawerLayout,
+                mBinding.drawerLayout,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
 
-        binding.drawerLayout.addDrawerListener(toggle);
+        mBinding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        binding.drawerLayout.openDrawer(GravityCompat.START);
-        binding.navView.setCheckedItem(binding.bottomNav.getSelectedItemId());
-        binding.navView.setNavigationItemSelectedListener(this);
-        binding.bottomNav.setOnNavigationItemSelectedListener(this);
-    }
-
-    private void loadData(){
-        if (homeVM != null) {
-            homeVM.getAllUsers();
-            homeVM.getAllCourses();
-            homeVM.get30Words();
-            homeVM.getRecentLogOutUser();
-        }
+        mBinding.drawerLayout.openDrawer(GravityCompat.START);
+        mBinding.navView.setCheckedItem(mBinding.bottomNav.getSelectedItemId());
+        mBinding.navView.setNavigationItemSelectedListener(this);
+        mBinding.bottomNav.setOnNavigationItemSelectedListener(this);
     }
 
     // show the avatar of the user
@@ -177,7 +131,7 @@ public class HomeActivity
     }
 
     private void showPopup(User user, boolean isLogin) {
-        PopupMenu popup = new PopupMenu(this, binding.imgAvatar);
+        PopupMenu popup = new PopupMenu(this, mBinding.imgAvatar);
         Menu menu = popup.getMenu();
 
         if (isLogin) {
@@ -202,9 +156,7 @@ public class HomeActivity
                 .setTitle(getString(R.string.account_title))
                 .setMessage(getString(R.string.account_message_logout))
                 .setIcon(R.drawable.ic_baseline_info_24)
-                .setPositiveButton("Yes", (dialog, which) -> {
-                    logout(user);
-                })
+                .setPositiveButton("Yes", (dialog, which) -> logout(user))
                 .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
                 .create()
                 .show();
@@ -213,72 +165,108 @@ public class HomeActivity
     private void logout(User newUser) {
         newUser.setLogin(false);
 
-        homeVM.updateUser(newUser);
+        mVM.updateUser(newUser);
 
         if (isNetwork())
-            homeVM.callLogout(newUser);
+            mVM.callLogout(newUser);
     }
 
-    public void openFragment(Class fragmentClass, String tag, int id){
+    public void openFragment(Class<? extends Fragment> fragmentClass, String tag, int id){
         Fragment fragment = null;
         try{
-            fragment = (Fragment) fragmentClass.newInstance();
+            fragment = fragmentClass.newInstance();
         }catch(Exception e){
             e.printStackTrace();
         }
 
         if (fragment != null) {
-            binding.bottomNav.setOnNavigationItemSelectedListener(null);
-            binding.navView.setNavigationItemSelectedListener(null);
+            mBinding.bottomNav.setOnNavigationItemSelectedListener(null);
+            mBinding.navView.setNavigationItemSelectedListener(null);
 
-            binding.txtTitle.setText(tag);
-            binding.bottomNav.setSelectedItemId(id);
-            binding.navView.setCheckedItem(id);
-            binding.drawerLayout.closeDrawers();
+            mBinding.txtTitle.setText(tag);
+            mBinding.bottomNav.setSelectedItemId(id);
+            mBinding.navView.setCheckedItem(id);
+            mBinding.drawerLayout.closeDrawers();
 
-            binding.bottomNav.setOnNavigationItemSelectedListener(this);
-            binding.navView.setNavigationItemSelectedListener(this);
+            mBinding.bottomNav.setOnNavigationItemSelectedListener(this);
+            mBinding.navView.setNavigationItemSelectedListener(this);
 
             if (id == R.id.mnVocab
-                    && (homeVM.getWords().getValue() == null
-                    || homeVM.getWords().getValue().getData() == null
-                    || homeVM.getWords().getValue().getData().isEmpty())){
-                homeVM.getAllWords();
+                    && (mVM.getWords().getValue() == null
+                    || mVM.getWords().getValue().getData() == null
+                    || mVM.getWords().getValue().getData().isEmpty())){
+                mVM.getAllWords();
             }
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(binding.framelayout.getId(), fragment, tag)
+                    .replace(mBinding.framelayout.getId(), fragment, tag)
                     .commit();
         }
     }
 
     private void updateLearnedWord(){
-        List<Word> words = homeVM.getTop30Words().getValue();
+        List<Word> words = mVM.getTop30Words().getValue();
         if (words != null && !words.isEmpty()) {
-            homeVM.updateLearnedWord(words);
+            mVM.updateLearnedWord(words);
+        }
+    }
+
+    @Override
+    public void setupObserver() {
+        if (mVM != null) {
+            // show cache user
+            mVM.getUsers().observe(this, users -> {
+                if (users != null && !users.isEmpty()) {
+                    // get the first user with state is login
+                    users.stream()
+                            .filter(u -> u != null && u.isLogin())
+                            .findFirst()
+                            .map(user -> {
+                                mVM.getCacheUser().postValue(user);
+                                if (isNetwork())
+                                    mVM.callRemoteUser(user.getId());
+                                return user;
+                            })
+                            .orElseGet(() -> {
+                                mVM.getCacheUser().postValue(null);
+                                return null;
+                            });
+                }
+            });
+
+            mVM.getCourses().observe(this, courses ->
+                    openFragment(HomeFragment.class, getString(R.string.home), R.id.mnHome));
+
+            mVM.getRemoteUser().observe(this, stateUser -> {
+                if (stateUser != null){
+                    if (stateUser.getStatus() == Status.SUCCESS) {
+                        mVM.getCacheUser().postValue(stateUser.getData());
+                        loadRemoteUser(stateUser.getData());
+                    }
+                }
+            });
         }
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-
         if (receiver != null)
             unregisterReceiver(receiver);
 
-        User cacheUser = homeVM.getCacheUser().getValue();
-        User recentLogoutUser = homeVM.getRecentLogOutUserLiveData().getValue();
+        User cacheUser = mVM.getCacheUser().getValue();
+        User recentLogoutUser = mVM.getRecentLogOutUserLiveData().getValue();
 
         if (isNetwork() && (cacheUser == null || !cacheUser.isLogin()) && recentLogoutUser != null)
-            homeVM.callLogout(recentLogoutUser);
+            mVM.callLogout(recentLogoutUser);
 
         updateLearnedWord();
+        super.onDestroy();
     }
 
     @Override
     public void onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        if (mBinding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mBinding.drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -287,7 +275,7 @@ public class HomeActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        Class fragmentClass = null;
+        Class<? extends Fragment> fragmentClass = null;
         String tag = "";
 
         if (id == R.id.mnHome) {
@@ -304,7 +292,7 @@ public class HomeActivity
             tag = getString(R.string.vocabulary);
         }
 
-        if (binding.bottomNav.getSelectedItemId() == id)
+        if (mBinding.bottomNav.getSelectedItemId() == id)
             return false;
 
         openFragment(fragmentClass, tag, id);
@@ -319,7 +307,7 @@ public class HomeActivity
         if (id == R.id.imageView) {
             initDrawerLayout();
         } else if (id == R.id.imgAvatar) {
-            List<User> users = homeVM.getUsers().getValue();
+            List<User> users = mVM.getUsers().getValue();
 
             if (users != null) {
                 if (!users.isEmpty()) {
@@ -353,33 +341,36 @@ public class HomeActivity
             activityLauncher.mLaunch(intent, result -> {
                 if (result.getResultCode() == RESULT_OK) {
                     Intent data = result.getData();
-                    User responseUser = data.getParcelableExtra("user");
+                    User responseUser = null;
+                    if (data != null) {
+                        responseUser = data.getParcelableExtra("user");
+                    }
 
                     if (responseUser != null)
-                        homeVM.addUser(responseUser);
+                        mVM.addUser(responseUser);
                 }
             });
         }
     }
 
     // test new method for request permission
-    private void requestLocationPermission() {
-        String locationString = Manifest.permission.ACCESS_FINE_LOCATION;
-
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-        } else if (shouldShowRequestPermissionRationale(locationString)) {
-
-        }else{
-            permissionLauncher.mLaunch(locationString, result -> {
-                if (result){
-
-                }else{
-                    requestLocationPermission();
-                }
-            });
-        }
-    }
+//    private void requestLocationPermission() {
+//        String locationString = Manifest.permission.ACCESS_FINE_LOCATION;
+//
+//        if (ContextCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//
+//        } else if (shouldShowRequestPermissionRationale(locationString)) {
+//
+//        }else{
+//            permissionLauncher.mLaunch(locationString, result -> {
+//                if (result){
+//
+//                }else{
+//                    requestLocationPermission();
+//                }
+//            });
+//        }
+//    }
 }

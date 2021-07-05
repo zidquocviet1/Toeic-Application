@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.WindowManager;
 
-import com.example.toeicapplication.adapters.LoginAdapter;
+import com.example.toeicapplication.adapters.LoginPagerAdapter;
 import com.example.toeicapplication.databinding.ActivityLoginBinding;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.utilities.NetworkController;
@@ -53,8 +53,8 @@ public class LoginActivity extends AppCompatActivity{
     private void setupUI(){
         tb = binding.tabLayout;
 
-        LoginAdapter loginAdapter = new LoginAdapter(getSupportFragmentManager(), getLifecycle(), 2);
-        binding.viewPager.setAdapter(loginAdapter);
+        LoginPagerAdapter loginPagerAdapter = new LoginPagerAdapter(getSupportFragmentManager(), getLifecycle(), 2);
+        binding.viewPager.setAdapter(loginPagerAdapter);
 
         new TabLayoutMediator(tb, binding.viewPager, (tab, position) -> {
             if (position == 0){
