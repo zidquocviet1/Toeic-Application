@@ -2,11 +2,21 @@ package com.example.toeicapplication.di;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.example.toeicapplication.db.MyDB;
 import com.example.toeicapplication.db.dao.ResultDAO;
 import com.example.toeicapplication.db.dao.UserDAO;
+import com.example.toeicapplication.utilities.AppConstants;
+import com.example.toeicapplication.workers.SeedDatabaseWorker;
+
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Singleton;
 
@@ -22,7 +32,17 @@ public class DatabaseModule {
     @Singleton
     @Provides
     MyDB provideDatabase(@ApplicationContext Context context){
-        return MyDB.getInstance(context);
+        return Room.databaseBuilder(context, MyDB.class, AppConstants.DB_NAME)
+                .fallbackToDestructiveMigration()
+                .addCallback(new RoomDatabase.Callback() {
+                    @Override
+                    public void onCreate(@NonNull @NotNull SupportSQLiteDatabase db) {
+                        super.onCreate(db);
+                        WorkRequest request = OneTimeWorkRequest.from(SeedDatabaseWorker.class);
+                        WorkManager.getInstance(context).enqueue(request);
+                    }
+                })
+                .build();
     }
 
     @Singleton
