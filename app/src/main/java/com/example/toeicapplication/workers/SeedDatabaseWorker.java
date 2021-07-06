@@ -3,6 +3,7 @@ package com.example.toeicapplication.workers;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.hilt.work.HiltWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -22,14 +23,16 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedInject;
 
+@HiltWorker
 public class SeedDatabaseWorker extends Worker {
     private final MyDB db;
 
-    @Inject
-    public SeedDatabaseWorker(@NonNull @NotNull Context context,
-                              @NonNull @NotNull WorkerParameters workerParams,
+    @AssistedInject
+    public SeedDatabaseWorker(@Assisted @NonNull @NotNull Context context,
+                              @Assisted @NonNull @NotNull WorkerParameters workerParams,
                               MyDB db) {
         super(context, workerParams);
         this.db = db;
