@@ -1,6 +1,6 @@
 package com.example.toeicapplication.utilities;
 
-public class AppConstants {
+public final class AppConstants {
     // NETWORK
     public static final String API_ENDPOINT = "http://192.168.100.15:8080/api/v1/";
     public static final String CONTENT_TYPE = "application/json";
