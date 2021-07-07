@@ -6,16 +6,14 @@ import android.os.Parcelable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
-
-import com.example.toeicapplication.db.converter.LocalDateTimeConverter;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
-@Entity(tableName = "user_info")
-@TypeConverters(LocalDateTimeConverter.class)
+@Entity(tableName = "user_info", indices = {@Index(name = "user_name_unique", value = {"user_name"}, unique = true)})
 public class User implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     private Long id;
@@ -38,14 +36,29 @@ public class User implements Parcelable {
     @SerializedName(value = "login")
     private Boolean isLogin;
 
+    @ColumnInfo(name = "result_list")
+    private ArrayList<Result> results;
+
     public User(Long id, String userName, String password,
-                String displayName, LocalDateTime timestamp, Boolean isLogin) {
+                String displayName, LocalDateTime timestamp, Boolean isLogin, ArrayList<Result> results) {
         this.id = id;
         this.userName = userName;
         this.password = password;
         this.displayName = displayName;
         this.timestamp = timestamp;
         this.isLogin = isLogin;
+        this.results = results;
+    }
+
+    @Ignore
+    public User(String userName, String password, String displayName,
+                LocalDateTime timestamp, Boolean isLogin, ArrayList<Result> results) {
+        this.userName = userName;
+        this.password = password;
+        this.displayName = displayName;
+        this.timestamp = timestamp;
+        this.isLogin = isLogin;
+        this.results = results;
     }
 
     @Ignore
@@ -66,13 +79,14 @@ public class User implements Parcelable {
 
     @Ignore
     public User(User b) {
+        this.id = b.id;
         this.userName = b.userName;
         this.password = b.password;
         this.displayName = b.displayName;
         this.timestamp = b.timestamp;
         this.isLogin = b.isLogin;
+        this.results = b.results;
     }
-
 
     protected User(Parcel in) {
         if (in.readByte() == 0) {
@@ -85,8 +99,11 @@ public class User implements Parcelable {
         displayName = in.readString();
         byte tmpIsLogin = in.readByte();
         isLogin = tmpIsLogin == 0 ? null : tmpIsLogin == 1;
+        timestamp = (LocalDateTime) in.readSerializable();
+        results = in.createTypedArrayList(Result.CREATOR);
     }
 
+    // parcelable write/read depends on ORDER
     public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
         public User createFromParcel(Parcel in) {
@@ -147,6 +164,14 @@ public class User implements Parcelable {
         isLogin = login;
     }
 
+    public ArrayList<Result> getResults() {
+        return results;
+    }
+
+    public void setResults(ArrayList<Result> results) {
+        this.results = results;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -164,5 +189,7 @@ public class User implements Parcelable {
         dest.writeString(password);
         dest.writeString(displayName);
         dest.writeByte((byte) (isLogin == null ? 0 : isLogin ? 1 : 2));
+        dest.writeSerializable(timestamp);
+        dest.writeTypedList(results);
     }
 }

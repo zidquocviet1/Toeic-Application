@@ -10,7 +10,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.example.toeicapplication.db.converter.ArrayListConverter;
+import com.example.toeicapplication.db.converter.CommentArrayConverter;
 import com.example.toeicapplication.model.Comment;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class Course implements Parcelable {
     private String description;
     @ColumnInfo(defaultValue = "null")
     private Float rating;
-    @TypeConverters(ArrayListConverter.class)
+    @TypeConverters(CommentArrayConverter.class)
     private ArrayList<Comment> comment;
 
     public Course(Long id, @NonNull String name, @NonNull String description, Float rating) {
