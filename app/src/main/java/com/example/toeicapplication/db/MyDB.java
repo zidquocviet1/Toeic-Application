@@ -18,11 +18,12 @@ import com.example.toeicapplication.model.entity.Course;
 import com.example.toeicapplication.model.entity.Progress;
 import com.example.toeicapplication.model.entity.Question;
 import com.example.toeicapplication.model.entity.Rank;
-import com.example.toeicapplication.model.entity.Result;
+ import com.example.toeicapplication.model.entity.RemoteUser;
+ import com.example.toeicapplication.model.entity.Result;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.model.entity.Word;
 
-@Database(entities = {User.class, Result.class,
+@Database(entities = {User.class, Result.class, RemoteUser.class,
         Course.class, Rank.class,
         Word.class, Question.class,
         Progress.class}, version = 1)
