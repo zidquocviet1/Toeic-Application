@@ -219,7 +219,6 @@ public class HomeActivity
                 if (users != null && !users.isEmpty()) {
                     // get the first user with state is login
                     users.stream()
-                            .filter(u -> u != null && u.isLogin())
                             .findFirst()
                             .map(user -> {
                                 mVM.getCacheUser().postValue(user);
