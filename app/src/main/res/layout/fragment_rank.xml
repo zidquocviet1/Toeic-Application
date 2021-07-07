@@ -48,8 +48,10 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutFirst"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/menu"
                 app:layout_constraintStart_toStartOf="@id/menu"
@@ -96,7 +98,7 @@
                     android:layout_marginTop="4dp"
                     android:fontFamily="@font/avenir_lt_pro_black"
                     android:text="990"
-                    android:textColor="@color/description"
+                    android:textColor="@color/ic_launcher_lv_toeic_background"
                     android:textSize="24sp"
                     app:layout_constraintBottom_toTopOf="@id/txtDisplayName1"
                     app:layout_constraintEnd_toEndOf="@id/imgTop1"
@@ -124,6 +126,8 @@
             android:id="@+id/layout2"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/layout1"
             app:layout_constraintStart_toStartOf="@id/layout1"
@@ -147,10 +151,11 @@
                 android:id="@+id/rvRankUser"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:padding="8dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:listitem="@layout/info_user_rank" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
