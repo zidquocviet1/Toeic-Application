@@ -98,6 +98,7 @@
     <string name="comment_title">Bình Luận</string>
     <string name="title_activity_exam" translatable="false">ExamActivity</string>
     <string name="profile">Thông tin</string>
+    <string name="score">Điểm: %1$d</string>
     <string name="account">Tài khoản</string>
 
     // course detail activity
@@ -135,5 +136,8 @@
 
     // rank fragment
     <string name="all">Tất cả</string>
+    <string name="second_symbol" translatable="false">%1$dnd</string>
+    <string name="third_symbol" translatable="false">%1$drd</string>
+    <string name="fourth_symbol" translatable="false">%1$dth</string>
     //
 </resources>
