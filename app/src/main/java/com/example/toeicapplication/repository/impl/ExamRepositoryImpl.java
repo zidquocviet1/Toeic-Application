@@ -10,6 +10,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class ExamRepositoryImpl implements ExamRepository {
@@ -28,6 +29,21 @@ public class ExamRepositoryImpl implements ExamRepository {
     @Override
     public Single<Progress> getProgressByCourseID(Long courseID) {
         return database.getProgressDAO().getByCourseID(courseID);
+    }
+
+    @Override
+    public Flowable<List<Progress>> getAll() {
+        return null;
+    }
+
+    @Override
+    public Single<Progress> findById(Long aLong) {
+        return null;
+    }
+
+    @Override
+    public Single<Progress> update(Progress progress) {
+        return null;
     }
 
     @Override

@@ -10,30 +10,39 @@ import com.example.toeicapplication.R;
 import com.example.toeicapplication.db.MyDB;
 import com.example.toeicapplication.model.entity.Course;
 import com.example.toeicapplication.model.entity.Rank;
-import com.example.toeicapplication.model.relations.CourseWithRanks;
+import com.example.toeicapplication.model.entity.RemoteUser;
 import com.example.toeicapplication.model.entity.User;
-import com.example.toeicapplication.model.relations.UserWithResults;
+import com.example.toeicapplication.model.relations.RemoteUserWithResults;
 import com.example.toeicapplication.model.entity.Word;
-import com.example.toeicapplication.network.response.Response;
+import com.example.toeicapplication.network.response.MyResponse;
 import com.example.toeicapplication.network.service.UserService;
 import com.example.toeicapplication.repository.HomeRepository;
-import com.example.toeicapplication.utilities.DataState;
+import com.example.toeicapplication.utilities.AppConstants;
+import com.example.toeicapplication.utilities.NetworkBoundResource;
+import com.example.toeicapplication.utilities.RateLimiter;
+import com.example.toeicapplication.utilities.Resource;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.net.ssl.HttpsURLConnection;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Function;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Response;
 
 public class HomeRepositoryImpl implements HomeRepository {
     private final CompositeDisposable compositeDisposable;
@@ -59,7 +68,10 @@ public class HomeRepositoryImpl implements HomeRepository {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(users -> {
-                            request.postValue(users);
+                            request.postValue(
+                                    users.stream()
+                                        .filter(u -> u != null && u.isLogin() && !u.getPassword().equals(""))
+                                        .collect(Collectors.toCollection(ArrayList::new)));
                             Log.e("TAG", "Get User data from db successful");
                         }, throwable -> {
                             Log.e("TAG", "Get User data from db failure: " + throwable.getMessage());
@@ -91,8 +103,8 @@ public class HomeRepositoryImpl implements HomeRepository {
     }
 
     @Override
-    public void getAllWords(MutableLiveData<DataState<List<Word>>> request) {
-        request.postValue(DataState.Loading(null));
+    public void getAllWords(MutableLiveData<Resource<List<Word>>> request) {
+        request.postValue(Resource.Loading(null));
 
         compositeDisposable.add(
                 database.getWordDAO().getAllWords()
@@ -100,10 +112,10 @@ public class HomeRepositoryImpl implements HomeRepository {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(words -> {
                             if (words != null){
-                                request.postValue(DataState.Success(words));
+                                request.postValue(Resource.Success(words));
                             }
                         }, throwable -> {
-                            request.postValue(DataState.Error(throwable.getMessage()));
+                            request.postValue(Resource.Error(throwable.getMessage()));
                             Log.e("TAG", "Can't get the course data from database: "
                                     + throwable.getMessage());
                             throwable.printStackTrace();
@@ -137,27 +149,27 @@ public class HomeRepositoryImpl implements HomeRepository {
     }
 
     @Override
-    public void callRemoteUser(MutableLiveData<DataState<User>> request, Long id) {
+    public void callRemoteUser(MutableLiveData<Resource<User>> request, Long id) {
         compositeDisposable.add(
                 userService.findUser(id)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .timeout(5, TimeUnit.SECONDS)
-                        .subscribeWith(new DisposableObserver<Response<User>>() {
+                        .subscribeWith(new DisposableObserver<MyResponse<User>>() {
                             @Override
-                            public void onNext(@NotNull Response<User> userResponse) {
+                            public void onNext(@NotNull MyResponse<User> userResponse) {
                                 if (userResponse.isStatus()) {
                                     User user = userResponse.getData();
 
-                                    request.postValue(DataState.Success(user));
+                                    request.postValue(Resource.Success(user));
                                 } else {
-                                    request.postValue(DataState.Error(userResponse.getMessage()));
+                                    request.postValue(Resource.Error(userResponse.getMessage()));
                                 }
                             }
 
                             @Override
                             public void onError(@NotNull Throwable e) {
-                                request.postValue(DataState.Error(context.getString(R.string.server_error)));
+                                request.postValue(Resource.Error(context.getString(R.string.server_error)));
                             }
 
                             @Override
@@ -215,54 +227,47 @@ public class HomeRepositoryImpl implements HomeRepository {
     }
 
     @Override
-    public void getRankByCourse(Course course) {
-        if (course != null) {
-            getCourse(course.getId())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .map(courseAndRank -> courseAndRank.rankList)
-                    .flatMap(new Function<List<Rank>, ObservableSource<Rank>>() {
-                        @Override
-                        public ObservableSource<Rank> apply(@NotNull List<Rank> ranks) throws Exception {
-                            return Observable.fromIterable(ranks);
-                        }
-                    })
-                    .flatMap(new Function<Rank, ObservableSource<UserWithResults>>() {
-                        @Override
-                        public ObservableSource<UserWithResults> apply(@NotNull Rank rank) throws Exception {
-                            return getResult(rank.getUserId());
-                        }
-                    })
-                    .subscribe(new DisposableObserver<UserWithResults>() {
-                        @Override
-                        public void onNext(@NotNull UserWithResults userAndResult) {
-                            Log.d("TAG", "OnNext");
-                        }
+    public Observable<List<RemoteUserWithResults>> getLeaderboard(Course course, boolean hasNetwork){
+        RateLimiter<Long> rateLimiter = new RateLimiter<>(10, TimeUnit.MINUTES);
+        Long courseId = course == null ? 999999L : course.getId();
 
-                        @Override
-                        public void onError(@NotNull Throwable e) {
-                            Log.d("TAG", e.getMessage());
+        return new NetworkBoundResource<List<RemoteUserWithResults>, Response<MyResponse<List<User>>>>(){
+            @Override
+            protected void saveCallResult(Response<MyResponse<List<User>>> item) {
+                if (item.code() == HttpsURLConnection.HTTP_OK){
+                    MyResponse<List<User>> body = item.body();
+                    if (body != null){
+                        List<User> data = body.getData();
+
+                        if (data != null && !data.isEmpty() && body.isStatus()) {
+                            database.getRankDAO().addRemoteUserWithResults(data);
                         }
+                    }
+                }else if (item.code() == HttpsURLConnection.HTTP_NOT_FOUND){
+                    Log.d(AppConstants.TAG, "The course has no leaderboard");
+                }
+            }
 
-                        @Override
-                        public void onComplete() {
-                            Log.d("TAG", "OnComplete");
-                        }
-                    });
-        }
-    }
+            @Override
+            protected boolean shouldFetch(List<RemoteUserWithResults> data) {
+                return hasNetwork && (data == null || data.isEmpty() || rateLimiter.shouldFetch(courseId));
+            }
 
-    private Observable<CourseWithRanks> getCourse(Long courseId){
-        return database.getRankDAO().getRankByCourse(courseId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .toObservable();
-    }
+            @Override
+            protected Flowable<List<RemoteUserWithResults>> loadFromDb() {
+                return database.getRankDAO().remoteUserWithResults();
+            }
 
-    private Observable<UserWithResults> getResult(Long userId){
-        return database.getRankDAO().getResultByUser(userId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .toObservable();
+            @Override
+            protected Observable<Response<MyResponse<List<User>>>> createCall() {
+                return userService.leaderboard("RANK", courseId);
+            }
+
+            @Override
+            protected void onFetchFailed(Throwable throwable) {
+                super.onFetchFailed(throwable);
+                rateLimiter.reset(courseId);
+            }
+        }.asObservable();
     }
 }

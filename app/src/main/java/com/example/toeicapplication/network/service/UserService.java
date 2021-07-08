@@ -29,5 +29,6 @@ public interface UserService {
     Observable<MyResponse<User>> findUser(@Path("id") Long id);
 
     @GET(value = "user/leaderboard")
-    Observable<Response<MyResponse<List<User>>>> leaderboard(@Header("USER_API_KEY") String key, @Query("courseId") Long courseId);
+    Observable<Response<MyResponse<List<User>>>> leaderboard(@Header("USER_API_KEY") String key,
+                                                                     @Query("courseId") Long courseId);
 }

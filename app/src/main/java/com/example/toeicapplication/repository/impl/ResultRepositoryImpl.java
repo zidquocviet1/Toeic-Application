@@ -2,12 +2,15 @@ package com.example.toeicapplication.repository.impl;
 
 import com.example.toeicapplication.db.dao.ResultDAO;
 import com.example.toeicapplication.model.entity.Result;
+import com.example.toeicapplication.network.response.MyResponse;
 import com.example.toeicapplication.network.service.ResultService;
 import com.example.toeicapplication.repository.ResultRepository;
 
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.Observable;
+import retrofit2.Response;
 
 public class ResultRepositoryImpl implements ResultRepository {
     private final ResultDAO dao;
@@ -22,16 +25,10 @@ public class ResultRepositoryImpl implements ResultRepository {
     @Override
     public Completable add(Result result) {
         return dao.add(result);
+    }
 
-//        resultService.add(result)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(resultResponse -> {
-//                    if (resultResponse.isStatus()) {
-//                        Log.e("TAG", "Insert result remote successfully!");
-//                    } else {
-//                        Log.e("TAG", "Insert result remote failure!");
-//                    }
-//                }, Throwable::printStackTrace)
+    @Override
+    public Observable<Response<MyResponse<Result>>> addResultRemote(Result result) {
+        return resultService.add(result);
     }
 }

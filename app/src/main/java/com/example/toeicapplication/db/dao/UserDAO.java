@@ -4,8 +4,10 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
+import com.example.toeicapplication.model.entity.RemoteUser;
 import com.example.toeicapplication.model.entity.User;
 
 import java.util.List;
@@ -25,6 +27,9 @@ public interface UserDAO {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     // completable doesn't care the return value
     Completable updateUser(User user);
+
+    @Insert
+    Completable saveUser(List<User> users);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Single<Long> addUser(User user);

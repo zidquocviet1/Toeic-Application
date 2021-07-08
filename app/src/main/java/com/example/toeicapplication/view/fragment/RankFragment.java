@@ -2,6 +2,8 @@ package com.example.toeicapplication.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +19,18 @@ import androidx.fragment.app.FragmentActivity;
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.adapters.RankAdapter;
 import com.example.toeicapplication.databinding.FragmentRankBinding;
+import com.example.toeicapplication.model.RankInfo;
 import com.example.toeicapplication.model.entity.Course;
+import com.example.toeicapplication.model.entity.RemoteUser;
+import com.example.toeicapplication.model.entity.Result;
 import com.example.toeicapplication.utilities.AppConstants;
+import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -37,6 +44,8 @@ public class RankFragment extends BaseFragment<HomeViewModel, FragmentRankBindin
 
     private List<String> items;
     private List<Course> courses;
+    private String currentMenuItem;
+    private boolean hasNetwork;
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -96,7 +105,7 @@ public class RankFragment extends BaseFragment<HomeViewModel, FragmentRankBindin
         setupObserve();
     }
 
-    private void setupRecyclerView(){
+    private void setupRecyclerView() {
         rankAdapter = new RankAdapter(context);
 
         mBinding.rvRankUser.setAdapter(rankAdapter);
@@ -114,36 +123,102 @@ public class RankFragment extends BaseFragment<HomeViewModel, FragmentRankBindin
 
                 itemAdapter = new ArrayAdapter<>(context, R.layout.list_item_course, items);
 
+                String defaultItem = itemAdapter.getItem(DEFAULT_INDEX);
+
                 mBinding.txt.setAdapter(itemAdapter);
                 mBinding.txt.setDropDownBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.layout_course_detail));
-                mBinding.txt.setText(itemAdapter.getItem(DEFAULT_INDEX), false);
+                mBinding.txt.setText(defaultItem, false);
                 mBinding.txt.setOnItemClickListener(this);
+
+                currentMenuItem = defaultItem;
+                mVM.getLeaderboard(null, this.hasNetwork);
             }
         });
 
-        mVM.getListRankInfo().observe(getViewLifecycleOwner(), rankInfoList -> {
-            if (rankInfoList != null) {
-                rankAdapter.submitList(rankInfoList);
+        mVM.getListRankInfo().observe(getViewLifecycleOwner(), rankResource -> {
+            if (rankResource != null) {
+                switch (rankResource.getStatus()) {
+                    case SUCCESS:
+                        List<RankInfo> data = rankResource.getData();
+
+
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                            LoadingDialog.dismissDialog();
+
+                            if (data == null || data.isEmpty()) {
+                                if (isAdded()) {
+                                    mBinding.layout2.setVisibility(View.GONE);
+                                    bindingVisibleUser(true);
+                                    rankAdapter.submitList(new ArrayList<>());
+                                    return;
+                                }
+                            }
+
+                            data.sort((o1, o2) -> o1.getResult().getScore().compareTo(o2.getResult().getScore()));
+                            Collections.reverse(data);
+
+                            bindingFirstUser(data.get(0));
+
+                            if (data.size() > 1) {
+                                if (isAdded()) {
+                                    mBinding.layout2.setVisibility(View.VISIBLE);
+                                    rankAdapter.submitList(data.subList(1, data.size()));
+                                }
+                            }
+                        }, 500);
+                        break;
+                    case LOADING:
+                        LoadingDialog.showLoadingDialog(context);
+                        break;
+                    case ERROR:
+                        new Handler(Looper.getMainLooper()).postDelayed(LoadingDialog::dismissDialog, 500);
+                        Log.d(AppConstants.TAG, "Load leaderboard error");
+                        break;
+                }
             }
         });
+
+        mVM.getNetworkState().observe(getViewLifecycleOwner(), hasNetwork -> this.hasNetwork = hasNetwork);
+    }
+
+    private void bindingFirstUser(RankInfo info) {
+        RemoteUser user = info.getUser();
+        Result result = info.getResult();
+
+        if (isAdded()) {
+            bindingVisibleUser(false);
+            mBinding.txtDisplayName1.setText(user.getDisplayName());
+            mBinding.txtScore1.setText(String.valueOf(result.getScore()));
+        }
+    }
+
+    private void bindingVisibleUser(boolean isGone){
+        if (!isGone) {
+            mBinding.layoutFirst.setVisibility(View.VISIBLE);
+            mBinding.txtContent.setVisibility(View.GONE);
+        }else{
+            mBinding.layoutFirst.setVisibility(View.GONE);
+            mBinding.txtContent.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String itemName = items.get(position);
+
+        if (itemName.equals(currentMenuItem)) return;
+        currentMenuItem = itemName;
+
         Course course = courses
                 .stream()
                 .filter(c -> c.getName().equals(itemName))
                 .findFirst()
                 .orElse(null);
 
-        if (course == null) {
-            // get all top user in the initialize
-            Log.d(AppConstants.TAG, "All of top users");
-        } else {
-            mVM.getRankByCourse(course);
-            // get rank of user by course id
-            Log.d(AppConstants.TAG, course.toString());
-        }
+        /*
+        if course == null, its mean we will get all the top user
+        else, we will get the top user by course
+         */
+        mVM.getLeaderboard(course, this.hasNetwork);
     }
 }

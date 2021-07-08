@@ -1,7 +1,7 @@
 package com.example.toeicapplication.repository.impl;
 
 import com.example.toeicapplication.model.entity.User;
-import com.example.toeicapplication.network.response.Response;
+import com.example.toeicapplication.network.response.MyResponse;
 import com.example.toeicapplication.network.service.UserService;
 import com.example.toeicapplication.repository.LoginRepository;
 
@@ -18,12 +18,12 @@ public class LoginRepositoryImpl implements LoginRepository {
     }
 
     @Override
-    public Observable<Response<User>> login(User user) {
+    public Observable<MyResponse<User>> login(User user) {
         return service.login(user);
     }
 
     @Override
-    public Observable<Response<User>> signUp(User user) {
+    public Observable<MyResponse<User>> signUp(User user) {
         return service.register(user);
     }
 }

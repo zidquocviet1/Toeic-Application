@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class RankAdapter extends ListAdapter<RankInfo, RankAdapter.RankViewHolder> {
     private Context context;
+    private static final int[] ORDINAL_SYMBOL = {R.string.second_symbol, R.string.third_symbol, R.string.fourth_symbol};
 
     public RankAdapter(Context context){
         this(new DiffUtil.ItemCallback<RankInfo>() {
@@ -47,7 +48,13 @@ public class RankAdapter extends ListAdapter<RankInfo, RankAdapter.RankViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull RankViewHolder holder, int position) {
-        holder.bind(getItem(position));
+        RankInfo item = getItem(position);
+        int index = getCurrentList().indexOf(item);
+        String ordinal = index > 1 ? context.getString(ORDINAL_SYMBOL[2], index + 2)
+                : (index == 0 ? context.getString(ORDINAL_SYMBOL[0], index + 2)
+                : context.getString(ORDINAL_SYMBOL[1], index + 2));
+
+        holder.bind(item, ordinal);
     }
 
     public static class RankViewHolder extends RecyclerView.ViewHolder {
@@ -58,9 +65,10 @@ public class RankAdapter extends ListAdapter<RankInfo, RankAdapter.RankViewHolde
             binding = InfoUserRankBinding.bind(itemView);
         }
 
-        public void bind(RankInfo item){
+        public void bind(RankInfo item, String ordinal){
             binding.txtDisplayName.setText(item.getUser().getDisplayName());
-            binding.txtScore.setText(item.getResult().getScore().toString());
+            binding.txtScore.setText(String.valueOf(item.getResult().getScore()));
+            binding.txtRank.setText(ordinal);
         }
     }
 }
