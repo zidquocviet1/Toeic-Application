@@ -139,5 +139,6 @@
     <string name="second_symbol" translatable="false">%1$dnd</string>
     <string name="third_symbol" translatable="false">%1$drd</string>
     <string name="fourth_symbol" translatable="false">%1$dth</string>
+    <string name="empty_leaderboard">Vẫn chưa có xếp hạng. Hãy trở thành người có xếp hạng đầu tiên.</string>
     //
 </resources>

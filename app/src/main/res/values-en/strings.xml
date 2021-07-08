@@ -135,5 +135,6 @@
 
     // rank fragment
     <string name="all">All</string>
+    <string name="empty_leaderboard">Have no leader yet. Be the first leader right now.</string>
     //
 </resources>
