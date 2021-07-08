@@ -3,20 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="6dp"
     android:background="@drawable/layout_course_detail"
-    android:foreground="?selectableItemBackground"
     android:clickable="true"
     android:elevation="4dp"
-    android:padding="4dp"
-    android:layout_margin="6dp">
+    android:foreground="?selectableItemBackground"
+    android:padding="4dp">
 
     <TextView
         android:id="@+id/txtRank"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="4th"
         android:fontFamily="@font/avenir_lt_pro_black"
+        android:text="4th"
         android:textColor="@color/description"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -24,27 +24,28 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
-        android:visibility="gone"
         android:id="@+id/icIncrease"
-        app:layout_constraintTop_toBottomOf="@id/txtRank"
-        app:layout_constraintStart_toStartOf="@id/txtRank"
-        app:layout_constraintEnd_toEndOf="@id/txtRank"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
         android:background="@drawable/ic_triangle"
         android:backgroundTint="@color/success"
         android:rotation="225"
-        android:layout_width="10dp"
-        android:layout_height="10dp"/>
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/txtRank"
+        app:layout_constraintStart_toStartOf="@id/txtRank"
+        app:layout_constraintTop_toBottomOf="@id/txtRank" />
 
     <View
         android:id="@+id/icDecrease"
-        app:layout_constraintTop_toBottomOf="@id/txtRank"
-        app:layout_constraintStart_toStartOf="@id/txtRank"
-        app:layout_constraintEnd_toEndOf="@id/txtRank"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
         android:background="@drawable/ic_triangle"
         android:backgroundTint="@color/alert"
         android:rotation="45"
-        android:layout_width="10dp"
-        android:layout_height="10dp"/>
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/txtRank"
+        app:layout_constraintStart_toStartOf="@id/txtRank"
+        app:layout_constraintTop_toBottomOf="@id/txtRank" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv1"
@@ -73,13 +74,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="14dp"
-        android:text="Mai Quoc Viet"
         android:fontFamily="@font/avenir_lt_pro_black"
+        android:text="Mai Quoc Viet"
         android:textColor="@color/description"
         android:textSize="20sp"
-        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintBottom_toBottomOf="@id/cv1"
         app:layout_constraintEnd_toStartOf="@id/txtScore"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/cv1"
         app:layout_constraintTop_toTopOf="@id/cv1" />
 
@@ -88,11 +89,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="14dp"
-        android:text="990"
         android:fontFamily="@font/avenir_lt_pro_black"
+        android:text="990"
         android:textColor="@color/ic_launcher_lv_toeic_background"
         android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/txtDisplayName"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/txtDisplayName" />
 </androidx.constraintlayout.widget.ConstraintLayout>

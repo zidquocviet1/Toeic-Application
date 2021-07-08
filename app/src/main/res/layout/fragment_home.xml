@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.fragment.HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,14 +15,14 @@
             style="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
             android:fontFamily="@font/avenir_lt_pro_black"
             android:text="Hey Guys,"
             android:textColor="@color/title"
             android:textSize="28sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txt1"
@@ -39,12 +39,14 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCourse"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/txtLayoutSearch"
+            app:layout_constraintHeight_percent="0.3"
             app:layout_constraintStart_toStartOf="@id/courses"
             app:layout_constraintTop_toBottomOf="@+id/courses"
-            app:layout_constraintBottom_toTopOf="@id/vocabulary"/>
+            app:layout_constraintVertical_bias="0" />
 
         <TextView
             android:id="@+id/courses"
@@ -98,20 +100,19 @@
 
         <Button
             android:id="@+id/btnViewAll"
+            style="@style/Widget.Button.ViewAllButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/view_all"
-            style="@style/Widget.Button.ViewAllButton"
-            app:layout_constraintTop_toTopOf="@id/vocabulary"
             app:layout_constraintBottom_toBottomOf="@id/vocabulary"
-            app:layout_constraintEnd_toEndOf="@id/rvCourse"/>
+            app:layout_constraintEnd_toEndOf="@id/rvCourse"
+            app:layout_constraintTop_toTopOf="@id/vocabulary" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvVocab"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/rvCourse"
             app:layout_constraintStart_toStartOf="@id/rvCourse"
