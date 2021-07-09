@@ -15,9 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ResultActivity">
-
-        </activity>
+        <activity android:name=".EditProfileActivity"></activity>
+        <activity android:name=".ResultActivity"></activity>
         <activity android:name=".CourseDetailActivity" />
         <activity
             android:name=".MainActivity"
@@ -38,9 +37,7 @@
             android:name=".HomeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
-            android:windowSoftInputMode="adjustNothing" />
-
-<!--        add this to remove the default initializer workermanager-->
+            android:windowSoftInputMode="adjustNothing" /> <!-- add this to remove the default initializer workermanager -->
         <provider
             android:name="androidx.work.impl.WorkManagerInitializer"
             android:authorities="${applicationId}.workmanager-init"
