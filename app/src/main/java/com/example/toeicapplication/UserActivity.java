@@ -1,16 +1,20 @@
 package com.example.toeicapplication;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
+import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.toeicapplication.databinding.ActivityUserBinding;
+import com.example.toeicapplication.model.entity.Result;
 import com.example.toeicapplication.model.entity.User;
-import com.example.toeicapplication.view.fragment.UserInfoFragment;
 
-public class UserActivity extends AppCompatActivity {
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+public class UserActivity extends AppCompatActivity implements View.OnClickListener {
     private ActivityUserBinding binding;
 
     @Override
@@ -20,6 +24,8 @@ public class UserActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         receiveUserAndShowInfo();
+        binding.imgAvatar.setOnClickListener(this);
+        binding.btnEdit.setOnClickListener(this);
     }
 
     private void receiveUserAndShowInfo(){
@@ -28,23 +34,33 @@ public class UserActivity extends AppCompatActivity {
         User user = intent.getParcelableExtra("user");
 
         if (user != null){
-            openFragment(UserInfoFragment.class, "User Information");
+            List<Result> results = user.getResults();
+
+            binding.txtDisplayName.setText(user.getDisplayName());
+            binding.txtJoin.setText(getString(R.string.join, user.getTimestamp().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+
+            if (results != null){
+                binding.txtRecord.setText(Html.fromHtml(getString(R.string.record, results.size()), Html.FROM_HTML_MODE_COMPACT));
+                Result result = results.stream()
+                        .max((o1, o2) -> o1.getScore().compareTo(o2.getScore()))
+                        .orElse(null);
+                Integer maxCore = result == null ? 0 : result.getScore();
+                binding.txtScore.setText(Html.fromHtml(getString(R.string.score, maxCore), Html.FROM_HTML_MODE_COMPACT));
+            }else{
+                binding.txtRecord.setText(Html.fromHtml(getString(R.string.record, 0), Html.FROM_HTML_MODE_COMPACT));
+                binding.txtScore.setText(Html.fromHtml(getString(R.string.score, 0), Html.FROM_HTML_MODE_COMPACT));
+            }
         }
     }
 
-    private void openFragment(Class fragmentClass, String tag){
-        Fragment fragment = null;
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
 
-        try {
-            fragment = (UserInfoFragment) fragmentClass.newInstance();
-        } catch (IllegalAccessException | InstantiationException e) {
-            e.printStackTrace();
-        }
+        if (id == binding.btnEdit.getId()){
+            startActivity(new Intent(UserActivity.this, EditProfileActivity.class));
+        }else if (id == binding.imgAvatar.getId()){
 
-        if (fragment != null){
-            getSupportFragmentManager().beginTransaction()
-                    .replace(binding.frameLayout.getId(), fragment, tag)
-                    .commit();
         }
     }
 }

@@ -59,7 +59,6 @@
             android:layout_marginEnd="20dp"
             android:foreground="?selectableItemBackground"
             app:cardCornerRadius="20dp"
-            app:cardElevation="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -71,7 +70,7 @@
                 android:background="@drawable/profile_avatar"
                 android:foreground="#10000000"
                 android:scaleType="centerCrop"
-                app:srcCompat="@drawable/user_1" />
+                app:srcCompat="@drawable/ic_gray_account" />
         </androidx.cardview.widget.CardView>
 
         <FrameLayout
