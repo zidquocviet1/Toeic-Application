@@ -11,4 +11,7 @@ public final class AppConstants {
 
     // DATABASE
     public static final String DB_NAME = "toeic_database";
+
+    // App
+    public static final String DATE_TIME_PATTERN = "LLLL yyyy";
 }
