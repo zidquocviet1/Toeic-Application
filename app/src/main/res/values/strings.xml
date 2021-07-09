@@ -66,7 +66,11 @@
     <string name="birthday">Ngày sinh</string>
     <string name="address">Địa chỉ</string>
     <string name="email">Email</string>
-    <string name="edit">Chỉnh sửa</string>
+    <string name="edit">Chỉnh Sửa Thông Tin</string>
+    <string name="save">Lưu</string>
+    <string name="join">Tham gia %1$s</string>
+    <string name="score"><![CDATA[Điểm: <b>%1$d</b>]]></string>
+    <string name="record"> <![CDATA[Đã thi: <b>%1$d</b>]]></string>
     //
 
     // login activity string
@@ -98,7 +102,6 @@
     <string name="comment_title">Bình Luận</string>
     <string name="title_activity_exam" translatable="false">ExamActivity</string>
     <string name="profile">Thông tin</string>
-    <string name="score">Điểm: %1$d</string>
     <string name="account">Tài khoản</string>
 
     // course detail activity

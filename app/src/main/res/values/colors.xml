@@ -17,4 +17,5 @@
     <color name="primary">#0275d8</color>
     <color name="success">#5cb85c</color>
     <color name="brown">#A6805E</color>
+    <color name="grayish">#EFEFEF</color>
 </resources>
