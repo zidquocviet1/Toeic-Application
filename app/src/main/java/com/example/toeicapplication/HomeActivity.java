@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.view.GravityCompat;
@@ -21,6 +22,7 @@ import com.example.toeicapplication.databinding.ActivityHomeBinding;
 import com.example.toeicapplication.listeners.PopupItemClickListener;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.model.entity.Word;
+import com.example.toeicapplication.utilities.MyActivityForResult;
 import com.example.toeicapplication.utilities.NetworkController;
 import com.example.toeicapplication.utilities.Status;
 import com.example.toeicapplication.view.custom.LoadingDialog;
@@ -43,6 +45,9 @@ public class HomeActivity
         extends BaseActivity<HomeViewModel, ActivityHomeBinding>
         implements NavigationView.OnNavigationItemSelectedListener,
         View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener, PopupItemClickListener {
+
+    private final MyActivityForResult<Intent, ActivityResult> mActivityLauncher =
+            MyActivityForResult.registerActivityForResult(this);
 
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -337,7 +342,7 @@ public class HomeActivity
                 intent.putExtra("dest", "Register");
             }
 
-            activityLauncher.mLaunch(intent, result -> {
+            mActivityLauncher.mLaunch(intent, result -> {
                 if (result.getResultCode() == RESULT_OK) {
                     Intent data = result.getData();
                     User responseUser = null;
@@ -351,25 +356,4 @@ public class HomeActivity
             });
         }
     }
-
-    // test new method for request permission
-//    private void requestLocationPermission() {
-//        String locationString = Manifest.permission.ACCESS_FINE_LOCATION;
-//
-//        if (ContextCompat.checkSelfPermission(
-//                this,
-//                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//
-//        } else if (shouldShowRequestPermissionRationale(locationString)) {
-//
-//        }else{
-//            permissionLauncher.mLaunch(locationString, result -> {
-//                if (result){
-//
-//                }else{
-//                    requestLocationPermission();
-//                }
-//            });
-//        }
-//    }
 }
