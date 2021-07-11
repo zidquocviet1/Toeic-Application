@@ -11,19 +11,12 @@ import com.example.toeicapplication.repository.ResultRepository;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.net.HttpURLConnection;
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function;
-import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
