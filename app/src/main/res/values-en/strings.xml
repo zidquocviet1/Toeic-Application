@@ -72,6 +72,8 @@
     <string name="score"><![CDATA[Score: <b>%1$d</b>]]></string>
     <string name="record"> <![CDATA[Record: <b>%1$d</b>]]></string>
     <string name="biography">Bio</string>
+    <string name="take_photo">Take photo</string>
+    <string name="choose_existing_photo">Choose existing photo</string>
     //
 
     // login activity string
