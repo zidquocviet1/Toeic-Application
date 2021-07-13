@@ -18,6 +18,14 @@
         android:name="android.hardware.camera2"
         android:required="false" />
 
+    <queries>
+    <!--with the target API level 30 or higher you must declare this element to take the app visible by intent filter-->
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT"/>
+            <data android:mimeType="image/*"/>
+        </intent>
+    </queries>
+
     <application
         android:name=".ToeicApplication"
         android:allowBackup="true"
