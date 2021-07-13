@@ -4,11 +4,9 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,7 +25,6 @@ import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.io.FileNotFoundException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -72,7 +69,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
     private void registerOnClickEvent() {
         binding.imgAvatar.setOnClickListener(this);
-        binding.layout1.setOnClickListener(this);
+        binding.imgCover.setOnClickListener(this);
         binding.txtCancel.setOnClickListener(this);
         binding.txtSave.setOnClickListener(this);
         binding.edtBirthday.setOnClickListener(this);
@@ -82,11 +79,11 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         int id = v.getId();
 
-        if (id == binding.imgAvatar.getId() || id == binding.layout1.getId()) {
-            showPopup();
-        } else if (id == binding.layout1.getId()) {
+        if (id == binding.imgAvatar.getId()) {
+            showPopup(binding.imgAvatar);
+        } else if (id == binding.imgCover.getId()) {
             // check the permission like Avatar but this is change the panel background
-            showPopup();
+            showPopup(binding.imgCover);
         } else if (id == binding.txtCancel.getId()) {
             this.finish();
         } else if (id == binding.txtSave.getId()) {
@@ -96,17 +93,17 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private void showPopup() {
+    private void showPopup(ImageView img) {
         MaterialAlertDialogBuilder alertDialog = new MaterialAlertDialogBuilder(this);
 
         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
-            alertDialog.setPositiveButton(R.string.take_photo, (dialog, which) -> takePhoto());
+            alertDialog.setPositiveButton(R.string.take_photo, (dialog, which) -> takePhoto(img));
         }
-        alertDialog.setNegativeButton(R.string.choose_existing_photo, (dialog, which) -> chooseExistingPhoto());
+        alertDialog.setNegativeButton(R.string.choose_existing_photo, (dialog, which) -> chooseExistingPhoto(img));
         alertDialog.create().show();
     }
 
-    private void takePhoto() {
+    private void takePhoto(ImageView img) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         requestPermission(Manifest.permission.CAMERA, takePictureIntent, result -> {
@@ -115,31 +112,31 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 Bundle bundle = data.getExtras();
                 if (bundle != null) {
                     Bitmap imageBitmap = (Bitmap) bundle.get("data");
-                    binding.imgAvatar.setImageBitmap(imageBitmap);
+                    img.setImageBitmap(imageBitmap);
                 }
             }
         });
     }
 
-    private void chooseExistingPhoto() {
+    private void chooseExistingPhoto(ImageView img) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
 
         if (intent.resolveActivity(getPackageManager()) != null) {
             if (Build.VERSION.SDK_INT < 29){
-                requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, intent, this::getImageBitmapFromResult);
+                requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, intent, result -> getImageBitmapFromResult(result, img));
             }else {
-                resultLauncher.mLaunch(intent, this::getImageBitmapFromResult);
+                resultLauncher.mLaunch(intent, result -> getImageBitmapFromResult(result, img));
             }
         }
     }
 
-    private void getImageBitmapFromResult(ActivityResult result){
+    private void getImageBitmapFromResult(ActivityResult result, ImageView img){
         Intent data = result.getData();
         if (data != null){
             Uri fullPhotoUri = data.getData();
             Bitmap rotatedBitmap = ExifUtils.getRotatedBitmap(getContentResolver(), fullPhotoUri);
-            binding.imgAvatar.setImageBitmap(rotatedBitmap);
+            img.setImageBitmap(rotatedBitmap);
         }
     }
 

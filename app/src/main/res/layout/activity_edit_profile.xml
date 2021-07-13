@@ -47,42 +47,42 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout1"
+    <ImageView
+        android:id="@+id/imgCover"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
+        android:scaleType="fitCenter"
         android:background="@android:color/darker_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.15"
+        app:layout_constraintHeight_percent="0.2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtCancel"
-        app:layout_constraintVertical_bias="0">
+        app:layout_constraintVertical_bias="0"/>
 
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:background="@drawable/ic_camera"
-            android:backgroundTint="@color/white"
-            android:alpha="0.6"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:background="@drawable/ic_camera"
+        android:backgroundTint="@color/white"
+        android:alpha="0.6"
+        app:layout_constraintBottom_toBottomOf="@id/imgCover"
+        app:layout_constraintEnd_toEndOf="@id/imgCover"
+        app:layout_constraintStart_toStartOf="@id/imgCover"
+        app:layout_constraintTop_toTopOf="@id/imgCover" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvAvatar"
         android:layout_width="100dp"
         android:layout_height="100dp"
         app:cardCornerRadius="50dp"
-        app:layout_constraintBottom_toBottomOf="@id/layout1"
+        app:layout_constraintBottom_toBottomOf="@id/imgCover"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layout1">
+        app:layout_constraintTop_toBottomOf="@id/imgCover">
 
         <ImageView
             android:id="@+id/imgAvatar"
