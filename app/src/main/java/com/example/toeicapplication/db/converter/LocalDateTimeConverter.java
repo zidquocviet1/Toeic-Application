@@ -10,7 +10,7 @@ import java.time.ZoneOffset;
 public class LocalDateTimeConverter {
     @TypeConverter
     public static LocalDateTime fromTimeStamp(Long value){
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(value), ZoneOffset.UTC);
+        return value == null ? null : LocalDateTime.ofInstant(Instant.ofEpochMilli(value), ZoneOffset.UTC);
     }
 
     @TypeConverter

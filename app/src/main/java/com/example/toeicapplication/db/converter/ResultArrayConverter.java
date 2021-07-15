@@ -13,12 +13,12 @@ public class ResultArrayConverter {
     @TypeConverter
     public static ArrayList<Result> fromString(String value) {
         Type listType = new TypeToken<ArrayList<Result>>() {}.getType();
-        return new Gson().fromJson(value, listType);
+        return value == null ? null : new Gson().fromJson(value, listType);
     }
 
     @TypeConverter
     public static String fromArrayList(ArrayList<Result> list) {
         Gson gson = new Gson();
-        return gson.toJson(list);
+        return list == null ? null : gson.toJson(list);
     }
 }
