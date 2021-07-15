@@ -6,10 +6,12 @@ import com.example.toeicapplication.db.MyDB;
 import com.example.toeicapplication.db.dao.ResultDAO;
 import com.example.toeicapplication.network.service.ResultService;
 import com.example.toeicapplication.network.service.UserService;
+import com.example.toeicapplication.repository.EditProfileRepository;
 import com.example.toeicapplication.repository.ExamRepository;
 import com.example.toeicapplication.repository.HomeRepository;
 import com.example.toeicapplication.repository.LoginRepository;
 import com.example.toeicapplication.repository.ResultRepository;
+import com.example.toeicapplication.repository.impl.EditProfileRepositoryImpl;
 import com.example.toeicapplication.repository.impl.ExamRepositoryImpl;
 import com.example.toeicapplication.repository.impl.HomeRepositoryImpl;
 import com.example.toeicapplication.repository.impl.LoginRepositoryImpl;
@@ -52,5 +54,11 @@ public class RepositoryModule {
     @Provides
     public ResultRepository provideResultRepository(ResultDAO dao, ResultService service){
         return new ResultRepositoryImpl(dao, service);
+    }
+
+    @ViewModelScoped
+    @Provides
+    public EditProfileRepository provideEditProfileRepository(UserService service){
+        return new EditProfileRepositoryImpl(service);
     }
 }
