@@ -1,5 +1,9 @@
 package com.example.toeicapplication.viewmodels;
 
+import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -7,8 +11,8 @@ import androidx.lifecycle.ViewModel;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.network.response.MyResponse;
 import com.example.toeicapplication.repository.EditProfileRepository;
+import com.example.toeicapplication.utilities.AppConstants;
 import com.example.toeicapplication.utilities.Resource;
-import com.example.toeicapplication.utilities.Status;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -19,9 +23,10 @@ import java.time.LocalDateTime;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.observers.DisposableObserver;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -45,57 +50,83 @@ public class EditProfileViewModel extends ViewModel {
         cd = new CompositeDisposable();
     }
 
-    public LiveData<Resource<User>> getResponseUser(){ return responseUser;}
+    public LiveData<Resource<User>> getResponseUser() {
+        return responseUser;
+    }
 
-    public void editProfile(String userId, String fullName, String bio, LocalDateTime birthday,
-                             String address, String avatarPath) {
-        File avatarFile = new File(avatarPath);
 
-        String birthdayString = birthday == null ? "" : birthday.toString();
+    public void editProfile(Long userId, String fullName, String bio, LocalDateTime birthday,
+                            String address, String avatarPath) {
 
-        RequestBody avatarRequestFile = MultipartBody.create(avatarFile, MediaType.parse("multipart/form-data"));
-        RequestBody userIdBody = createFromString(userId);
-        RequestBody fullNameBody = createFromString(fullName);
-        RequestBody bioBody = createFromString(bio);
-        RequestBody birthdayBody = createFromString(birthdayString);
-        RequestBody addressBody = createFromString(address);
+        Observable<Response<MyResponse<User>>> observable;
 
-        MultipartBody.Part avatarBody = MultipartBody.Part.createFormData(AVATAR, avatarFile.getName(), avatarRequestFile);
+        if (avatarPath.equals("")) {
+            User user = new User();
+            user.setId(userId);
+            user.setDisplayName(fullName);
+            user.setBiography(bio);
+            user.setBirthday(birthday);
+            user.setAddress(address);
+
+            observable = repository.editProfile(user);
+        } else {
+            RequestBody userIdBody = createFromString(String.valueOf(userId));
+            RequestBody fullNameBody = createFromString(fullName);
+            RequestBody bioBody = createFromString(bio);
+            RequestBody birthdayBody = createFromString(birthday == null ? "" : birthday.toString());
+            RequestBody addressBody = createFromString(address);
+
+            File avatarFile = new File(avatarPath);
+            RequestBody avatarRequestFile = MultipartBody.create(avatarFile, MediaType.parse("multipart/form-data"));
+            MultipartBody.Part avatarBody = MultipartBody.Part.createFormData(AVATAR, avatarFile.getName(), avatarRequestFile);
+
+            observable = repository.editProfile(avatarBody, userIdBody, fullNameBody, bioBody, birthdayBody, addressBody);
+        }
 
         responseUser.postValue(Resource.Loading(null));
-        cd.add(repository.editProfile(avatarBody, userIdBody, fullNameBody, bioBody, birthdayBody, addressBody)
+        cd.add(observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<Response<MyResponse<User>>>() {
-                    @Override
-                    public void onNext(@NotNull Response<MyResponse<User>> response) {
-                        if (response.code() == HttpURLConnection.HTTP_ACCEPTED){
-                            MyResponse<User> body = response.body();
-                            if (body != null && body.isStatus()){
-                                responseUser.postValue(Resource.Success(body.getData()));
-                            }
-                        }else if (response.code() == HttpURLConnection.HTTP_NOT_FOUND){
-                            MyResponse<User> body = response.body();
-                            if (body != null) {
-                                responseUser.postValue(Resource.Error(body.getMessage()));
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onError(@NotNull Throwable e) {
-                        responseUser.postValue(Resource.Error(e.getMessage()));
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                })
+                .doOnNext(this::onEditProfileResponse)
+                .doOnError(this::onEditProfileError)
+                .subscribe()
         );
+    }
+
+    private void onEditProfileResponse(Response<MyResponse<User>> response) {
+        MyResponse<User> body = response.body();
+
+        if (response.code() == HttpURLConnection.HTTP_ACCEPTED) {
+            if (body != null && body.isStatus())
+                responseUser.postValue(Resource.Success(body.getData()));
+        } else if (response.code() == HttpURLConnection.HTTP_NOT_FOUND) {
+            if (body != null) responseUser.postValue(Resource.Error(body.getMessage()));
+        }
+    }
+
+    private void onEditProfileError(Throwable e) {
+        responseUser.postValue(Resource.Error(e.getMessage()));
     }
 
     private RequestBody createFromString(String input) {
         return RequestBody.create(input, MediaType.parse("multipart/form-data"));
+    }
+
+    public void updateUserProfile(User user, Context context) {
+        cd.add(repository.updateUserProfile(user)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Toast.makeText(context, "Edit Profile successfully", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                        Log.e(AppConstants.TAG, "Update User Profile failure " + e.getMessage());
+                    }
+                })
+        );
     }
 }

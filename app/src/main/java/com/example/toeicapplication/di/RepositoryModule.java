@@ -58,7 +58,7 @@ public class RepositoryModule {
 
     @ViewModelScoped
     @Provides
-    public EditProfileRepository provideEditProfileRepository(UserService service){
-        return new EditProfileRepositoryImpl(service);
+    public EditProfileRepository provideEditProfileRepository(UserService service, MyDB db){
+        return new EditProfileRepositoryImpl(service, db);
     }
 }
