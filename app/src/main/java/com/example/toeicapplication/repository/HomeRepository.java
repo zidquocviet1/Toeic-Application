@@ -10,14 +10,16 @@ import com.example.toeicapplication.utilities.Resource;
 
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public interface HomeRepository {
     void getAllUsers(MutableLiveData<List<User>> request);
 
     void addUser(User user);
 
-    void updateUser(User newUser);
+    Completable updateUser(User newUser);
 
     void getAllCourses(MutableLiveData<List<Course>> request);
 
@@ -27,11 +29,13 @@ public interface HomeRepository {
 
     void updateLearnedWord(List<Word> words);
 
-    void callRemoteUser(MutableLiveData<Resource<User>> request, Long id);
-
     void callLogout(User user);
 
     void getRecentLogOutUser(MutableLiveData<User> request);
 
+    Single<User> getLoginUserId();
+
     Observable<List<RemoteUserWithResults>> getLeaderboard(Course course, boolean hasNetwork);
+
+    Observable<User> loadUserFromLocalAndRemote(Long userId, boolean hasNetwork);
 }

@@ -107,7 +107,7 @@ public class HomeFragment extends BaseFragment<HomeViewModel, FragmentHomeBindin
     public void onItemClick(Object object, int position) {
         if (object instanceof CourseAdapter) {
             Course course = courseAdapter.getItem(position);
-            User user = mVM.getCacheUser().getValue();
+            User user = mVM.getLoginUserFromLocalLiveData().getValue();
 
             Intent intent = new Intent(context, CourseDetailActivity.class);
             intent.putExtra("course", course);
@@ -128,7 +128,7 @@ public class HomeFragment extends BaseFragment<HomeViewModel, FragmentHomeBindin
     }
 
     private void observeViewModel() {
-        mVM.getCacheUser().observe(getViewLifecycleOwner(), user -> {
+        mVM.getLoginUserFromLocalLiveData().observe(getViewLifecycleOwner(), user -> {
             if (user != null)
                 mBinding.txtHello.setText(getString(R.string.hello, user.getDisplayName()));
             else

@@ -31,7 +31,7 @@ public interface UserService {
     Observable<MyResponse<User>> register(@Body User user);
 
     @GET(value = "user/{id}")
-    Observable<MyResponse<User>> findUser(@Path("id") Long id);
+    Observable<Response<MyResponse<User>>> findUser(@Path("id") Long id);
 
     @GET(value = "user/leaderboard")
     Observable<Response<MyResponse<List<User>>>> leaderboard(@Header("USER_API_KEY") String key,

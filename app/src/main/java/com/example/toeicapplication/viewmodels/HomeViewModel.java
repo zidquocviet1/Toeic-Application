@@ -1,5 +1,9 @@
 package com.example.toeicapplication.viewmodels;
 
+import android.content.Context;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -25,14 +29,17 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
 public class HomeViewModel extends ViewModel {
     // Home Page
-    private final MutableLiveData<List<User>> users;
     private final MutableLiveData<List<Course>> courses;
     private final MutableLiveData<List<Word>> top30Words;
+    private final MutableLiveData<User> loginUserFromLocal;
+    private final MutableLiveData<Long> loginUserId;
 
     // Vocabulary Fragment
     private final MutableLiveData<Resource<List<Word>>> words;
@@ -40,9 +47,7 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<Boolean> networkState;
 
     // Result Data from Login Activity
-    private final MutableLiveData<User> cacheUser;
     private final MutableLiveData<User> recentLogOutUser;
-    private final MutableLiveData<Resource<User>> remoteUser;
 
     // Rank Fragment
     private final MutableLiveData<Resource<List<RankInfo>>> listRankInfo;
@@ -53,15 +58,14 @@ public class HomeViewModel extends ViewModel {
 
     @Inject
     public HomeViewModel(HomeRepository repository) {
-        users = new MutableLiveData<>();
         courses = new MutableLiveData<>();
-        cacheUser = new MutableLiveData<>();
         words = new MutableLiveData<>();
         top30Words = new MutableLiveData<>();
-        remoteUser = new MutableLiveData<>();
         networkState = new MutableLiveData<>();
         recentLogOutUser = new MutableLiveData<>();
         listRankInfo = new MutableLiveData<>();
+        loginUserFromLocal = new MutableLiveData<>();
+        loginUserId = new MutableLiveData<>();
         cd = new CompositeDisposable();
 
         this.repository = repository;
@@ -69,8 +73,8 @@ public class HomeViewModel extends ViewModel {
         init();
     }
 
-    private void init(){
-        getAllUsers();
+    private void init() {
+        getLoginUserId();
         getAllCourses();
         get30Words();
         getRecentLogOutUser();
@@ -79,10 +83,6 @@ public class HomeViewModel extends ViewModel {
     // GETTER
     public MutableLiveData<Boolean> getNetworkState() {
         return networkState;
-    }
-
-    public MutableLiveData<List<User>> getUsers() {
-        return users;
     }
 
     public MutableLiveData<List<Word>> getTop30Words() {
@@ -97,65 +97,100 @@ public class HomeViewModel extends ViewModel {
         return courses;
     }
 
-    public MutableLiveData<User> getCacheUser() {
-        return cacheUser;
-    }
-
     public MutableLiveData<User> getRecentLogOutUserLiveData() {
         return recentLogOutUser;
-    }
-
-    public MutableLiveData<Resource<User>> getRemoteUser() {
-        return remoteUser;
     }
 
     public LiveData<Resource<List<RankInfo>>> getListRankInfo() {
         return listRankInfo;
     }
 
+    public LiveData<User> getLoginUserFromLocalLiveData() {
+        return loginUserFromLocal;
+    }
+
+    public LiveData<Long> getLoginUserIdLiveData() {
+        return loginUserId;
+    }
+
     // communicate with Repository
+    private void getAllCourses() {
+        repository.getAllCourses(this.courses);
+    }
+
+    private void get30Words() {
+        repository.get30Words(this.top30Words);
+    }
+
+    private void getRecentLogOutUser() {
+        repository.getRecentLogOutUser(this.recentLogOutUser);
+    }
+
+    private void getLoginUserId() {
+        cd.add(repository.getLoginUserId().observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(user -> {
+                    if (user != null) loginUserId.postValue(user.getId());
+                }, throwable -> loginUserId.postValue(null)));
+    }
+
     public void addUser(User user) {
         repository.addUser(user);
     }
 
-    public void getAllUsers() {
-        repository.getAllUsers(this.getUsers());
+    // use this method from Login Response
+    public void updateUserFromLocal(@NonNull User user) {
+        loginUserFromLocal.postValue(user);
     }
 
-    public void callRemoteUser(Long id){
-        repository.callRemoteUser(this.remoteUser, id);
+    public void loadUserFromLocalAndRemote(Long userId, boolean hasNetwork) {
+        repository.loadUserFromLocalAndRemote(userId, hasNetwork)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new DisposableObserver<User>() {
+                    @Override
+                    public void onNext(@NotNull User user) {
+                        loginUserFromLocal.postValue(user);
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                        loginUserFromLocal.postValue(null);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
-    public void updateUser(User newUser) {
-        repository.updateUser(newUser);
+    public void updateUser(User newUser, Context context) {
+        cd.add(repository.updateUser(newUser)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    loginUserFromLocal.postValue(null);
+                    Toast.makeText(context, "You are logging out successfully!",
+                            Toast.LENGTH_SHORT).show();
+                })
+        );
     }
 
-    public void getAllCourses(){
-        repository.getAllCourses(this.courses);
-    }
-
-    public void getAllWords(){
+    public void getAllWords() {
         repository.getAllWords(this.words);
     }
 
-    public void get30Words(){
-        repository.get30Words(this.top30Words);
-    }
-
-    public void updateLearnedWord(List<Word> words){
+    public void updateLearnedWord(List<Word> words) {
         repository.updateLearnedWord(words);
     }
 
-    public void callLogout(User user){
+    public void callLogout(User user) {
         repository.callLogout(user);
     }
 
-    public void getRecentLogOutUser(){
-        repository.getRecentLogOutUser(this.recentLogOutUser);
-    }
-
     // RankFragment
-    public void getLeaderboard(Course course, boolean hasNetwork){
+    public void getLeaderboard(Course course, boolean hasNetwork) {
         repository.getLeaderboard(course, hasNetwork)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -178,7 +213,7 @@ public class HomeViewModel extends ViewModel {
                                             .filter(item -> item.getCourseId().equals(course.getId()))
                                             .findFirst()
                                             .ifPresent(firstResult -> info.add(new RankInfo(r.remoteUser, firstResult)));
-                                }else{
+                                } else {
                                     results.stream()
                                             .max((o1, o2) -> o1.getScore().compareTo(o2.getScore()))
                                             .ifPresent(firstResult -> info.add(new RankInfo(r.remoteUser, firstResult)));

@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,16 +16,18 @@ import android.widget.PopupMenu;
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.toeicapplication.databinding.ActivityHomeBinding;
 import com.example.toeicapplication.listeners.PopupItemClickListener;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.model.entity.Word;
+import com.example.toeicapplication.utilities.AppConstants;
 import com.example.toeicapplication.utilities.MyActivityForResult;
 import com.example.toeicapplication.utilities.NetworkController;
-import com.example.toeicapplication.utilities.Status;
 import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.example.toeicapplication.view.fragment.CourseFragment;
 import com.example.toeicapplication.view.fragment.HomeFragment;
@@ -36,6 +39,8 @@ import com.google.android.material.navigation.NavigationView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -81,7 +86,7 @@ public class HomeActivity
         registerOnClickEvent();
     }
 
-    private boolean isNetwork(){
+    private boolean isNetwork() {
         return mVM.getNetworkState().getValue() != null
                 && mVM.getNetworkState().getValue();
     }
@@ -108,23 +113,34 @@ public class HomeActivity
         mBinding.bottomNav.setOnNavigationItemSelectedListener(this);
     }
 
-    // show the avatar of the user
-    private void loadRemoteUser(User user) {
+    private void loadAvatar(@NonNull User user, boolean isRemote) {
+        String avatarPath = user.getAvatarPath();
 
-    }
+        if (avatarPath != null && !avatarPath.equals("")) {
+            if (isRemote) {
+                Glide.with(this)
+                        .load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
+                        .centerCrop()
+                        .into(mBinding.imgAvatar);
+                Log.d(AppConstants.TAG, "Load avatar from remote");
+            } else {
+                String avatarName = avatarPath.substring(avatarPath.lastIndexOf('\\') + 1);
+                String path = getFilesDir() + "/user-photos/" + user.getId() + "/" + avatarName;
 
-    private void getUserForPopup(List<User> users) {
-        users.stream()
-                .filter(u -> u != null && u.isLogin())
-                .findFirst()
-                .map(user -> {
-                    showPopup(user, user.isLogin());
-                    return user;
-                })
-                .orElseGet(() -> {
-                    showPopup(null, false);
-                    return null;
-                });
+                try {
+                    File file = new File(path);
+                    Glide.with(this)
+                            .load(file)
+                            .centerCrop()
+                            .into(mBinding.imgAvatar);
+                    Log.d(AppConstants.TAG, "Load avatar from local");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            mBinding.imgAvatar.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_gray_account));
+        }
     }
 
     public void displayLoading(boolean isDisplay, long time) {
@@ -170,17 +186,17 @@ public class HomeActivity
     private void logout(User newUser) {
         newUser.setLogin(false);
 
-        mVM.updateUser(newUser);
+        mVM.updateUser(newUser, this);
 
         if (isNetwork())
             mVM.callLogout(newUser);
     }
 
-    public void openFragment(Class<? extends Fragment> fragmentClass, String tag, int id){
+    public void openFragment(Class<? extends Fragment> fragmentClass, String tag, int id) {
         Fragment fragment = null;
-        try{
+        try {
             fragment = fragmentClass.newInstance();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -199,7 +215,7 @@ public class HomeActivity
             if (id == R.id.mnVocab
                     && (mVM.getWords().getValue() == null
                     || mVM.getWords().getValue().getData() == null
-                    || mVM.getWords().getValue().getData().isEmpty())){
+                    || mVM.getWords().getValue().getData().isEmpty())) {
                 mVM.getAllWords();
             }
 
@@ -209,7 +225,7 @@ public class HomeActivity
         }
     }
 
-    private void updateLearnedWord(){
+    private void updateLearnedWord() {
         List<Word> words = mVM.getTop30Words().getValue();
         if (words != null && !words.isEmpty()) {
             mVM.updateLearnedWord(words);
@@ -219,36 +235,27 @@ public class HomeActivity
     @Override
     public void setupObserver() {
         if (mVM != null) {
-            // show cache user
-            mVM.getUsers().observe(this, users -> {
-                if (users != null && !users.isEmpty()) {
-                    // get the first user with state is login
-                    users.stream()
-                            .findFirst()
-                            .map(user -> {
-                                mVM.getCacheUser().postValue(user);
-                                if (isNetwork())
-                                    mVM.callRemoteUser(user.getId());
-                                return user;
-                            })
-                            .orElseGet(() -> {
-                                mVM.getCacheUser().postValue(null);
-                                return null;
-                            });
+            mVM.getLoginUserIdLiveData().observe(this, id -> {
+                if (id != null) mVM.loadUserFromLocalAndRemote(id, NetworkController.isOnline(this));
+            });
+
+            // observe list User from Local Database
+            mVM.getLoginUserFromLocalLiveData().observe(this, user -> {
+                if (user != null) {
+                    /*
+                     * This is return a list of User. Then we must filter out the User is login.
+                     * Show this user information in the UI. After that, we must make a call to get new state of user
+                     * in the remote storage. Then observe it from the code snippet below
+                     * */
+                    boolean isRemote = user.getLastModified().compareTo(LocalDateTime.now().minusMinutes(2)) >= 0;
+                    loadAvatar(user, isRemote);
+                }else{
+                    mBinding.imgAvatar.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_gray_account));
                 }
             });
 
             mVM.getCourses().observe(this, courses ->
                     openFragment(HomeFragment.class, getString(R.string.home), R.id.mnHome));
-
-            mVM.getRemoteUser().observe(this, stateUser -> {
-                if (stateUser != null){
-                    if (stateUser.getStatus() == Status.SUCCESS) {
-                        mVM.getCacheUser().postValue(stateUser.getData());
-                        loadRemoteUser(stateUser.getData());
-                    }
-                }
-            });
         }
     }
 
@@ -257,7 +264,7 @@ public class HomeActivity
         if (receiver != null)
             unregisterReceiver(receiver);
 
-        User cacheUser = mVM.getCacheUser().getValue();
+        User cacheUser = mVM.getLoginUserFromLocalLiveData().getValue();
         User recentLogoutUser = mVM.getRecentLogOutUserLiveData().getValue();
 
         if (isNetwork() && (cacheUser == null || !cacheUser.isLogin()) && recentLogoutUser != null)
@@ -291,7 +298,7 @@ public class HomeActivity
         } else if (id == R.id.mnRank) {
             fragmentClass = RankFragment.class;
             tag = getString(R.string.rank);
-        }else if (id == R.id.mnVocab){
+        } else if (id == R.id.mnVocab) {
             fragmentClass = VocabularyFragment.class;
             tag = getString(R.string.vocabulary);
         }
@@ -311,14 +318,12 @@ public class HomeActivity
         if (id == R.id.imageView) {
             initDrawerLayout();
         } else if (id == R.id.imgAvatar) {
-            List<User> users = mVM.getUsers().getValue();
+            User user = mVM.getLoginUserFromLocalLiveData().getValue();
 
-            if (users != null) {
-                if (!users.isEmpty()) {
-                    getUserForPopup(users);
-                } else {
-                    showPopup(null, false);
-                }
+            if (user != null) {
+                showPopup(user, user.isLogin());
+            }else{
+                showPopup(null, false);
             }
         }
     }
@@ -350,8 +355,10 @@ public class HomeActivity
                         responseUser = data.getParcelableExtra("user");
                     }
 
-                    if (responseUser != null)
+                    if (responseUser != null) {
                         mVM.addUser(responseUser);
+                        mVM.updateUserFromLocal(responseUser);
+                    }
                 }
             });
         }
