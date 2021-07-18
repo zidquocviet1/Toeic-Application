@@ -6,11 +6,7 @@ import android.os.Parcelable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
-
-import com.example.toeicapplication.db.converter.LocalDateTimeConverter;
 
 import java.time.LocalDateTime;
 
@@ -40,7 +36,6 @@ public class Result implements Parcelable {
     private Integer completion;
     @ColumnInfo(defaultValue = "0")
     private Integer duration;
-    @TypeConverters(LocalDateTimeConverter.class)
     private LocalDateTime timestamp;
 
     public Result(Long id, Long userId, Long courseId, Integer score,

@@ -8,6 +8,7 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.time.LocalDateTime;
@@ -29,8 +30,29 @@ public class User implements Parcelable {
     @SerializedName(value = "displayName")
     private String displayName;
 
+    @ColumnInfo(name = "biography", defaultValue = "")
+    private String biography;
+
+    @ColumnInfo(name = "address", defaultValue = "")
+    private String address;
+
+    @ColumnInfo(name = "avatar_path", defaultValue = "")
+    @SerializedName("avatar_path")
+    private String avatarPath;
+
+    @ColumnInfo(name = "cover_path", defaultValue = "")
+    @SerializedName("cover_path")
+    private String coverPath;
+
+    @ColumnInfo(name = "birthday", defaultValue = "")
+    private LocalDateTime birthday;
+
     @ColumnInfo(name = "timestamp")
     private LocalDateTime timestamp;
+
+    @ColumnInfo(name = "last_modified")
+    @SerializedName(value = "last_modified")
+    private LocalDateTime lastModified;
 
     @ColumnInfo(name = "login")
     @SerializedName(value = "login")
@@ -39,6 +61,26 @@ public class User implements Parcelable {
     @ColumnInfo(name = "result_list")
     private ArrayList<Result> results;
 
+    public User(Long id, String userName, String password,
+                String displayName, String biography, String address, String avatarPath,
+                String coverPath, LocalDateTime birthday, LocalDateTime timestamp,
+                LocalDateTime lastModified, Boolean isLogin, ArrayList<Result> results) {
+        this.id = id;
+        this.userName = userName;
+        this.password = password;
+        this.displayName = displayName;
+        this.biography = biography;
+        this.address = address;
+        this.avatarPath = avatarPath;
+        this.coverPath = coverPath;
+        this.birthday = birthday;
+        this.timestamp = timestamp;
+        this.lastModified = lastModified;
+        this.isLogin = isLogin;
+        this.results = results;
+    }
+
+    @Ignore
     public User(Long id, String userName, String password,
                 String displayName, LocalDateTime timestamp, Boolean isLogin, ArrayList<Result> results) {
         this.id = id;
@@ -77,17 +119,6 @@ public class User implements Parcelable {
         this.password = password;
     }
 
-    @Ignore
-    public User(User b) {
-        this.id = b.id;
-        this.userName = b.userName;
-        this.password = b.password;
-        this.displayName = b.displayName;
-        this.timestamp = b.timestamp;
-        this.isLogin = b.isLogin;
-        this.results = b.results;
-    }
-
     protected User(Parcel in) {
         if (in.readByte() == 0) {
             id = null;
@@ -97,10 +128,16 @@ public class User implements Parcelable {
         userName = in.readString();
         password = in.readString();
         displayName = in.readString();
+        biography = in.readString();
+        address = in.readString();
+        avatarPath = in.readString();
+        coverPath = in.readString();
         byte tmpIsLogin = in.readByte();
         isLogin = tmpIsLogin == 0 ? null : tmpIsLogin == 1;
-        timestamp = (LocalDateTime) in.readSerializable();
         results = in.createTypedArrayList(Result.CREATOR);
+        timestamp = (LocalDateTime) in.readSerializable();
+        birthday = (LocalDateTime) in.readSerializable();
+        lastModified = (LocalDateTime) in.readSerializable();
     }
 
     // parcelable write/read depends on ORDER
@@ -115,6 +152,10 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
+
+    public User() {
+
+    }
 
     public Long getId() {
         return id;
@@ -172,6 +213,54 @@ public class User implements Parcelable {
         this.results = results;
     }
 
+    public String getBiography() {
+        return biography;
+    }
+
+    public void setBiography(String biography) {
+        this.biography = biography;
+    }
+
+    public LocalDateTime getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(LocalDateTime birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getAvatarPath() {
+        return avatarPath;
+    }
+
+    public void setAvatarPath(String avatarPath) {
+        this.avatarPath = avatarPath;
+    }
+
+    public String getCoverPath() {
+        return coverPath;
+    }
+
+    public void setCoverPath(String coverPath) {
+        this.coverPath = coverPath;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -188,8 +277,14 @@ public class User implements Parcelable {
         dest.writeString(userName);
         dest.writeString(password);
         dest.writeString(displayName);
+        dest.writeString(biography);
+        dest.writeString(address);
+        dest.writeString(avatarPath);
+        dest.writeString(coverPath);
         dest.writeByte((byte) (isLogin == null ? 0 : isLogin ? 1 : 2));
-        dest.writeSerializable(timestamp);
         dest.writeTypedList(results);
+        dest.writeSerializable(timestamp);
+        dest.writeSerializable(birthday);
+        dest.writeSerializable(lastModified);
     }
 }
