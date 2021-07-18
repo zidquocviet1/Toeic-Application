@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -25,7 +24,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.example.toeicapplication.databinding.ActivityEditProfileBinding;
 import com.example.toeicapplication.model.entity.User;
-import com.example.toeicapplication.utilities.AppConstants;
 import com.example.toeicapplication.utilities.DatePickerValidator;
 import com.example.toeicapplication.utilities.ExifUtils;
 import com.example.toeicapplication.utilities.MyActivityForResult;
@@ -163,8 +161,6 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void showInfo(User user) {
-        mBinding.imgAvatar.setImageBitmap(user.getThumbnail());
-        mBinding.imgCover.setImageBitmap(user.getCover());
         mBinding.layoutName.getEditText().setText(user.getDisplayName());
         mBinding.layoutBio.getEditText().setText(user.getBiography());
         mBinding.layoutBirthday.getEditText().setText(user.getBirthday() != null ? user.getBirthday().format(formatter) : "");
@@ -313,7 +309,8 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void chooseExistingPhoto(ImageView img) {
-        if (!hasReadExternalPermission) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
             requestOrUpdatePermission();
         } else {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);

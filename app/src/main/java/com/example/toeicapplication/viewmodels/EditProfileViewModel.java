@@ -87,9 +87,7 @@ public class EditProfileViewModel extends ViewModel {
         cd.add(observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(this::onEditProfileResponse)
-                .doOnError(this::onEditProfileError)
-                .subscribe()
+                .subscribe(this::onEditProfileResponse, this::onEditProfileError)
         );
     }
 
