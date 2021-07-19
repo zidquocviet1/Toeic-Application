@@ -2,7 +2,6 @@ package com.example.toeicapplication.repository.impl;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -41,17 +40,14 @@ import retrofit2.Response;
 public class HomeRepositoryImpl implements HomeRepository {
     private final CompositeDisposable compositeDisposable;
     private final UserService userService;
-    private final Context context;
     private final MyDB database;
 
     @Inject
     public HomeRepositoryImpl(UserService userService,
                               MyDB database,
-                              CompositeDisposable compositeDisposable,
-                              @ApplicationContext Context context) {
+                              CompositeDisposable compositeDisposable) {
         this.compositeDisposable = compositeDisposable;
         this.userService = userService;
-        this.context = context;
         this.database = database;
     }
 
@@ -227,16 +223,16 @@ public class HomeRepositoryImpl implements HomeRepository {
     }
 
     @Override
-    public Single<User> getLoginUserId() {
+    public Single<User> getLoginUser() {
         return database.getUserDAO().getLoginUserId();
     }
 
     @Override
-    public Observable<User> loadUserFromLocalAndRemote(Long userId, boolean hasNetwork){
+    public Observable<User> loadUserFromLocalAndRemote(User user, boolean hasNetwork){
         return new NetworkBoundResource<User, Response<MyResponse<User>>>() {
             @Override
             protected void saveCallResult(Response<MyResponse<User>> item) {
-                if (item.code() == HttpsURLConnection.HTTP_ACCEPTED){
+                if (item.code() == HttpsURLConnection.HTTP_OK){
                     MyResponse<User> body = item.body();
                     if (body != null){
                         User data = body.getData();
@@ -263,7 +259,7 @@ public class HomeRepositoryImpl implements HomeRepository {
 
             @Override
             protected Observable<Response<MyResponse<User>>> createCall() {
-                return userService.findUser(userId);
+                return userService.login(user);
             }
         }.asObservable();
     }

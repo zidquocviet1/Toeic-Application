@@ -8,6 +8,7 @@ import com.example.toeicapplication.repository.LoginRepository;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import retrofit2.Response;
 
 public class LoginRepositoryImpl implements LoginRepository {
     private final UserService service;
@@ -18,7 +19,7 @@ public class LoginRepositoryImpl implements LoginRepository {
     }
 
     @Override
-    public Observable<MyResponse<User>> login(User user) {
+    public Observable<Response<MyResponse<User>>> login(User user) {
         return service.login(user);
     }
 

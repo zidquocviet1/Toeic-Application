@@ -14,6 +14,7 @@ import com.example.toeicapplication.utilities.Resource;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -23,6 +24,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Response;
 
 @HiltViewModel
 public class LoginViewModel extends ViewModel {
@@ -191,20 +193,23 @@ public class LoginViewModel extends ViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .timeout(5, TimeUnit.SECONDS)
-                .subscribe(new Observer<MyResponse<User>>() {
+                .subscribe(new Observer<Response<MyResponse<User>>>() {
                     @Override
                     public void onSubscribe(@NotNull Disposable d) {
                         setStateResponse(Resource.Loading(null));
                     }
 
                     @Override
-                    public void onNext(@NotNull MyResponse<User> userPostResponse) {
-                        if (userPostResponse.isStatus()) {
-                            User data = userPostResponse.getData();
+                    public void onNext(@NotNull Response<MyResponse<User>> response) {
+                        MyResponse<User> body = response.body();
 
-                            setStateResponse(Resource.Success(data));
+                        if (response.code() == HttpURLConnection.HTTP_OK){
+                            if (body != null && body.isStatus()){
+                                User data = body.getData();
+                                setStateResponse(Resource.Success(data));
+                            }
                         }else{
-                            setStateResponse(Resource.Error(userPostResponse.getMessage()));
+                            setStateResponse(Resource.Error(body != null ? body.getMessage() : null));
                         }
                     }
 

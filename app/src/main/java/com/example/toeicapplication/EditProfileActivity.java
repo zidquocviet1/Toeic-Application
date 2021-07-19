@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,19 +12,20 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.toeicapplication.databinding.ActivityEditProfileBinding;
 import com.example.toeicapplication.model.entity.User;
+import com.example.toeicapplication.utilities.AppConstants;
 import com.example.toeicapplication.utilities.DatePickerValidator;
 import com.example.toeicapplication.utilities.ExifUtils;
 import com.example.toeicapplication.utilities.MyActivityForResult;
@@ -37,6 +39,8 @@ import com.example.toeicapplication.viewmodels.EditProfileViewModel;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,7 +62,8 @@ import java.util.TimeZone;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener {
+public class EditProfileActivity extends BaseActivity<EditProfileViewModel, ActivityEditProfileBinding>
+        implements View.OnClickListener {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
 
     private final MyActivityForResult<String, Boolean> permissionLauncher =
@@ -70,8 +75,6 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private final MyActivityForResult<String[], Map<String, Boolean>> multiplePermissionLauncher =
             MyActivityForResult.registerActivityForResult(this, new ActivityResultContracts.RequestMultiplePermissions());
 
-    private ActivityEditProfileBinding mBinding;
-    private EditProfileViewModel mVM;
     private String avatarPath = "";
     private String coverPath = "";
     private Bitmap avatarBitmap;
@@ -86,24 +89,36 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         void onActivityResult(ActivityResult result);
     }
 
+    @NonNull
+    @NotNull
+    @Override
+    public Class<EditProfileViewModel> getViewModel() {
+        return EditProfileViewModel.class;
+    }
+
+    @Override
+    public int getLayoutRes() {
+        return R.layout.activity_edit_profile;
+    }
+
+    @Override
+    public ActivityEditProfileBinding bindingInflater() {
+        return ActivityEditProfileBinding.inflate(getLayoutInflater());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = ActivityEditProfileBinding.inflate(getLayoutInflater());
-        setContentView(mBinding.getRoot());
+        Log.d(AppConstants.TAG, "ActivityEditProfileBinding -> onCreate");
 
-        Intent intent = getIntent();
-        user = intent.getParcelableExtra("user");
-
+        user = getIntent().getParcelableExtra("user");
         if (user != null) showInfo(user);
 
         registerOnClickEvent();
-
-        mVM = new ViewModelProvider(this).get(EditProfileViewModel.class);
-        setupObserver();
     }
 
-    private void setupObserver() {
+    @Override
+    public void setupObserver() {
         if (mVM != null) {
             mVM.getResponseUser().observe(this, resource -> {
                 Status status = resource.getStatus();
@@ -123,7 +138,8 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                             this.user.setAvatarPath(remoteUser.getAvatarPath());
                             this.user.setCoverPath(remoteUser.getCoverPath());
 
-                            if (hasWriteExternalPermission) {
+                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                    == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                                 String avatarName = remoteUser.getAvatarPath();
                                 if (avatarBitmap != null && avatarName != null && !avatarName.equals("") ) {
                                     String fileName = avatarName.substring(avatarName.lastIndexOf('\\') + 1);
@@ -178,19 +194,19 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void loadAvatar(String avatarPath){
+        Drawable defaultIcon = ContextCompat.getDrawable(this, R.drawable.ic_gray_account);
+
         if (avatarPath != null && !avatarPath.equals("")){
             String avatarName = avatarPath.substring(avatarPath.lastIndexOf('\\') + 1);
             String path = getFilesDir() + "/user-photos/" + user.getId() + "/" + avatarName;
 
-            try {
-                File file = new File(path);
-                Glide.with(this)
-                        .load(file)
-                        .centerCrop()
-                        .into(mBinding.imgAvatar);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
+            Glide.with(this)
+                    .load(new File(path))
+                    .centerCrop()
+                    .error(defaultIcon)
+                    .into(mBinding.imgAvatar);
+        }else{
+            mBinding.imgAvatar.setImageDrawable(defaultIcon);
         }
     }
     @Override

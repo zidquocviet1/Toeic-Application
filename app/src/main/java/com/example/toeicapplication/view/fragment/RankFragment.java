@@ -24,13 +24,13 @@ import com.example.toeicapplication.model.entity.Course;
 import com.example.toeicapplication.model.entity.RemoteUser;
 import com.example.toeicapplication.model.entity.Result;
 import com.example.toeicapplication.utilities.AppConstants;
+import com.example.toeicapplication.utilities.NetworkController;
 import com.example.toeicapplication.view.custom.LoadingDialog;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -154,8 +154,7 @@ public class RankFragment extends BaseFragment<HomeViewModel, FragmentRankBindin
                                 }
                             }
 
-                            data.sort((o1, o2) -> o1.getResult().getScore().compareTo(o2.getResult().getScore()));
-                            Collections.reverse(data);
+                            data.sort((o1, o2) -> o2.getResult().getScore().compareTo(o1.getResult().getScore()));
 
                             bindingFirstUser(data.get(0));
 
@@ -219,6 +218,6 @@ public class RankFragment extends BaseFragment<HomeViewModel, FragmentRankBindin
         if course == null, its mean we will get all the top user
         else, we will get the top user by course
          */
-        mVM.getLeaderboard(course, this.hasNetwork);
+        mVM.getLeaderboard(course, NetworkController.isOnline(context));
     }
 }

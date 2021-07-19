@@ -33,9 +33,9 @@ public interface HomeRepository {
 
     void getRecentLogOutUser(MutableLiveData<User> request);
 
-    Single<User> getLoginUserId();
+    Single<User> getLoginUser();
 
     Observable<List<RemoteUserWithResults>> getLeaderboard(Course course, boolean hasNetwork);
 
-    Observable<User> loadUserFromLocalAndRemote(Long userId, boolean hasNetwork);
+    Observable<User> loadUserFromLocalAndRemote(User user, boolean hasNetwork);
 }

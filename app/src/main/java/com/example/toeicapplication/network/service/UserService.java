@@ -22,7 +22,7 @@ import retrofit2.http.Query;
 
 public interface UserService {
     @POST(value = "user/login")
-    Observable<MyResponse<User>> login(@Body User user);
+    Observable<Response<MyResponse<User>>> login(@Body User user);
 
     @PUT(value  = "user")
     Observable<MyResponse<User>> logout(@Body User user);

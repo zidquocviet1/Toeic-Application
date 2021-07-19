@@ -45,9 +45,8 @@ public class RepositoryModule {
     @Provides
     public HomeRepository provideHomeRepository(UserService userService,
                                                 MyDB database,
-                                                CompositeDisposable cd,
-                                                @ApplicationContext Context context){
-        return new HomeRepositoryImpl(userService, database, cd, context);
+                                                CompositeDisposable cd){
+        return new HomeRepositoryImpl(userService, database, cd);
     }
 
     @ViewModelScoped

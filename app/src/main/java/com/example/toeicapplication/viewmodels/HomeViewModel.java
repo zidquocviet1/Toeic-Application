@@ -29,7 +29,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -39,7 +38,7 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<List<Course>> courses;
     private final MutableLiveData<List<Word>> top30Words;
     private final MutableLiveData<User> loginUserFromLocal;
-    private final MutableLiveData<Long> loginUserId;
+    private final MutableLiveData<User> loginUser;
 
     // Vocabulary Fragment
     private final MutableLiveData<Resource<List<Word>>> words;
@@ -65,7 +64,7 @@ public class HomeViewModel extends ViewModel {
         recentLogOutUser = new MutableLiveData<>();
         listRankInfo = new MutableLiveData<>();
         loginUserFromLocal = new MutableLiveData<>();
-        loginUserId = new MutableLiveData<>();
+        loginUser = new MutableLiveData<>();
         cd = new CompositeDisposable();
 
         this.repository = repository;
@@ -74,7 +73,7 @@ public class HomeViewModel extends ViewModel {
     }
 
     private void init() {
-        getLoginUserId();
+        getLoginUser();
         getAllCourses();
         get30Words();
         getRecentLogOutUser();
@@ -109,8 +108,8 @@ public class HomeViewModel extends ViewModel {
         return loginUserFromLocal;
     }
 
-    public LiveData<Long> getLoginUserIdLiveData() {
-        return loginUserId;
+    public LiveData<User> getLoginUserLiveData() {
+        return loginUser;
     }
 
     // communicate with Repository
@@ -126,12 +125,12 @@ public class HomeViewModel extends ViewModel {
         repository.getRecentLogOutUser(this.recentLogOutUser);
     }
 
-    private void getLoginUserId() {
-        cd.add(repository.getLoginUserId().observeOn(AndroidSchedulers.mainThread())
+    private void getLoginUser() {
+        cd.add(repository.getLoginUser().observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(user -> {
-                    if (user != null) loginUserId.postValue(user.getId());
-                }, throwable -> loginUserId.postValue(null)));
+                    if (user != null) loginUser.postValue(user);
+                }, throwable -> loginUser.postValue(null)));
     }
 
     public void addUser(User user) {
@@ -143,8 +142,8 @@ public class HomeViewModel extends ViewModel {
         loginUserFromLocal.postValue(user);
     }
 
-    public void loadUserFromLocalAndRemote(Long userId, boolean hasNetwork) {
-        repository.loadUserFromLocalAndRemote(userId, hasNetwork)
+    public void loadUserFromLocalAndRemote(User user, boolean hasNetwork) {
+        repository.loadUserFromLocalAndRemote(user, hasNetwork)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new DisposableObserver<User>() {
