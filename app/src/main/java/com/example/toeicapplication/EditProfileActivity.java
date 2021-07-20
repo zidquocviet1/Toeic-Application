@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.ObjectKey;
 import com.example.toeicapplication.databinding.ActivityEditProfileBinding;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.utilities.AppConstants;
@@ -49,13 +50,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -141,11 +145,11 @@ public class EditProfileActivity extends BaseActivity<EditProfileViewModel, Acti
                             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                                     == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                                 String avatarName = remoteUser.getAvatarPath();
-                                if (avatarBitmap != null && avatarName != null && !avatarName.equals("") ) {
+                                if (avatarBitmap != null && avatarName != null && !avatarName.equals("")) {
                                     String fileName = avatarName.substring(avatarName.lastIndexOf('\\') + 1);
 
                                     Path dir = Paths.get(getFilesDir() + "/user-photos/" + remoteUser.getId());
-                                    if (!Files.exists(dir)){
+                                    if (!Files.exists(dir)) {
                                         try {
                                             Files.createDirectories(dir);
                                         } catch (IOException e) {
@@ -193,22 +197,30 @@ public class EditProfileActivity extends BaseActivity<EditProfileViewModel, Acti
         mBinding.edtBirthday.setOnClickListener(this);
     }
 
-    private void loadAvatar(String avatarPath){
+    private void loadAvatar(String avatarPath) {
         Drawable defaultIcon = ContextCompat.getDrawable(this, R.drawable.ic_gray_account);
 
-        if (avatarPath != null && !avatarPath.equals("")){
+        if (avatarPath != null && !avatarPath.equals("")) {
             String avatarName = avatarPath.substring(avatarPath.lastIndexOf('\\') + 1);
             String path = getFilesDir() + "/user-photos/" + user.getId() + "/" + avatarName;
 
-            Glide.with(this)
-                    .load(new File(path))
+//            Glide.with(this)
+//                    .load(new File(path))
+//                    .centerCrop()
+//                    .error(defaultIcon)
+//                    .into(mBinding.imgAvatar);
+
+            Glide.with(this).load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
                     .centerCrop()
                     .error(defaultIcon)
+                    .fallback(defaultIcon)
+                    .signature(new ObjectKey(avatarPath))
                     .into(mBinding.imgAvatar);
-        }else{
+        } else {
             mBinding.imgAvatar.setImageDrawable(defaultIcon);
         }
     }
+
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -218,7 +230,7 @@ public class EditProfileActivity extends BaseActivity<EditProfileViewModel, Acti
         } else if (id == mBinding.imgCover.getId()) {
             showPopup(mBinding.imgCover);
         } else if (id == mBinding.txtCancel.getId()) {
-            if (hasUserChange){
+            if (hasUserChange) {
                 Intent intent = new Intent();
                 intent.putExtra("user", this.user);
                 setResult(RESULT_OK, intent);
@@ -275,7 +287,7 @@ public class EditProfileActivity extends BaseActivity<EditProfileViewModel, Acti
 
         alertDialog.setItems(items, (dialog, which) -> {
             if (items[which].equals(getString(R.string.take_photo))) {
-                takePhoto(img);
+                dispatchTakePictureIntent(img);
             } else if (items[which].equals(getString(R.string.choose_existing_photo))) {
                 chooseExistingPhoto(img);
             }
@@ -283,27 +295,76 @@ public class EditProfileActivity extends BaseActivity<EditProfileViewModel, Acti
         alertDialog.create().show();
     }
 
-    private void takePhoto(ImageView img) {
+    private File createImageFile(ImageView img) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "IMG_" + timeStamp + "_";
+        String dir = getFilesDir().getAbsolutePath() + "/user-photos/" + user.getId();
+        Path path = Paths.get(dir);
+
+        if (!Files.exists(path)){
+            Files.createDirectories(path);
+        }
+
+        File storageDir = new File(path.toFile().getAbsolutePath());
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+        if (img == mBinding.imgAvatar) avatarPath = image.getAbsolutePath();
+        else coverPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void dispatchTakePictureIntent(ImageView img){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        ResultCallback callback = result -> {
-            Intent data = result.getData();
-            if (data != null) {
-                Bundle bundle = data.getExtras();
-                if (bundle != null) {
-                    Bitmap imageBitmap = (Bitmap) bundle.get("data");
-                    img.setImageBitmap(imageBitmap);
+
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null){
+            File photoFile = null;
+
+            try {
+                photoFile = createImageFile(img);
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+
+            if (photoFile != null){
+                File finalPhotoFile = photoFile;
+
+                ResultCallback callback = result -> {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        Bundle bundle = data.getExtras();
+                        if (bundle != null) {
+                            Bitmap imageBitmap = (Bitmap) bundle.get("data");
+                            try {
+                                FileOutputStream fos = new FileOutputStream(finalPhotoFile);
+                                if (imageBitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)){
+                                    Glide.with(this)
+                                            .load(imageBitmap)
+                                            .error(ContextCompat.getDrawable(this, R.drawable.ic_gray_account))
+                                            .into(img);
+
+                                    if (img == mBinding.imgAvatar){
+                                        avatarBitmap = imageBitmap;
+                                    }else{
+                                        coverBitmap = imageBitmap;
+                                    }
+                                }
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                };
+
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                    startResultLauncher(takePictureIntent, callback);
+                } else if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                    ExplainReasonUsePermissionDialog reasonUsePermissionDialog = new ExplainReasonUsePermissionDialog();
+                    reasonUsePermissionDialog.setOnClickListener(() -> cameraPermissionResult(takePictureIntent, callback));
+                    reasonUsePermissionDialog.show(getSupportFragmentManager(), "app_info");
+                } else {
+                    cameraPermissionResult(takePictureIntent, callback);
                 }
             }
-        };
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            startResultLauncher(takePictureIntent, callback);
-        } else if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-            ExplainReasonUsePermissionDialog reasonUsePermissionDialog = new ExplainReasonUsePermissionDialog();
-            reasonUsePermissionDialog.setOnClickListener(() -> cameraPermissionResult(takePictureIntent, callback));
-            reasonUsePermissionDialog.show(getSupportFragmentManager(), "app_info");
-        } else {
-            cameraPermissionResult(takePictureIntent, callback);
         }
     }
 
@@ -340,7 +401,10 @@ public class EditProfileActivity extends BaseActivity<EditProfileViewModel, Acti
         if (data != null) {
             Uri fullPhotoUri = data.getData();
             Bitmap rotatedBitmap = ExifUtils.getRotatedBitmap(getContentResolver(), fullPhotoUri);
-            img.setImageBitmap(rotatedBitmap);
+            Glide.with(this)
+                    .load(rotatedBitmap)
+                    .error(ContextCompat.getDrawable(this, R.drawable.ic_gray_account))
+                    .into(img);
 
             if (img == mBinding.imgAvatar) {
                 avatarPath = RealPathUtil.getRealPath(this, fullPhotoUri);
