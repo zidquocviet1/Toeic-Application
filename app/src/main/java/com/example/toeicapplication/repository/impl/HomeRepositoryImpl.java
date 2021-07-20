@@ -1,6 +1,5 @@
 package com.example.toeicapplication.repository.impl;
 
-import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -27,7 +26,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.net.ssl.HttpsURLConnection;
 
-import dagger.hilt.android.qualifiers.ApplicationContext;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -241,15 +239,16 @@ public class HomeRepositoryImpl implements HomeRepository {
                             database.getUserDAO().addNewUser(data);
                         }
                     }
-                }else if (item.code() == HttpsURLConnection.HTTP_NOT_FOUND){
-                    Log.d(AppConstants.TAG, "The course has no leaderboard");
+                }else if (item.code() == HttpsURLConnection.HTTP_BAD_REQUEST){
+                    Log.d(AppConstants.TAG, "The username or password is incorrect");
+                    database.getUserDAO().deleteUser(user);
                 }
             }
 
             @Override
             protected boolean shouldFetch(User data) {
                 return hasNetwork && (data == null ||
-                        data.getLastModified().compareTo(LocalDateTime.now().minusMinutes(2)) < 0);
+                        data.getLastModified().compareTo(LocalDateTime.now().minusMinutes(1)) < 0);
             }
 
             @Override
