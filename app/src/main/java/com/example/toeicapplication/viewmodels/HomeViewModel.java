@@ -29,7 +29,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
@@ -143,25 +142,10 @@ public class HomeViewModel extends ViewModel {
     }
 
     public void loadUserFromLocalAndRemote(User user, boolean hasNetwork) {
-        repository.loadUserFromLocalAndRemote(user, hasNetwork)
+        cd.add(repository.loadUserFromLocalAndRemote(user, hasNetwork)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new DisposableObserver<User>() {
-                    @Override
-                    public void onNext(@NotNull User user) {
-                        loginUserFromLocal.postValue(user);
-                    }
-
-                    @Override
-                    public void onError(@NotNull Throwable e) {
-                        loginUserFromLocal.postValue(null);
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                .subscribe(loginUserFromLocal::postValue, t -> loginUserFromLocal.postValue(null)));
     }
 
     public void updateUser(User newUser, Context context) {
