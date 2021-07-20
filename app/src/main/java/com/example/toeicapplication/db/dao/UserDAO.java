@@ -1,6 +1,7 @@
 package com.example.toeicapplication.db.dao;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -44,4 +45,7 @@ public interface UserDAO {
 
     @Query("select * from user_info order by timestamp desc limit 1")
     Single<User> recentLogoutUser();
+
+    @Delete
+    void deleteUser(User user);
 }
