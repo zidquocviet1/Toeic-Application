@@ -36,7 +36,7 @@ public class AppInfoPermissionDialog extends DialogFragment implements View.OnCl
 
     @Override
     public int getTheme() {
-        return android.R.style.Theme_Black_NoTitleBar_Fullscreen;
+        return android.R.style.Theme_Material_NoActionBar_TranslucentDecor;
     }
 
     @Override
