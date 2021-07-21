@@ -74,6 +74,8 @@
     <string name="biography">Bio</string>
     <string name="take_photo">Take photo</string>
     <string name="choose_existing_photo">Choose existing photo</string>
+    <string name="could_not_save_image">Couldn\'t save image. Please try again</string>
+    <string name="save_image_successfully">Save image successfully</string>
     //
 
     // login activity string

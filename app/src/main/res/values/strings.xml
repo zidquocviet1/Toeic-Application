@@ -74,6 +74,8 @@
     <string name="biography">Tiểu sử</string>
     <string name="take_photo">Chụp ảnh</string>
     <string name="choose_existing_photo">Chọn ảnh có sẵn</string>
+    <string name="could_not_save_image">Không thể lưu ảnh. Vui lòng thử lại sau</string>
+    <string name="save_image_successfully">Lưu ảnh thành công</string>
     //
 
     // login activity string
