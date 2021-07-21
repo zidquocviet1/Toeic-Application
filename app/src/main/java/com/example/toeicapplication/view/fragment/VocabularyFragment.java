@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -137,6 +138,7 @@ public class VocabularyFragment extends BaseFragment<HomeViewModel, FragmentVoca
         mBinding.rvVocab.setAdapter(wordAdapter);
         mBinding.rvVocab.setLayoutManager(new LinearLayoutManager(context,
                 RecyclerView.VERTICAL, false));
+        mBinding.rvVocab.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         mBinding.rvVocab.setHasFixedSize(true);
     }
 
