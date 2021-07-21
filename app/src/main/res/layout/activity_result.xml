@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@drawable/bottom_left_right_corner"
+        android:background="@drawable/shape_bottom_left_right_corner"
         android:backgroundTint="@color/ic_launcher_lv_toeic_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -104,7 +104,7 @@
         android:id="@+id/layout2"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/layout_course_detail"
+        android:background="@drawable/shape_layout_course_detail"
         android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

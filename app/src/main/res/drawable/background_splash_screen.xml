@@ -3,7 +3,7 @@
 
     <item android:drawable="@color/white" />
 
-    <item android:drawable="@drawable/image_launcher_icon"
+    <item android:drawable="@drawable/icon_launcher"
         android:gravity="center">
     </item>
 </layer-list>

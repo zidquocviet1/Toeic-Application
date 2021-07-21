@@ -4,10 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="6dp"
-    android:background="@drawable/layout_course_detail"
+    android:background="@drawable/shape_layout_course_detail"
     android:clickable="true"
     android:elevation="4dp"
-    android:foreground="?selectableItemBackground"
+    android:backgroundTintMode="src_in"
+    android:foregroundTint="@android:color/transparent"
+    android:foreground="?selectableItemBackgroundBorderless"
     android:padding="4dp">
 
     <TextView

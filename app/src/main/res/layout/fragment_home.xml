@@ -78,7 +78,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/search_field"
+                android:background="@drawable/ic_search_field"
                 android:hint="@string/search"
                 android:inputType="text"
                 android:maxLines="1"
