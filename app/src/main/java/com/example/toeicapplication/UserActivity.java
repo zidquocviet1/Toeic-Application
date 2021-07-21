@@ -1,25 +1,53 @@
 package com.example.toeicapplication;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
+import com.bumptech.glide.signature.ObjectKey;
 import com.example.toeicapplication.databinding.ActivityUserBinding;
 import com.example.toeicapplication.model.entity.Result;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.utilities.AppConstants;
 import com.example.toeicapplication.utilities.MyActivityForResult;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class UserActivity extends AppCompatActivity implements View.OnClickListener {
     private ActivityUserBinding mBinding;
@@ -69,18 +97,12 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
     private void loadAvatar(String avatarPath){
         Drawable defaultIcon = ContextCompat.getDrawable(this, R.drawable.ic_gray_account);
 
-        if (avatarPath != null && !avatarPath.equals("")){
-            String avatarName = avatarPath.substring(avatarPath.lastIndexOf('\\') + 1);
-            String path = getFilesDir() + "/user-photos/" + user.getId() + "/" + avatarName;
-
-            Glide.with(this)
-                    .load(new File(path))
-                    .error(defaultIcon)
-                    .centerCrop()
-                    .into(mBinding.imgAvatar);
-        }else{
-            mBinding.imgAvatar.setImageDrawable(defaultIcon);
-        }
+        Glide.with(this).load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
+                .centerCrop()
+                .error(defaultIcon)
+                .fallback(defaultIcon)
+                .signature(new ObjectKey(avatarPath))
+                .into(mBinding.imgAvatar);
     }
 
     @Override
@@ -100,7 +122,127 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
                 }
             });
         }else if (id == mBinding.imgAvatar.getId()){
+            Dialog dialog = new Dialog(this, android.R.style.Theme_Material_NoActionBar_TranslucentDecor);
+            dialog.setContentView(R.layout.dialog_image_preview);
+            dialog.getWindow().getAttributes().windowAnimations = R.style.SlideDialogAnimation;
 
+            ImageView img = dialog.findViewById(R.id.imgAvatar);
+            ImageView imgBack = dialog.findViewById(R.id.imgBack);
+            ImageView imgMoreVert = dialog.findViewById(R.id.imgMoreVert);
+
+            imgBack.setOnClickListener(v12 -> dialog.dismiss());
+            imgMoreVert.setOnClickListener(v1 -> {
+                PopupMenu popup = new PopupMenu(this, imgMoreVert);
+                popup.inflate(R.menu.mn_profile_image);
+                popup.setOnMenuItemClickListener(item -> {
+                    int id1 = item.getItemId();
+
+                    if (id1 == R.id.mnSave){
+                        saveProfileImage();
+                        Log.d(AppConstants.TAG, "Save image into Internal Storage");
+                    }else if (id1 == R.id.mnShareImage){
+                        Log.d(AppConstants.TAG, "Share image link");
+                        Intent sendLinkIntent = new Intent(Intent.ACTION_SEND);
+                        sendLinkIntent.setType("text/plain");
+                        sendLinkIntent.putExtra(Intent.EXTRA_TEXT, AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId());
+                        startActivity(sendLinkIntent);
+                    }else if (id1 == R.id.mnOpenInBrowser){
+                        Log.d(AppConstants.TAG, "Open image in browser");
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId()));
+                        startActivity(intent);
+                    }
+                    return false;
+                });
+                popup.show();
+            });
+
+            CircularProgressDrawable cp = new CircularProgressDrawable(this);
+            cp.setStrokeWidth(5f);
+            cp.setCenterRadius(30f);
+            cp.start();
+
+            Glide.with(this).load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
+                    .centerCrop()
+                    .error(ContextCompat.getDrawable(this, R.drawable.ic_gray_account))
+                    .placeholder(cp)
+                    .signature(new ObjectKey(String.valueOf(System.currentTimeMillis())))
+                    .into(img);
+            dialog.show();
+        }
+    }
+
+    private void saveProfileImage(){
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "IMG_" + timeStamp + "_";
+        String dir = getFilesDir().getAbsolutePath() + "/save-photos";
+        Path path = Paths.get(dir);
+
+        if (!Files.exists(path)){
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, getString(R.string.could_not_save_image),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        File storageDir = new File(path.toFile().getAbsolutePath());
+        File image = null;
+        try {
+            image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, getString(R.string.could_not_save_image),
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        if (image != null){
+            try {
+                FileOutputStream fos = new FileOutputStream(image);
+
+                Glide.with(this)
+                        .asBitmap()
+                        .load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
+                        .signature(new ObjectKey(String.valueOf(System.currentTimeMillis())))
+                        .listener(new RequestListener<Bitmap>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                                Toast.makeText(UserActivity.this, getString(R.string.could_not_save_image),
+                                        Toast.LENGTH_SHORT).show();
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                                return false;
+                            }
+                        })
+                        .into(new CustomTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(@NonNull @NotNull Bitmap resource, @Nullable @org.jetbrains.annotations.Nullable Transition<? super Bitmap> transition) {
+                                if (resource.compress(Bitmap.CompressFormat.JPEG, 95, fos)){
+                                    Toast.makeText(UserActivity.this, getString(R.string.save_image_successfully),
+                                            Toast.LENGTH_SHORT).show();
+                                }else{
+                                    Toast.makeText(UserActivity.this, getString(R.string.could_not_save_image),
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onLoadCleared(@Nullable @org.jetbrains.annotations.Nullable Drawable placeholder) {
+                                Toast.makeText(UserActivity.this, getString(R.string.could_not_save_image),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                if (image.length() == 0) image.delete();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(this, getString(R.string.could_not_save_image),
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
