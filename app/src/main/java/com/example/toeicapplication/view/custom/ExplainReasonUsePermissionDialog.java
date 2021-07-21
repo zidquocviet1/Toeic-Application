@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.toeicapplication.R;
 import com.example.toeicapplication.databinding.DialogExplainReasonUsePermissionBinding;
 
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +39,8 @@ public class ExplainReasonUsePermissionDialog extends DialogFragment implements 
         super.onViewCreated(view, savedInstanceState);
         binding.btnContinue.setOnClickListener(this);
         binding.txtNotNow.setOnClickListener(this);
+
+        getDialog().getWindow().getAttributes().windowAnimations = R.style.FadeDialogAnimation;
     }
 
     @Override

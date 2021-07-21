@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.toeicapplication.EditProfileActivity;
+import com.example.toeicapplication.R;
 import com.example.toeicapplication.databinding.DialogAppInfoPermissionBinding;
 
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +33,7 @@ public class AppInfoPermissionDialog extends DialogFragment implements View.OnCl
         super.onViewCreated(view, savedInstanceState);
         binding.btnSettings.setOnClickListener(this);
         binding.txtNotNow.setOnClickListener(this);
+        getDialog().getWindow().getAttributes().windowAnimations = R.style.FadeDialogAnimation;
     }
 
     @Override
