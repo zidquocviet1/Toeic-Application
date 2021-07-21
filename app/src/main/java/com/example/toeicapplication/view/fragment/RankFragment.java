@@ -126,7 +126,7 @@ public class RankFragment extends BaseFragment<HomeViewModel, FragmentRankBindin
                 String defaultItem = itemAdapter.getItem(DEFAULT_INDEX);
 
                 mBinding.txt.setAdapter(itemAdapter);
-                mBinding.txt.setDropDownBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.layout_course_detail));
+                mBinding.txt.setDropDownBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.shape_layout_course_detail));
                 mBinding.txt.setText(defaultItem, false);
                 mBinding.txt.setOnItemClickListener(this);
 
