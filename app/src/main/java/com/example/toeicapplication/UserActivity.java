@@ -28,11 +28,15 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.bumptech.glide.signature.ObjectKey;
+import com.example.toeicapplication.adapters.UserInfoPagerAdapter;
 import com.example.toeicapplication.databinding.ActivityUserBinding;
 import com.example.toeicapplication.model.entity.Result;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.utilities.AppConstants;
 import com.example.toeicapplication.utilities.MyActivityForResult;
+import com.example.toeicapplication.viewmodels.UserInfoViewModel;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -45,20 +49,41 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class UserActivity extends AppCompatActivity implements View.OnClickListener {
-    private ActivityUserBinding mBinding;
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
+public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBinding>
+        implements View.OnClickListener {
     private User user;
-    private final MyActivityForResult<Intent, ActivityResult> activityLauncher = MyActivityForResult.registerActivityForResult(this);
+    private final MyActivityForResult<Intent, ActivityResult> activityLauncher
+            = MyActivityForResult.registerActivityForResult(this);
+
+    @NonNull
+    @NotNull
+    @Override
+    public Class<UserInfoViewModel> getViewModel() {
+        return UserInfoViewModel.class;
+    }
+
+    @Override
+    public int getLayoutRes() {
+        return R.layout.activity_user;
+    }
+
+    @Override
+    public ActivityUserBinding bindingInflater() {
+        return ActivityUserBinding.inflate(getLayoutInflater());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = ActivityUserBinding.inflate(getLayoutInflater());
-        setContentView(mBinding.getRoot());
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("user");
@@ -66,6 +91,21 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
         showInfo(user);
         mBinding.imgAvatar.setOnClickListener(this);
         mBinding.btnEdit.setOnClickListener(this);
+
+        UserInfoPagerAdapter pagerAdapter = new UserInfoPagerAdapter(getSupportFragmentManager(),
+                getLifecycle(), 1);
+
+        mBinding.viewPager.setAdapter(pagerAdapter);
+        new TabLayoutMediator(mBinding.tabLayout, mBinding.viewPager, (tab, position) -> {
+            if (position == 0){
+                tab.setText(getString(R.string.record_string));
+            }
+        }).attach();
+    }
+
+    @Override
+    public void setupObserver() {
+
     }
 
     private void showInfo(User user){
