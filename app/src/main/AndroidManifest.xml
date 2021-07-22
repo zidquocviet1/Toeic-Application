@@ -8,21 +8,19 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
-
-    <!-- this permission to take a picture-->
-    <uses-permission android:name="android.permission.CAMERA" />
-
-    <!-- this feature to check the device has camera or not-->
+        android:maxSdkVersion="28" /> <!-- this permission to take a picture -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- this feature to check the device has camera or not -->
     <uses-feature
         android:name="android.hardware.camera2"
         android:required="false" />
 
     <queries>
-    <!--with the target API level 30 or higher you must declare this element to take the app visible by intent filter-->
+
+        <!-- with the target API level 30 or higher you must declare this element to take the app visible by intent filter -->
         <intent>
-            <action android:name="android.intent.action.GET_CONTENT"/>
-            <data android:mimeType="image/*"/>
+            <action android:name="android.intent.action.GET_CONTENT" />
+
+            <data android:mimeType="image/*" />
         </intent>
     </queries>
 
@@ -35,8 +33,15 @@
         android:supportsRtl="true"
         android:theme="@style/NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".EditProfileActivity"></activity>
-        <activity android:name=".ResultActivity"></activity>
+        <activity android:name=".SendMessageActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".EditProfileActivity" />
+        <activity android:name=".ResultActivity" />
         <activity android:name=".CourseDetailActivity" />
         <activity
             android:name=".MainActivity"
