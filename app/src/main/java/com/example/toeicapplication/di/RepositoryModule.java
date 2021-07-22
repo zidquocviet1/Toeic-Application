@@ -1,6 +1,5 @@
 package com.example.toeicapplication.di;
 
-import android.content.Context;
 
 import com.example.toeicapplication.db.MyDB;
 import com.example.toeicapplication.db.dao.ResultDAO;
@@ -11,17 +10,18 @@ import com.example.toeicapplication.repository.ExamRepository;
 import com.example.toeicapplication.repository.HomeRepository;
 import com.example.toeicapplication.repository.LoginRepository;
 import com.example.toeicapplication.repository.ResultRepository;
+import com.example.toeicapplication.repository.UserInfoRepository;
 import com.example.toeicapplication.repository.impl.EditProfileRepositoryImpl;
 import com.example.toeicapplication.repository.impl.ExamRepositoryImpl;
 import com.example.toeicapplication.repository.impl.HomeRepositoryImpl;
 import com.example.toeicapplication.repository.impl.LoginRepositoryImpl;
 import com.example.toeicapplication.repository.impl.ResultRepositoryImpl;
+import com.example.toeicapplication.repository.impl.UserInfoRepositoryImpl;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.components.ViewModelComponent;
-import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.android.scopes.ViewModelScoped;
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -59,5 +59,11 @@ public class RepositoryModule {
     @Provides
     public EditProfileRepository provideEditProfileRepository(UserService service, MyDB db){
         return new EditProfileRepositoryImpl(service, db);
+    }
+
+    @ViewModelScoped
+    @Provides
+    public UserInfoRepository provideUserInfoRepository(MyDB db){
+        return new UserInfoRepositoryImpl(db);
     }
 }
