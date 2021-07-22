@@ -12,11 +12,11 @@ import com.example.toeicapplication.view.fragment.ReviewFragment;
 
 import org.jetbrains.annotations.NotNull;
 
-public class CourseDetailAdapter extends FragmentStateAdapter {
+public class CourseDetailPagerAdapter extends FragmentStateAdapter {
     private final int NUM_PAGES;
     private final Course course;
 
-    public CourseDetailAdapter(FragmentManager fm, Lifecycle lifecycle, int NUM_PAGES, Course course) {
+    public CourseDetailPagerAdapter(FragmentManager fm, Lifecycle lifecycle, int NUM_PAGES, Course course) {
         super(fm, lifecycle);
         this.NUM_PAGES = NUM_PAGES;
         this.course = course;

@@ -10,7 +10,7 @@ import android.os.Looper;
 import android.view.View;
 
 import com.example.toeicapplication.adapters.CourseAdapter;
-import com.example.toeicapplication.adapters.CourseDetailAdapter;
+import com.example.toeicapplication.adapters.CourseDetailPagerAdapter;
 import com.example.toeicapplication.databinding.ActivityCourseDetailBinding;
 import com.example.toeicapplication.model.entity.Course;
 import com.example.toeicapplication.model.entity.User;
@@ -47,9 +47,9 @@ public class CourseDetailActivity extends AppCompatActivity {
 
         TabLayout tab = binding.tabLayout;
 
-        CourseDetailAdapter courseDetailAdapter = new CourseDetailAdapter(getSupportFragmentManager(),
+        CourseDetailPagerAdapter courseDetailPagerAdapter = new CourseDetailPagerAdapter(getSupportFragmentManager(),
                 getLifecycle(), 2, course);
-        binding.viewPager.setAdapter(courseDetailAdapter);
+        binding.viewPager.setAdapter(courseDetailPagerAdapter);
         binding.viewPager.setUserInputEnabled(false);
         new TabLayoutMediator(tab, binding.viewPager, (tab1, position) -> {
             if (position == 0){
