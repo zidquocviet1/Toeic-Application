@@ -71,6 +71,7 @@
     <string name="join">Tham gia %1$s</string>
     <string name="score"><![CDATA[Điểm: <b>%1$d</b>]]></string>
     <string name="record"> <![CDATA[Đã thi: <b>%1$d</b>]]></string>
+    <string name="record_string">Đã thi</string>
     <string name="biography">Tiểu sử</string>
     <string name="take_photo">Chụp ảnh</string>
     <string name="choose_existing_photo">Chọn ảnh có sẵn</string>
