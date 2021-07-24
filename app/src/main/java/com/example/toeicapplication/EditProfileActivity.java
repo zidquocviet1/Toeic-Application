@@ -214,7 +214,7 @@ public class EditProfileActivity extends BaseActivity<EditProfileViewModel, Acti
                     .centerCrop()
                     .error(defaultIcon)
                     .fallback(defaultIcon)
-                    .signature(new ObjectKey(avatarPath))
+                    .signature(new ObjectKey(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId()))
                     .into(mBinding.imgAvatar);
         } else {
             mBinding.imgAvatar.setImageDrawable(defaultIcon);

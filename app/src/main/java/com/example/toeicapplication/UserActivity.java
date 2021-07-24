@@ -16,7 +16,6 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
@@ -35,7 +34,6 @@ import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.utilities.AppConstants;
 import com.example.toeicapplication.utilities.MyActivityForResult;
 import com.example.toeicapplication.viewmodels.UserInfoViewModel;
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.jetbrains.annotations.NotNull;
@@ -49,9 +47,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -144,7 +140,7 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
                 .centerCrop()
                 .error(defaultIcon)
                 .fallback(defaultIcon)
-                .signature(new ObjectKey(avatarPath))
+                .signature(new ObjectKey(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId()))
                 .into(mBinding.imgAvatar);
     }
 
