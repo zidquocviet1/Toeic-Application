@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +21,7 @@ import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.signature.ObjectKey;
 import com.example.toeicapplication.databinding.ActivityHomeBinding;
 import com.example.toeicapplication.listeners.PopupItemClickListener;
 import com.example.toeicapplication.model.entity.User;
@@ -41,7 +40,6 @@ import com.google.android.material.navigation.NavigationView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -120,24 +118,31 @@ public class HomeActivity
         Drawable defaultIcon = ContextCompat.getDrawable(this, R.drawable.ic_gray_account);
 
         if (avatarPath != null && !avatarPath.equals("")) {
-            if (isRemote) {
-                Glide.with(this).load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
-                        .centerCrop()
-                        .error(defaultIcon)
-                        .fallback(defaultIcon)
-                        .into(mBinding.imgAvatar);
-                Log.d(AppConstants.TAG, "Load avatar from remote");
-            } else {
-                String avatarName = avatarPath.substring(avatarPath.lastIndexOf('\\') + 1);
-                String path = getFilesDir() + "/user-photos/" + user.getId() + "/" + avatarName;
+            Glide.with(this).load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
+                    .centerCrop()
+                    .error(defaultIcon)
+                    .fallback(defaultIcon)
+                    .signature(new ObjectKey(avatarPath))
+                    .into(mBinding.imgAvatar);
 
-                Glide.with(this).load(new File(path))
-                        .centerCrop()
-                        .error(defaultIcon)
-                        .fallback(defaultIcon)
-                        .into(mBinding.imgAvatar);
-                Log.d(AppConstants.TAG, "Load avatar from local");
-            }
+//            if (isRemote) {
+//                Glide.with(this).load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
+//                        .centerCrop()
+//                        .error(defaultIcon)
+//                        .fallback(defaultIcon)
+//                        .into(mBinding.imgAvatar);
+//                Log.d(AppConstants.TAG, "Load avatar from remote");
+//            } else {
+//                String avatarName = avatarPath.substring(avatarPath.lastIndexOf('\\') + 1);
+//                String path = getFilesDir() + "/user-photos/" + user.getId() + "/" + avatarName;
+//
+//                Glide.with(this).load(new File(path))
+//                        .centerCrop()
+//                        .error(defaultIcon)
+//                        .fallback(defaultIcon)
+//                        .into(mBinding.imgAvatar);
+//                Log.d(AppConstants.TAG, "Load avatar from local");
+//            }
         } else {
             mBinding.imgAvatar.setImageDrawable(defaultIcon);
         }
@@ -247,7 +252,7 @@ public class HomeActivity
                      * Show this user information in the UI. After that, we must make a call to get new state of user
                      * in the remote storage. Then observe it from the code snippet below
                      * */
-                    boolean isRemote = user.getLastModified().compareTo(LocalDateTime.now().minusMinutes(2)) >= 0;
+                    boolean isRemote = user.getLastModified().compareTo(LocalDateTime.now().minusMinutes(1)) >= 0;
                     loadAvatar(user, isRemote);
                 }else{
                     mBinding.imgAvatar.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_gray_account));
