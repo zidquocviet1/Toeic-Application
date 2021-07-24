@@ -1,14 +1,14 @@
 package com.example.toeicapplication.view.fragment;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.example.toeicapplication.adapters.RecordExpandableListAdapter;
 import com.example.toeicapplication.databinding.FragmentUserRecordBinding;
@@ -28,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class UserRecordFragment extends BaseFragment<UserInfoViewModel, FragmentUserRecordBinding> {
     private List<Course> courses;
-    private List<Result> results;
+    private Map<Course, List<Result>> courseWithResults;
 
     public UserRecordFragment() {
         // Required empty public constructor
@@ -59,16 +59,6 @@ public class UserRecordFragment extends BaseFragment<UserInfoViewModel, Fragment
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupObserver();
-//        if (courses != null && !courses.isEmpty()){
-//            Map<Course, List<Result>> listDetail = new HashMap<>();
-//
-//            courses.forEach(c -> {
-//                if (c != null) listDetail.put(c, null);
-//            });
-//
-//            RecordExpandableListAdapter adapter = new RecordExpandableListAdapter(courses, listDetail, getActivity());
-//            mBinding.expandableListView.setAdapter(adapter);
-//        }
     }
 
     private void setupObserver(){
@@ -76,21 +66,21 @@ public class UserRecordFragment extends BaseFragment<UserInfoViewModel, Fragment
             mVM.getCourseListLiveData().observe(getViewLifecycleOwner(), courses ->{
                 if (courses != null && !courses.isEmpty()){
                     this.courses = new ArrayList<>(courses);
-
-                    Map<Course, List<Result>> listDetail = new HashMap<>();
-
-                    courses.forEach(c -> {
-                        if (c != null) listDetail.put(c, null);
-                    });
-
-                    RecordExpandableListAdapter adapter = new RecordExpandableListAdapter(courses, listDetail, getActivity());
-                    mBinding.expandableListView.setAdapter(adapter);
                 }
             });
 
-            mVM.getResultListLiveData().observe(getViewLifecycleOwner(), results -> {
-                if (results != null && !results.isEmpty()){
-                    this.results = new ArrayList<>(results);
+            mVM.getCourseWithResultLiveData().observe(getViewLifecycleOwner(), mapper -> {
+                if (mapper != null && !mapper.isEmpty()){
+                    this.courseWithResults = new HashMap<>(mapper);
+
+                    RecordExpandableListAdapter adapter = new RecordExpandableListAdapter(courses, courseWithResults, getActivity());
+                    mBinding.expandableListView.setAdapter(adapter);
+                    mBinding.expandableListView.setOnGroupExpandListener(groupPosition -> {
+                        List<Result> results = mapper.get(courses.get(groupPosition));
+                        if (results == null || results.isEmpty()){
+                            Toast.makeText(getContext(), "Don't have any record in this course", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             });
         }

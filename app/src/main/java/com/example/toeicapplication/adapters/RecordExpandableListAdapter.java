@@ -1,26 +1,27 @@
 package com.example.toeicapplication.adapters;
 
 import android.content.Context;
-import android.graphics.Typeface;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.TextView;
 
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.databinding.InfoCourseGroupBinding;
 import com.example.toeicapplication.databinding.InfoUserRecordBinding;
 import com.example.toeicapplication.model.entity.Course;
 import com.example.toeicapplication.model.entity.Result;
+import com.example.toeicapplication.utilities.Utils;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
 public class RecordExpandableListAdapter extends BaseExpandableListAdapter {
-    private List<Course> courses;
-    private Map<Course, List<Result>> listDetail;
-    private Context context;
+    private final List<Course> courses;
+    private final Map<Course, List<Result>> listDetail;
+    private final Context context;
 
     public RecordExpandableListAdapter(List<Course> courses, Map<Course, List<Result>> listDetail, Context context) {
         this.courses = courses;
@@ -35,7 +36,8 @@ public class RecordExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return listDetail.get(courses.get(groupPosition)).size();
+        List<Result> results = listDetail.get(courses.get(groupPosition));
+        return results == null || results.isEmpty() ? 0 : results.size();
     }
 
     @Override
@@ -45,7 +47,8 @@ public class RecordExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return listDetail.get(courses.get(groupPosition)).get(childPosition);
+        List<Result> results = listDetail.get(courses.get(groupPosition));
+        return results == null || results.isEmpty() ? null : results.get(childPosition);
     }
 
     @Override
@@ -55,7 +58,8 @@ public class RecordExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return listDetail.get(courses.get(groupPosition)).get(childPosition).getId();
+        List<Result> results = listDetail.get(courses.get(groupPosition));
+        return results == null || results.isEmpty() ? childPosition : results.get(childPosition).getId();
     }
 
     @Override
@@ -71,11 +75,13 @@ public class RecordExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             binding = InfoCourseGroupBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
             convertView = binding.getRoot();
-        }else{
+        } else {
             binding = (InfoCourseGroupBinding) convertView.getTag();
         }
 
         binding.txtTitle.setText(course.toString());
+        binding.imgGroupIndicator.setSelected(isExpanded);
+
         convertView.setTag(binding);
         return convertView;
     }
@@ -85,15 +91,26 @@ public class RecordExpandableListAdapter extends BaseExpandableListAdapter {
         Result child = (Result) getChild(groupPosition, childPosition);
         InfoUserRecordBinding binding;
 
-        if (convertView  == null){
+        if (convertView == null) {
             binding = InfoUserRecordBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
             convertView = binding.getRoot();
-        }else{
+        } else {
             binding = (InfoUserRecordBinding) convertView.getTag();
         }
 
-        if (child != null){
-            binding.txtScore.setText(child.getScore().toString());
+        if (child != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            binding.txtScore.setText(Html.fromHtml(context.getString(R.string.score, child.getScore()), Html.FROM_HTML_MODE_COMPACT));
+            binding.txtCompleteRatio.setText(context.getString(R.string.complete_progress, child.getCompletion()));
+            binding.pbProgress.setProgress(child.getCompletion());
+            binding.txtReadingScore.setText(Html.fromHtml(context.getString(R.string.reading_score, child.getReadingScore()), Html.FROM_HTML_MODE_COMPACT));
+            binding.txtListeningScore.setText(Html.fromHtml(context.getString(R.string.listening_score, child.getListeningScore()), Html.FROM_HTML_MODE_COMPACT));
+            binding.txtCorrect.setText(Html.fromHtml(context.getString(R.string.correct_detail, child.getCorrect()), Html.FROM_HTML_MODE_COMPACT));
+            binding.txtWrong.setText(Html.fromHtml(context.getString(R.string.wrong_detail, child.getWrong()), Html.FROM_HTML_MODE_COMPACT));
+            binding.txtDuration.setText(Html.fromHtml(context.getString(R.string.duration_detail, Utils.convertTime(child.getDuration())), Html.FROM_HTML_MODE_COMPACT));
+            binding.txtTimestamp.setText(Html.fromHtml(context.getString(R.string.timestamp_detail, child.getTimestamp().format(formatter)), Html.FROM_HTML_MODE_COMPACT));
+        }else{
+            binding.txtScore.setText("Have no record in this course yet.");
         }
         convertView.setTag(binding);
         return convertView;

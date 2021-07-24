@@ -141,6 +141,20 @@
     <string name="try_again">Thử lại</string>
     <string name="review_answer">Xem kết quả</string>
     <string name="duration">Thời lượng: %1$s</string>
+    <string name="reading_score"><![CDATA[Điểm đọc: <b>%1$d</b>]]></string>
+    <string name="listening_score"><![CDATA[Điểm nghe: <b>%1$d</b>]]></string>
+    <string name="correct_detail"><![CDATA[
+        Đúng: <b>%1$d</b>
+    ]]></string>
+    <string name="wrong_detail"><![CDATA[
+        Sai: <b>%1$d</b>
+    ]]></string>
+    <string name="duration_detail"><![CDATA[
+        Thời lượng: <b>%1$s</b>
+    ]]></string>
+    <string name="timestamp_detail"><![CDATA[
+        Thời gian: <b>%1$s</b>
+    ]]></string>
     //
 
     // rank fragment

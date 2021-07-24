@@ -1,16 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="10dp"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/title"
+    app:strokeWidth="1dp">
 
-    <TextView
-        android:id="@+id/txtScore"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
-        android:paddingTop="10dp"
-        android:text="990"
-        android:paddingBottom="10dp" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/txtScore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:padding="10dp"
+            android:text="@string/score"
+            android:textColor="@color/description"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txtComplete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Completion:"
+            android:textColor="@color/description"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtScore"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <ProgressBar
+            android:id="@+id/pbProgress"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:max="100"
+            android:progress="98"
+            android:progressBackgroundTint="@color/description"
+            app:layout_constraintBottom_toBottomOf="@id/txtComplete"
+            app:layout_constraintEnd_toStartOf="@id/txtCompleteRatio"
+            app:layout_constraintStart_toEndOf="@id/txtComplete"
+            app:layout_constraintTop_toTopOf="@id/txtComplete" />
+
+        <TextView
+            android:id="@+id/txtCompleteRatio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="98%"
+            android:textColor="@color/description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/txtComplete" />
+
+        <TextView
+            android:id="@+id/txtReadingScore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Reading Score: 550"
+            android:textColor="@color/description"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtComplete"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <TextView
+            android:id="@+id/txtListeningScore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Listening Score: 440"
+            android:textColor="@color/description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@id/txtReadingScore"
+            app:layout_constraintTop_toTopOf="@id/txtReadingScore"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <TextView
+            android:id="@+id/txtCorrect"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Correct: 200"
+            android:textColor="@color/description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtListeningScore"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <TextView
+            android:id="@+id/txtWrong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Wrong: 0"
+            android:textColor="@color/description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/txtCorrect"
+            app:layout_constraintTop_toBottomOf="@id/txtListeningScore" />
+
+        <TextView
+            android:id="@+id/txtDuration"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Duration: 02:00:00"
+            android:textColor="@color/description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtCorrect"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <TextView
+            android:id="@+id/txtTimestamp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Timestamp: 11/07/2021"
+            android:textColor="@color/description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/txtDuration"
+            app:layout_constraintTop_toBottomOf="@id/txtCorrect" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

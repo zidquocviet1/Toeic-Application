@@ -2,6 +2,7 @@ package com.example.toeicapplication.repository.impl;
 
 import com.example.toeicapplication.db.MyDB;
 import com.example.toeicapplication.model.entity.Course;
+import com.example.toeicapplication.model.relations.CourseWithResults;
 import com.example.toeicapplication.repository.UserInfoRepository;
 
 import java.util.List;
@@ -21,5 +22,10 @@ public class UserInfoRepositoryImpl implements UserInfoRepository {
     @Override
     public Single<List<Course>> getAllCourses() {
         return db.getCourseDAO().getAllCourses();
+    }
+
+    @Override
+    public Single<List<CourseWithResults>> getCourseWithResults() {
+        return db.getCourseDAO().getCourseWithResults();
     }
 }

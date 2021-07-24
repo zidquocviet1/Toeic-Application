@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="8dp"
     tools:context=".view.fragment.UserRecordFragment">
 
     <ExpandableListView
@@ -11,6 +12,7 @@
         android:layout_height="match_parent"
         android:divider="@color/white"
         android:dividerHeight="6dp"
+        android:childDivider="@color/white"
         android:groupIndicator="@null"
         android:indicatorRight="?android:attr/expandableListPreferredItemIndicatorRight"
         tools:listitem="@layout/info_course_group" />

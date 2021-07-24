@@ -5,6 +5,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 
 import com.example.toeicapplication.model.entity.Course;
+import com.example.toeicapplication.model.relations.CourseWithResults;
 
 import java.util.List;
 
@@ -17,4 +18,7 @@ public interface CourseDAO {
 
     @Insert
     void insertAll(Course... courses);
+
+    @Query("select * from course")
+    Single<List<CourseWithResults>> getCourseWithResults();
 }

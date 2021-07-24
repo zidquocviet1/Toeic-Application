@@ -87,8 +87,11 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("user");
+        if (user == null) this.finish();
 
+        mVM.setUser(user);
         showInfo(user);
+
         mBinding.imgAvatar.setOnClickListener(this);
         mBinding.btnEdit.setOnClickListener(this);
 

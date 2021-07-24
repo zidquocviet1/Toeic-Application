@@ -115,7 +115,7 @@
         scenarios and over 1,000 authentic TOEIC® test
         questions to help you build the English skills
         you need for everyday workplace situations and
-        prepare you for success<br/>
+        prepare you for success<br />
     </string>
     <string name="enroll">Enroll</string>
     <string name="course_content">Course Content</string>
@@ -140,6 +140,24 @@
     <string name="try_again">Try Again</string>
     <string name="review_answer">Review Answer</string>
     <string name="duration">Duration: %1$s</string>
+    <string name="reading_score"><![CDATA[
+    Reading Score: <b>%1$d</b>
+    ]]></string>
+    <string name="listening_score"><![CDATA[
+    Listening Score: <b>%1$d</b>
+    ]]></string>
+    <string name="correct_detail"><![CDATA[
+        Correct: <b>%1$d</b>
+    ]]></string>
+    <string name="wrong_detail"><![CDATA[
+        Wrong: <b>%1$d</b>
+    ]]></string>
+    <string name="duration_detail"><![CDATA[
+        Duration: <b>%1$s</b>
+    ]]></string>
+    <string name="timestamp_detail"><![CDATA[
+        Timestamp: <b>%1$s</b>
+    ]]></string>
     //
 
     // rank fragment
