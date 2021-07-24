@@ -5,12 +5,12 @@
     android:layout_height="wrap_content"
     android:layout_margin="6dp"
     android:background="@drawable/shape_layout_course_detail"
-    android:clickable="true"
-    android:elevation="4dp"
     android:backgroundTintMode="src_in"
+    android:clickable="true"
+    android:focusable="true"
+    android:elevation="2dp"
     android:foregroundTint="@android:color/transparent"
-    android:foreground="?selectableItemBackgroundBorderless"
-    android:padding="4dp">
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/txtRank"
@@ -55,7 +55,7 @@
         android:layout_height="50dp"
         android:layout_marginStart="14dp"
         android:foreground="?selectableItemBackground"
-        app:cardCornerRadius="60dp"
+        app:cardCornerRadius="100dp"
         app:layout_constraintBottom_toBottomOf="@id/txtRank"
         app:layout_constraintStart_toEndOf="@id/txtRank"
         app:layout_constraintTop_toTopOf="@id/txtRank">
@@ -73,7 +73,7 @@
 
     <TextView
         android:id="@+id/txtDisplayName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="14dp"
         android:fontFamily="@font/avenir_lt_pro_black"

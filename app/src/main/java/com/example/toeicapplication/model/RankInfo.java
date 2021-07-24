@@ -1,5 +1,8 @@
 package com.example.toeicapplication.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.example.toeicapplication.model.entity.RemoteUser;
 import com.example.toeicapplication.model.entity.Result;
 import com.example.toeicapplication.model.entity.User;
@@ -7,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
-public class RankInfo {
+public class RankInfo implements Parcelable {
     @SerializedName("user")
     private RemoteUser user;
     @SerializedName("result")
@@ -17,6 +20,23 @@ public class RankInfo {
         this.user = user;
         this.result = result;
     }
+
+    protected RankInfo(Parcel in) {
+        user = in.readParcelable(RemoteUser.class.getClassLoader());
+        result = in.readParcelable(Result.class.getClassLoader());
+    }
+
+    public static final Creator<RankInfo> CREATOR = new Creator<RankInfo>() {
+        @Override
+        public RankInfo createFromParcel(Parcel in) {
+            return new RankInfo(in);
+        }
+
+        @Override
+        public RankInfo[] newArray(int size) {
+            return new RankInfo[size];
+        }
+    };
 
     public RemoteUser getUser() {
         return user;
@@ -46,5 +66,16 @@ public class RankInfo {
     @Override
     public int hashCode() {
         return Objects.hash(user, result);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(user, flags);
+        dest.writeParcelable(result, flags);
     }
 }

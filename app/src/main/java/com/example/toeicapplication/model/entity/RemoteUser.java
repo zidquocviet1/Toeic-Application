@@ -25,13 +25,17 @@ public class RemoteUser implements Parcelable{
     @SerializedName(value = "displayName")
     private String displayName;
 
+    @ColumnInfo(name = "biography", defaultValue = "")
+    private String biography;
+
     @ColumnInfo(name = "timestamp")
     private LocalDateTime timestamp;
 
-    public RemoteUser(Long id, String userName, String displayName, LocalDateTime timestamp) {
+    public RemoteUser(Long id, String userName, String displayName, String biography, LocalDateTime timestamp) {
         this.id = id;
         this.userName = userName;
         this.displayName = displayName;
+        this.biography = biography;
         this.timestamp = timestamp;
     }
 
@@ -43,6 +47,8 @@ public class RemoteUser implements Parcelable{
         }
         userName = in.readString();
         displayName = in.readString();
+        biography = in.readString();
+        timestamp = (LocalDateTime) in.readSerializable();
     }
 
     public static final Creator<RemoteUser> CREATOR = new Creator<RemoteUser>() {
@@ -89,6 +95,14 @@ public class RemoteUser implements Parcelable{
         this.timestamp = timestamp;
     }
 
+    public String getBiography() {
+        return biography;
+    }
+
+    public void setBiography(String biography) {
+        this.biography = biography;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -104,5 +118,7 @@ public class RemoteUser implements Parcelable{
         }
         dest.writeString(userName);
         dest.writeString(displayName);
+        dest.writeString(biography);
+        dest.writeSerializable(timestamp);
     }
 }

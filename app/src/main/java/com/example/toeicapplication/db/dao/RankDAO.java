@@ -31,7 +31,7 @@ public abstract class RankDAO {
     @Transaction
     public void addRemoteUserWithResults(List<User> users){
         for (User user : users){
-            addRemoteUser(new RemoteUser(user.getId(), user.getUserName(), user.getDisplayName(), user.getTimestamp()));
+            addRemoteUser(new RemoteUser(user.getId(), user.getUserName(), user.getDisplayName(), user.getBiography(), user.getTimestamp()));
             insertResult(user.getResults());
         }
     }

@@ -6,19 +6,35 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.ObjectKey;
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.databinding.InfoUserRankBinding;
 import com.example.toeicapplication.model.RankInfo;
+import com.example.toeicapplication.model.entity.RemoteUser;
+import com.example.toeicapplication.model.entity.User;
+import com.example.toeicapplication.utilities.AppConstants;
 
 import org.jetbrains.annotations.NotNull;
 
 public class RankAdapter extends ListAdapter<RankInfo, RankAdapter.RankViewHolder> {
     private Context context;
+    private OnItemClickListener callback;
     private static final int[] ORDINAL_SYMBOL = {R.string.second_symbol, R.string.third_symbol, R.string.fourth_symbol};
+
+    public interface OnItemClickListener{
+        void onItemClick(RemoteUser item);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener callback){
+        this.callback = callback;
+    }
 
     public RankAdapter(Context context){
         this(new DiffUtil.ItemCallback<RankInfo>() {
@@ -54,7 +70,10 @@ public class RankAdapter extends ListAdapter<RankInfo, RankAdapter.RankViewHolde
                 : (index == 0 ? context.getString(ORDINAL_SYMBOL[0], index + 2)
                 : context.getString(ORDINAL_SYMBOL[1], index + 2));
 
-        holder.bind(item, ordinal);
+        holder.bind(item, ordinal, context);
+        holder.itemView.setOnClickListener(v -> {
+            if (callback != null) callback.onItemClick(item.getUser());
+        });
     }
 
     public static class RankViewHolder extends RecyclerView.ViewHolder {
@@ -65,10 +84,22 @@ public class RankAdapter extends ListAdapter<RankInfo, RankAdapter.RankViewHolde
             binding = InfoUserRankBinding.bind(itemView);
         }
 
-        public void bind(RankInfo item, String ordinal){
+        public void bind(RankInfo item, String ordinal, Context context){
             binding.txtDisplayName.setText(item.getUser().getDisplayName());
             binding.txtScore.setText(String.valueOf(item.getResult().getScore()));
             binding.txtRank.setText(ordinal);
+
+            CircularProgressDrawable cp = new CircularProgressDrawable(context);
+            cp.setStrokeWidth(5f);
+            cp.setCenterRadius(30f);
+            cp.start();
+
+            Glide.with(context)
+                    .load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + item.getUser().getId())
+                    .error(ContextCompat.getDrawable(context, R.drawable.ic_gray_account))
+                    .placeholder(cp)
+                    .signature(new ObjectKey(AppConstants.API_ENDPOINT + "user/avatar?userId=" + item.getUser().getId()))
+                    .into(binding.imgUser);
         }
     }
 }

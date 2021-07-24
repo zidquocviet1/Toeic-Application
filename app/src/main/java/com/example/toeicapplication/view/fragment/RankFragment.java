@@ -1,6 +1,7 @@
 package com.example.toeicapplication.view.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,8 +16,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.ObjectKey;
+import com.example.toeicapplication.EditProfileActivity;
 import com.example.toeicapplication.R;
+import com.example.toeicapplication.UserActivity;
 import com.example.toeicapplication.adapters.RankAdapter;
 import com.example.toeicapplication.databinding.FragmentRankBinding;
 import com.example.toeicapplication.model.RankInfo;
@@ -108,6 +114,12 @@ public class RankFragment extends BaseFragment<HomeViewModel, FragmentRankBindin
     private void setupRecyclerView() {
         rankAdapter = new RankAdapter(context);
 
+        rankAdapter.setOnItemClickListener(item -> {
+            Intent intent = new Intent(context, UserActivity.class);
+            intent.putExtra("remote_user", item);
+            intent.putExtra("source", RankFragment.class.getSimpleName());
+            startActivity(intent);
+        });
         mBinding.rvRankUser.setAdapter(rankAdapter);
         mBinding.rvRankUser.setHasFixedSize(true);
     }
@@ -167,7 +179,7 @@ public class RankFragment extends BaseFragment<HomeViewModel, FragmentRankBindin
                         }, 500);
                         break;
                     case LOADING:
-                        LoadingDialog.showLoadingDialog(context);
+//                        LoadingDialog.showLoadingDialog(context);
                         break;
                     case ERROR:
                         new Handler(Looper.getMainLooper()).postDelayed(LoadingDialog::dismissDialog, 500);
@@ -188,6 +200,18 @@ public class RankFragment extends BaseFragment<HomeViewModel, FragmentRankBindin
             bindingVisibleUser(false);
             mBinding.txtDisplayName1.setText(user.getDisplayName());
             mBinding.txtScore1.setText(String.valueOf(result.getScore()));
+
+            CircularProgressDrawable cp = new CircularProgressDrawable(context);
+            cp.setStrokeWidth(5f);
+            cp.setCenterRadius(30f);
+            cp.start();
+
+            Glide.with(context)
+                    .load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
+                    .error(ContextCompat.getDrawable(context, R.drawable.ic_gray_account))
+                    .placeholder(cp)
+                    .signature(new ObjectKey(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId()))
+                    .into(mBinding.imgAvatar);
         }
     }
 
