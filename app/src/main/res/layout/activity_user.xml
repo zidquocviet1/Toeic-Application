@@ -37,12 +37,23 @@
             android:foreground="#10000000" />
     </androidx.cardview.widget.CardView>
 
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/pbLoading"
+        style="?android:progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="10dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/cvAvatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/txtDisplayName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Cristiano Ronaldo"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -55,7 +66,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Write your bio here to share the opinion to everyone."
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="16sp"
@@ -135,10 +145,10 @@
         android:id="@+id/tabLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:tabTextAppearance="@style/TextTabItem"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtJoin">
+        app:layout_constraintTop_toBottomOf="@id/txtJoin"
+        app:tabTextAppearance="@style/TextTabItem">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="match_parent"

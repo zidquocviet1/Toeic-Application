@@ -32,7 +32,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/shape_layout_course_detail"
-        android:elevation="8dp"
+        android:elevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.4"
@@ -114,21 +114,20 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:src="@drawable/ic_crown"
-            app:layout_constraintBottom_toTopOf="@id/imgTop1"
-            app:layout_constraintEnd_toEndOf="@id/imgTop1"
+            app:layout_constraintBottom_toTopOf="@id/cvTop1"
+            app:layout_constraintEnd_toEndOf="@id/cvTop1"
             app:layout_constraintHeight_percent="0.12"
-            app:layout_constraintStart_toStartOf="@id/imgTop1"
+            app:layout_constraintStart_toStartOf="@id/cvTop1"
             app:layout_constraintVertical_bias="1"
             app:layout_constraintWidth_percent="0.15" />
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/imgTop1"
+            android:id="@+id/cvTop1"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="30dp"
             android:foreground="?selectableItemBackground"
             app:cardCornerRadius="60dp"
-            app:cardElevation="16dp"
             app:layout_constraintBottom_toTopOf="@id/txtScore1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.3"
@@ -137,6 +136,7 @@
             app:layout_constraintWidth_percent="0.3">
 
             <ImageView
+                android:id="@+id/imgTop1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/profile_avatar"
@@ -155,9 +155,9 @@
             android:textColor="@color/title"
             android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@id/txtDisplayName1"
-            app:layout_constraintEnd_toEndOf="@id/imgTop1"
-            app:layout_constraintStart_toStartOf="@id/imgTop1"
-            app:layout_constraintTop_toBottomOf="@id/imgTop1" />
+            app:layout_constraintEnd_toEndOf="@id/cvTop1"
+            app:layout_constraintStart_toStartOf="@id/cvTop1"
+            app:layout_constraintTop_toBottomOf="@id/cvTop1" />
 
         <TextView
             android:id="@+id/txtDisplayName1"
@@ -181,25 +181,25 @@
             android:textColor="@color/title"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/imgTop2"
-            app:layout_constraintEnd_toEndOf="@id/imgTop2"
-            app:layout_constraintStart_toStartOf="@id/imgTop2" />
+            app:layout_constraintBottom_toTopOf="@id/cvTop2"
+            app:layout_constraintEnd_toEndOf="@id/cvTop2"
+            app:layout_constraintStart_toStartOf="@id/cvTop2" />
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/imgTop2"
+            android:id="@+id/cvTop2"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginEnd="30dp"
             android:foreground="?selectableItemBackground"
             app:cardCornerRadius="120dp"
-            app:cardElevation="16dp"
-            app:layout_constraintBottom_toBottomOf="@id/imgTop1"
-            app:layout_constraintEnd_toStartOf="@id/imgTop1"
+            app:layout_constraintBottom_toBottomOf="@id/cvTop1"
+            app:layout_constraintEnd_toStartOf="@id/cvTop1"
             app:layout_constraintHeight_percent="0.2"
-            app:layout_constraintTop_toTopOf="@id/imgTop1"
+            app:layout_constraintTop_toTopOf="@id/cvTop1"
             app:layout_constraintWidth_percent="0.2">
 
             <ImageView
+                android:id="@+id/imgTop2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/profile_avatar"
@@ -218,9 +218,9 @@
             android:textColor="@color/title"
             android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@id/txtDisplayName2"
-            app:layout_constraintEnd_toEndOf="@id/imgTop2"
-            app:layout_constraintStart_toStartOf="@id/imgTop2"
-            app:layout_constraintTop_toBottomOf="@id/imgTop2" />
+            app:layout_constraintEnd_toEndOf="@id/cvTop2"
+            app:layout_constraintStart_toStartOf="@id/cvTop2"
+            app:layout_constraintTop_toBottomOf="@id/cvTop2" />
 
         <TextView
             android:id="@+id/txtDisplayName2"
@@ -244,25 +244,25 @@
             android:textColor="@color/title"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/imgTop3"
-            app:layout_constraintEnd_toEndOf="@id/imgTop3"
-            app:layout_constraintStart_toStartOf="@id/imgTop3" />
+            app:layout_constraintBottom_toTopOf="@id/cvTop3"
+            app:layout_constraintEnd_toEndOf="@id/cvTop3"
+            app:layout_constraintStart_toStartOf="@id/cvTop3" />
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/imgTop3"
+            android:id="@+id/cvTop3"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="30dp"
             android:foreground="?selectableItemBackground"
             app:cardCornerRadius="120dp"
-            app:cardElevation="16dp"
-            app:layout_constraintBottom_toBottomOf="@id/imgTop1"
+            app:layout_constraintBottom_toBottomOf="@id/cvTop1"
             app:layout_constraintHeight_percent="0.2"
-            app:layout_constraintStart_toEndOf="@id/imgTop1"
-            app:layout_constraintTop_toTopOf="@id/imgTop1"
+            app:layout_constraintStart_toEndOf="@id/cvTop1"
+            app:layout_constraintTop_toTopOf="@id/cvTop1"
             app:layout_constraintWidth_percent="0.2">
 
             <ImageView
+                android:id="@+id/imgTop3"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/profile_avatar"
@@ -281,9 +281,9 @@
             android:textColor="@color/title"
             android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@id/txtDisplayName3"
-            app:layout_constraintEnd_toEndOf="@id/imgTop3"
-            app:layout_constraintStart_toStartOf="@id/imgTop3"
-            app:layout_constraintTop_toBottomOf="@id/imgTop3" />
+            app:layout_constraintEnd_toEndOf="@id/cvTop3"
+            app:layout_constraintStart_toStartOf="@id/cvTop3"
+            app:layout_constraintTop_toBottomOf="@id/cvTop3" />
 
         <TextView
             android:id="@+id/txtDisplayName3"
