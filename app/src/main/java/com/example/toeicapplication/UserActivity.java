@@ -1,11 +1,16 @@
 package com.example.toeicapplication;
 
+import android.Manifest;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +19,7 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -29,22 +35,21 @@ import com.bumptech.glide.request.transition.Transition;
 import com.bumptech.glide.signature.ObjectKey;
 import com.example.toeicapplication.adapters.UserInfoPagerAdapter;
 import com.example.toeicapplication.databinding.ActivityUserBinding;
+import com.example.toeicapplication.model.entity.RemoteUser;
 import com.example.toeicapplication.model.entity.Result;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.utilities.AppConstants;
 import com.example.toeicapplication.utilities.MyActivityForResult;
+import com.example.toeicapplication.view.custom.AppInfoPermissionDialog;
+import com.example.toeicapplication.view.custom.ExplainReasonUsePermissionDialog;
+import com.example.toeicapplication.view.fragment.RankFragment;
 import com.example.toeicapplication.viewmodels.UserInfoViewModel;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -59,6 +64,8 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
     private User user;
     private final MyActivityForResult<Intent, ActivityResult> activityLauncher
             = MyActivityForResult.registerActivityForResult(this);
+    private final MyActivityForResult<String, Boolean> requestPermissionLauncher
+            = MyActivityForResult.registerActivityForResult(this, new ActivityResultContracts.RequestPermission());
 
     @NonNull
     @NotNull
@@ -81,34 +88,65 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        user = intent.getParcelableExtra("user");
+        getUserFromIntent();
         if (user == null) this.finish();
-
         mVM.setUser(user);
+        setupViewPager();
         showInfo(user);
-
         mBinding.imgAvatar.setOnClickListener(this);
         mBinding.btnEdit.setOnClickListener(this);
+    }
 
+    @Override
+    public void setupObserver() {
+        if (mVM != null) {
+            mVM.getResultListLiveData().observe(this, resultList -> {
+                if (resultList != null && !resultList.isEmpty()) {
+                    mBinding.txtRecord.setText(Html.fromHtml(getString(R.string.record, resultList.size()), Html.FROM_HTML_MODE_COMPACT));
+                    Result result = resultList.stream()
+                            .max((o1, o2) -> o1.getScore().compareTo(o2.getScore()))
+                            .orElse(null);
+                    Integer maxCore = result == null ? 0 : result.getScore();
+                    mBinding.txtScore.setText(Html.fromHtml(getString(R.string.score, maxCore), Html.FROM_HTML_MODE_COMPACT));
+                } else {
+                    mBinding.txtRecord.setText(Html.fromHtml(getString(R.string.record, 0), Html.FROM_HTML_MODE_COMPACT));
+                    mBinding.txtScore.setText(Html.fromHtml(getString(R.string.score, 0), Html.FROM_HTML_MODE_COMPACT));
+                }
+            });
+        }
+    }
+
+    private void getUserFromIntent() {
+        Intent intent = getIntent();
+        String source = intent.getStringExtra("source");
+
+        if (source.equals(HomeActivity.class.getSimpleName())) {
+            user = intent.getParcelableExtra("user");
+//            mVM.getCourseWithResults();
+        } else if (source.equals(RankFragment.class.getSimpleName())) {
+            mBinding.btnEdit.setVisibility(View.GONE);
+            RemoteUser remoteUser = intent.getParcelableExtra("remote_user");
+            user = new User(remoteUser.getId(), remoteUser.getUserName(), "", remoteUser.getDisplayName(),
+                    remoteUser.getBiography(), "", "", "", null,
+                    remoteUser.getTimestamp(), null, false, null);
+            mVM.getResultRemoteWithUserId(user.getId());
+        }
+    }
+
+    private void setupViewPager() {
         UserInfoPagerAdapter pagerAdapter = new UserInfoPagerAdapter(getSupportFragmentManager(),
                 getLifecycle(), 1);
 
         mBinding.viewPager.setAdapter(pagerAdapter);
         new TabLayoutMediator(mBinding.tabLayout, mBinding.viewPager, (tab, position) -> {
-            if (position == 0){
+            if (position == 0) {
                 tab.setText(getString(R.string.record_string));
             }
         }).attach();
     }
 
-    @Override
-    public void setupObserver() {
-
-    }
-
-    private void showInfo(User user){
-        if (user != null){
+    private void showInfo(User user) {
+        if (user != null) {
             List<Result> results = user.getResults();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(AppConstants.DATE_TIME_PATTERN);
 
@@ -116,24 +154,23 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
             mBinding.txtBio.setText(user.getBiography());
             mBinding.txtJoin.setText(getString(R.string.join, user.getTimestamp().format(formatter)));
 
-            if (results != null){
+            if (results != null) {
                 mBinding.txtRecord.setText(Html.fromHtml(getString(R.string.record, results.size()), Html.FROM_HTML_MODE_COMPACT));
                 Result result = results.stream()
                         .max((o1, o2) -> o1.getScore().compareTo(o2.getScore()))
                         .orElse(null);
                 Integer maxCore = result == null ? 0 : result.getScore();
                 mBinding.txtScore.setText(Html.fromHtml(getString(R.string.score, maxCore), Html.FROM_HTML_MODE_COMPACT));
-            }else{
+            } else {
                 mBinding.txtRecord.setText(Html.fromHtml(getString(R.string.record, 0), Html.FROM_HTML_MODE_COMPACT));
                 mBinding.txtScore.setText(Html.fromHtml(getString(R.string.score, 0), Html.FROM_HTML_MODE_COMPACT));
             }
 
-            String avatarPath = user.getAvatarPath();
-            loadAvatar(avatarPath);
+            loadAvatar();
         }
     }
 
-    private void loadAvatar(String avatarPath){
+    private void loadAvatar() {
         Drawable defaultIcon = ContextCompat.getDrawable(this, R.drawable.ic_gray_account);
 
         Glide.with(this).load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
@@ -148,19 +185,19 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
     public void onClick(View v) {
         int id = v.getId();
 
-        if (id == mBinding.btnEdit.getId()){
+        if (id == mBinding.btnEdit.getId()) {
             Intent intent = new Intent(UserActivity.this, EditProfileActivity.class);
             intent.putExtra("user", user);
 
             activityLauncher.mLaunch(intent, result -> {
                 Intent response = result.getData();
 
-                if (response != null){
+                if (response != null) {
                     User user = response.getParcelableExtra("user");
                     if (user != null) showInfo(user);
                 }
             });
-        }else if (id == mBinding.imgAvatar.getId()){
+        } else if (id == mBinding.imgAvatar.getId()) {
             Dialog dialog = new Dialog(this, android.R.style.Theme_Material_NoActionBar_TranslucentDecor);
             dialog.setContentView(R.layout.dialog_image_preview);
             dialog.getWindow().getAttributes().windowAnimations = R.style.SlideDialogAnimation;
@@ -176,17 +213,29 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
                 popup.setOnMenuItemClickListener(item -> {
                     int id1 = item.getItemId();
 
-                    if (id1 == R.id.mnSave){
-                        saveProfileImage();
-                        Log.d(AppConstants.TAG, "Save image into Internal Storage");
-                    }else if (id1 == R.id.mnShareImage){
-                        Log.d(AppConstants.TAG, "Share image link");
+                    if (id1 == R.id.mnSave) {
+                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                                PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+                            saveProfileImage();
+                        }else if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                            ExplainReasonUsePermissionDialog explainDialog = new ExplainReasonUsePermissionDialog();
+                            explainDialog.show(getSupportFragmentManager(), "explain");
+                        }else{
+                            requestPermissionLauncher.mLaunch(Manifest.permission.WRITE_EXTERNAL_STORAGE, isGranted -> {
+                                if (isGranted){
+                                    saveProfileImage();
+                                }else{
+                                    AppInfoPermissionDialog appInfoDialog = new AppInfoPermissionDialog();
+                                    appInfoDialog.show(getSupportFragmentManager(), "app_info");
+                                }
+                            });
+                        }
+                    } else if (id1 == R.id.mnShareImage) {
                         Intent sendLinkIntent = new Intent(Intent.ACTION_SEND);
                         sendLinkIntent.setType("text/plain");
                         sendLinkIntent.putExtra(Intent.EXTRA_TEXT, AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId());
                         startActivity(sendLinkIntent);
-                    }else if (id1 == R.id.mnOpenInBrowser){
-                        Log.d(AppConstants.TAG, "Open image in browser");
+                    } else if (id1 == R.id.mnOpenInBrowser) {
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setData(Uri.parse(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId()));
                         startActivity(intent);
@@ -211,77 +260,63 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
         }
     }
 
-    private void saveProfileImage(){
+    private void saveProfileImage() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String imageFileName = "IMG_" + timeStamp + "_";
-        String dir = getFilesDir().getAbsolutePath() + "/save-photos";
-        Path path = Paths.get(dir);
+        String imageFileName = "IMG_" + timeStamp;
 
-        if (!Files.exists(path)){
-            try {
-                Files.createDirectories(path);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, getString(R.string.could_not_save_image),
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
+        Glide.with(this)
+                .asBitmap()
+                .load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
+                .signature(new ObjectKey(String.valueOf(System.currentTimeMillis())))
+                .listener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                        Toast.makeText(UserActivity.this, getString(R.string.could_not_save_image),
+                                Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
 
-        File storageDir = new File(path.toFile().getAbsolutePath());
-        File image = null;
-        try {
-            image = File.createTempFile(imageFileName, ".jpg", storageDir);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, getString(R.string.could_not_save_image),
-                    Toast.LENGTH_SHORT).show();
-        }
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                })
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull @NotNull Bitmap resource, @Nullable @org.jetbrains.annotations.Nullable Transition<? super Bitmap> transition) {
+                        Uri imageCollections;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            imageCollections = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+                        } else {
+                            imageCollections = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                        }
 
-        if (image != null){
-            try {
-                FileOutputStream fos = new FileOutputStream(image);
+                        Log.d(AppConstants.TAG, "Content Uri: " + imageCollections.toString());
 
-                Glide.with(this)
-                        .asBitmap()
-                        .load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
-                        .signature(new ObjectKey(String.valueOf(System.currentTimeMillis())))
-                        .listener(new RequestListener<Bitmap>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                                Toast.makeText(UserActivity.this, getString(R.string.could_not_save_image),
-                                        Toast.LENGTH_SHORT).show();
-                                return false;
+                        ContentValues cv = new ContentValues();
+                        cv.put(MediaStore.Images.Media.DISPLAY_NAME, imageFileName);
+                        cv.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                        cv.put(MediaStore.Images.Media.WIDTH, resource.getWidth());
+                        cv.put(MediaStore.Images.Media.HEIGHT, resource.getHeight());
+
+                        Uri insertUri = getContentResolver().insert(imageCollections, cv);
+                        try {
+                            OutputStream os = getContentResolver().openOutputStream(insertUri);
+                            if (!resource.compress(Bitmap.CompressFormat.JPEG, 95, os)) {
+                                throw new IOException(getString(R.string.could_not_save_image));
                             }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(UserActivity.this, getString(R.string.save_image_successfully),
+                                Toast.LENGTH_SHORT).show();
+                    }
 
-                            @Override
-                            public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                                return false;
-                            }
-                        })
-                        .into(new CustomTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(@NonNull @NotNull Bitmap resource, @Nullable @org.jetbrains.annotations.Nullable Transition<? super Bitmap> transition) {
-                                if (resource.compress(Bitmap.CompressFormat.JPEG, 95, fos)){
-                                    Toast.makeText(UserActivity.this, getString(R.string.save_image_successfully),
-                                            Toast.LENGTH_SHORT).show();
-                                }else{
-                                    Toast.makeText(UserActivity.this, getString(R.string.could_not_save_image),
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onLoadCleared(@Nullable @org.jetbrains.annotations.Nullable Drawable placeholder) {
-                                Toast.makeText(UserActivity.this, getString(R.string.could_not_save_image),
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                if (image.length() == 0) image.delete();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                Toast.makeText(this, getString(R.string.could_not_save_image),
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
+                    @Override
+                    public void onLoadCleared(@Nullable @org.jetbrains.annotations.Nullable Drawable placeholder) {
+                        Toast.makeText(UserActivity.this, getString(R.string.could_not_save_image),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
