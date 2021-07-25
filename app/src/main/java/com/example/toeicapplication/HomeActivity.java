@@ -339,6 +339,7 @@ public class HomeActivity
             if (id == R.id.mnInfo) {
                 Intent intent = new Intent(HomeActivity.this, UserActivity.class);
                 intent.putExtra("user", user);
+                intent.putExtra("source", HomeActivity.class.getSimpleName());
                 startActivity(intent);
             } else if (id == R.id.mnLogout) {
                 showLogoutDialog(user);
