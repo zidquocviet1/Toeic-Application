@@ -65,9 +65,9 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
         implements View.OnClickListener {
     private User user;
     private final MyActivityForResult<Intent, ActivityResult> activityLauncher
-            = MyActivityForResult.registerActivityForResult(this);
+            = getActivityForResult(new ActivityResultContracts.StartActivityForResult());
     private final MyActivityForResult<String, Boolean> requestPermissionLauncher
-            = MyActivityForResult.registerActivityForResult(this, new ActivityResultContracts.RequestPermission());
+            = getActivityForResult(new ActivityResultContracts.RequestPermission());
 
     @NonNull
     @NotNull
