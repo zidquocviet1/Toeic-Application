@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.signature.ObjectKey;
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.databinding.InfoUserRankBinding;
@@ -98,6 +99,7 @@ public class RankAdapter extends ListAdapter<RankInfo, RankAdapter.RankViewHolde
                     .load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + item.getUser().getId())
                     .error(ContextCompat.getDrawable(context, R.drawable.ic_gray_account))
                     .placeholder(cp)
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .signature(new ObjectKey(AppConstants.API_ENDPOINT + "user/avatar?userId=" + item.getUser().getId()))
                     .into(binding.imgUser);
         }

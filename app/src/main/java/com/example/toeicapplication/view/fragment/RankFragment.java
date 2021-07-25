@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.signature.ObjectKey;
 import com.example.toeicapplication.EditProfileActivity;
 import com.example.toeicapplication.R;
@@ -210,6 +211,7 @@ public class RankFragment extends BaseFragment<HomeViewModel, FragmentRankBindin
                     .load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId())
                     .error(ContextCompat.getDrawable(context, R.drawable.ic_gray_account))
                     .placeholder(cp)
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .signature(new ObjectKey(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId()))
                     .into(mBinding.imgAvatar);
             mBinding.imgAvatar.setOnClickListener(v -> {
