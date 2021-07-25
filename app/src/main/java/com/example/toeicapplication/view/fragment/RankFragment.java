@@ -212,6 +212,12 @@ public class RankFragment extends BaseFragment<HomeViewModel, FragmentRankBindin
                     .placeholder(cp)
                     .signature(new ObjectKey(AppConstants.API_ENDPOINT + "user/avatar?userId=" + user.getId()))
                     .into(mBinding.imgAvatar);
+            mBinding.imgAvatar.setOnClickListener(v -> {
+                Intent intent = new Intent(context, UserActivity.class);
+                intent.putExtra("remote_user", info.getUser());
+                intent.putExtra("source", RankFragment.class.getSimpleName());
+                startActivity(intent);
+            });
         }
     }
 
