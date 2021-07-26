@@ -3,6 +3,7 @@ package com.example.toeicapplication.di;
 
 import com.example.toeicapplication.db.MyDB;
 import com.example.toeicapplication.db.dao.ResultDAO;
+import com.example.toeicapplication.network.service.CommentService;
 import com.example.toeicapplication.network.service.CourseService;
 import com.example.toeicapplication.network.service.ResultService;
 import com.example.toeicapplication.network.service.UserService;
@@ -72,7 +73,7 @@ public class RepositoryModule {
 
     @ViewModelScoped
     @Provides
-    public CourseDetailRepository provideCourseDetailRepository(CourseService courseService){
-        return new CourseDetailRepositoryImpl(courseService);
+    public CourseDetailRepository provideCourseDetailRepository(CourseService courseService, CommentService commentService){
+        return new CourseDetailRepositoryImpl(courseService, commentService);
     }
 }

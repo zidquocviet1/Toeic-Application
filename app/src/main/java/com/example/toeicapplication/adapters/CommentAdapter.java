@@ -10,9 +10,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.signature.ObjectKey;
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.model.Comment;
+import com.example.toeicapplication.utilities.AppConstants;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -27,6 +32,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         this.comments = comments;
     }
 
+    public void setData(List<Comment> data){
+        comments.addAll(data);
+        notifyItemRangeChanged(0, data.size());
+    }
+
     @NonNull
     @NotNull
     @Override
@@ -39,8 +49,20 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     public void onBindViewHolder(@NonNull @NotNull CommentAdapter.CommentVH holder, int position) {
         Comment comment = comments.get(position);
 
-        holder.imgAvatar.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.user_1));
         holder.review.setText(comment.getContent());
+
+        CircularProgressDrawable cp = new CircularProgressDrawable(context);
+        cp.setStrokeWidth(5f);
+        cp.setCenterRadius(30f);
+        cp.start();
+
+        Glide.with(context)
+                .load(AppConstants.API_ENDPOINT + "user/avatar?userId=" + comment.getUserId())
+                .error(ContextCompat.getDrawable(context, R.drawable.ic_gray_account))
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .placeholder(cp)
+                .signature(new ObjectKey(AppConstants.API_ENDPOINT + "user/avatar?userId=" + comment.getUserId()))
+                .into(holder.imgAvatar);
     }
 
     @Override

@@ -30,7 +30,7 @@ public class CourseDetailPagerAdapter extends FragmentStateAdapter {
             case 0:
                 return OverviewFragment.newInstance(this.course.getDescription());
             case 1:
-                return ReviewFragment.newInstance(this.course.getComment());
+                return new ReviewFragment();
             default:
                 return null;
         }

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,38 +16,22 @@ import com.example.toeicapplication.CourseDetailActivity;
 import com.example.toeicapplication.adapters.CommentAdapter;
 import com.example.toeicapplication.databinding.TabReviewFragmentBinding;
 import com.example.toeicapplication.model.Comment;
+import com.example.toeicapplication.viewmodels.CourseDetailViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ReviewFragment extends Fragment {
-    private ArrayList<Comment> comments = new ArrayList<>();
+    private final List<Comment> comments = new ArrayList<>();
     private TabReviewFragmentBinding binding;
-    private CommentAdapter commentAdapter;
     private CourseDetailActivity context;
+    private CommentAdapter commentAdapter;
+    private CourseDetailViewModel mVM;
 
     // require no arguments constructor
     public ReviewFragment(){}
-
-    public static ReviewFragment newInstance(ArrayList<Comment> comments){
-        ReviewFragment reviewFragment = new ReviewFragment();
-
-        Bundle args = new Bundle();
-        args.putParcelableArrayList("list_comment", comments);
-
-        reviewFragment.setArguments(args);
-        return reviewFragment;
-    }
-
-    @Override
-    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        if (args != null && args.getParcelableArrayList("list_comment") != null){
-            comments.addAll(getArguments().getParcelableArrayList("list_comment"));
-        }
-    }
 
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -56,13 +41,18 @@ public class ReviewFragment extends Fragment {
         context = (CourseDetailActivity) getActivity();
 
         setupRecyclerView();
-        if (comments.isEmpty()){
-            binding.txtNoComment.setVisibility(View.VISIBLE);
-            binding.rvReview.setVisibility(View.GONE);
-        }else{
-            binding.txtNoComment.setVisibility(View.GONE);
-            binding.rvReview.setVisibility(View.VISIBLE);
-        }
+
+        mVM = new ViewModelProvider(requireActivity()).get(CourseDetailViewModel.class);
+        mVM.getCommentLiveData().observe(getViewLifecycleOwner(), comments -> {
+            if (comments.isEmpty()){
+                binding.txtNoComment.setVisibility(View.VISIBLE);
+                binding.rvReview.setVisibility(View.GONE);
+            }else{
+                binding.txtNoComment.setVisibility(View.GONE);
+                binding.rvReview.setVisibility(View.VISIBLE);
+            }
+            commentAdapter.setData(comments);
+        });
         return binding.getRoot();
     }
 

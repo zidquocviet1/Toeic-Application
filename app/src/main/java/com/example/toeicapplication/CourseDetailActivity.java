@@ -74,6 +74,7 @@ public class CourseDetailActivity extends BaseActivity<CourseDetailViewModel, Ac
         if (course != null) {
             setupBaseUI();
             mVM.getCourseInfo(course.getId());
+            mVM.getTopCommentByCourse(course.getId(), 5L);
         }
         setupEvent();
     }

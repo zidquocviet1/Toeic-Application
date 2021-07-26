@@ -6,37 +6,40 @@ import android.os.Parcelable;
 import com.example.toeicapplication.model.entity.Course;
 import com.example.toeicapplication.model.entity.User;
 
-public class Comment implements Parcelable {
-    private int id;
-    private String content;
-    private int rating;
-    private long courseId;
-    private Long userId;
-    private Course course;
-    private User user;
+import java.time.LocalDateTime;
 
-    public Comment(int id, String content, int rating, long courseId, Long userId, Course course, User user) {
+public class Comment implements Parcelable {
+    private Long id;
+    private String content;
+    private LocalDateTime timestamp;
+    private Long courseId;
+    private Long userId;
+
+    public Comment(Long id, String content, LocalDateTime timestamp, Long courseId, Long userId) {
         this.id = id;
         this.content = content;
-        this.rating = rating;
+        this.timestamp = timestamp;
         this.courseId = courseId;
         this.userId = userId;
-        this.course = course;
-        this.user = user;
     }
 
     protected Comment(Parcel in) {
-        id = in.readInt();
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readLong();
+        }
         content = in.readString();
-        rating = in.readInt();
-        courseId = in.readLong();
+        if (in.readByte() == 0) {
+            courseId = null;
+        } else {
+            courseId = in.readLong();
+        }
         if (in.readByte() == 0) {
             userId = null;
         } else {
             userId = in.readLong();
         }
-        course = in.readParcelable(Course.class.getClassLoader());
-        user = in.readParcelable(User.class.getClassLoader());
     }
 
     public static final Creator<Comment> CREATOR = new Creator<Comment>() {
@@ -51,11 +54,11 @@ public class Comment implements Parcelable {
         }
     };
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -67,19 +70,19 @@ public class Comment implements Parcelable {
         this.content = content;
     }
 
-    public int getRating() {
-        return rating;
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setRating(int rating) {
-        this.rating = rating;
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
-    public long getCourseId() {
+    public Long getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(long courseId) {
+    public void setCourseId(Long courseId) {
         this.courseId = courseId;
     }
 
@@ -91,22 +94,6 @@ public class Comment implements Parcelable {
         this.userId = userId;
     }
 
-    public Course getCourse() {
-        return course;
-    }
-
-    public void setCourse(Course course) {
-        this.course = course;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -114,17 +101,24 @@ public class Comment implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
         dest.writeString(content);
-        dest.writeInt(rating);
-        dest.writeLong(courseId);
+        if (courseId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(courseId);
+        }
         if (userId == null) {
             dest.writeByte((byte) 0);
         } else {
             dest.writeByte((byte) 1);
             dest.writeLong(userId);
         }
-        dest.writeParcelable(course, flags);
-        dest.writeParcelable(user, flags);
     }
 }

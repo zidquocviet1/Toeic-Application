@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.toeicapplication.model.Comment;
 import com.example.toeicapplication.model.CourseMapper;
 import com.example.toeicapplication.model.entity.User;
+import com.example.toeicapplication.network.response.MyResponse;
 import com.example.toeicapplication.repository.CourseDetailRepository;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,12 +19,14 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
 public class CourseDetailViewModel extends ViewModel {
     private final MutableLiveData<List<CourseMapper>> courseInfoLiveData;
+    private final MutableLiveData<List<Comment>> commentLiveData;
 
     private final CourseDetailRepository repository;
     private final CompositeDisposable cd;
@@ -30,12 +34,17 @@ public class CourseDetailViewModel extends ViewModel {
     @Inject
     public CourseDetailViewModel(CourseDetailRepository repository) {
         courseInfoLiveData = new MutableLiveData<>();
+        commentLiveData = new MutableLiveData<>();
         this.repository = repository;
         this.cd = new CompositeDisposable();
     }
 
     public LiveData<List<CourseMapper>> getCourseInfoLiveData() {
         return courseInfoLiveData;
+    }
+
+    public LiveData<List<Comment>> getCommentLiveData() {
+        return commentLiveData;
     }
 
     /*
@@ -65,6 +74,17 @@ public class CourseDetailViewModel extends ViewModel {
                     }
                 })
         );
+    }
+
+    public void getTopCommentByCourse(Long courseId, Long volume) {
+        cd.add(repository.getTopCommentByCourse(courseId, volume)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listMyResponse -> {
+                    if (listMyResponse != null && listMyResponse.isStatus()) {
+                        commentLiveData.postValue(listMyResponse.getData());
+                    }
+                }, Throwable::printStackTrace));
     }
 
     @Override
