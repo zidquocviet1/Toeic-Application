@@ -3,14 +3,17 @@ package com.example.toeicapplication.di;
 
 import com.example.toeicapplication.db.MyDB;
 import com.example.toeicapplication.db.dao.ResultDAO;
+import com.example.toeicapplication.network.service.CourseService;
 import com.example.toeicapplication.network.service.ResultService;
 import com.example.toeicapplication.network.service.UserService;
+import com.example.toeicapplication.repository.CourseDetailRepository;
 import com.example.toeicapplication.repository.EditProfileRepository;
 import com.example.toeicapplication.repository.ExamRepository;
 import com.example.toeicapplication.repository.HomeRepository;
 import com.example.toeicapplication.repository.LoginRepository;
 import com.example.toeicapplication.repository.ResultRepository;
 import com.example.toeicapplication.repository.UserInfoRepository;
+import com.example.toeicapplication.repository.impl.CourseDetailRepositoryImpl;
 import com.example.toeicapplication.repository.impl.EditProfileRepositoryImpl;
 import com.example.toeicapplication.repository.impl.ExamRepositoryImpl;
 import com.example.toeicapplication.repository.impl.HomeRepositoryImpl;
@@ -63,7 +66,13 @@ public class RepositoryModule {
 
     @ViewModelScoped
     @Provides
-    public UserInfoRepository provideUserInfoRepository(MyDB db){
-        return new UserInfoRepositoryImpl(db);
+    public UserInfoRepository provideUserInfoRepository(MyDB db, ResultService resultService, UserService userService){
+        return new UserInfoRepositoryImpl(db, resultService, userService);
+    }
+
+    @ViewModelScoped
+    @Provides
+    public CourseDetailRepository provideCourseDetailRepository(CourseService courseService){
+        return new CourseDetailRepositoryImpl(courseService);
     }
 }

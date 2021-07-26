@@ -1,5 +1,6 @@
 package com.example.toeicapplication.di;
 
+import com.example.toeicapplication.network.service.CourseService;
 import com.example.toeicapplication.network.service.ResultService;
 import com.example.toeicapplication.network.service.UserService;
 import com.example.toeicapplication.utilities.AppConstants;
@@ -68,5 +69,11 @@ public class NetworkModule {
     @Provides
     public ResultService provideResultService(Retrofit retrofit){
         return retrofit.create(ResultService.class);
+    }
+
+    @Singleton
+    @Provides
+    public CourseService provideCourseService(Retrofit retrofit){
+        return retrofit.create(CourseService.class);
     }
 }
