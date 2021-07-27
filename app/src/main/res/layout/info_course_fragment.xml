@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
+    android:layout_margin="6dp"
     android:layout_span="10"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?selectableItemBackground"
     android:padding="8dp"
     app:cardCornerRadius="10dp"
-    app:cardElevation="16dp">
+    app:cardElevation="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <FrameLayout
             android:id="@+id/framelayout"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/imageView"
@@ -49,10 +49,10 @@
             android:layout_marginTop="10dp"
             android:fontFamily="@font/avenir_lt_pro_light"
             android:text="Training with 550 scores"
-            app:layout_constraintStart_toEndOf="@id/framelayout"
-            app:layout_constraintTop_toTopOf="@id/framelayout"
             android:textColor="@color/description"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@id/framelayout"
+            app:layout_constraintTop_toTopOf="@id/framelayout" />
 
         <RatingBar
             android:id="@+id/rbStar"
@@ -73,29 +73,30 @@
             android:layout_marginStart="5dp"
             android:fontFamily="@font/avenir_lt_pro_light"
             android:text="3/5"
-            app:layout_constraintStart_toEndOf="@id/rbStar"
-            app:layout_constraintTop_toTopOf="@id/rbStar"
-            app:layout_constraintBottom_toBottomOf="@id/rbStar"
             android:textColor="@color/title"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/rbStar"
+            app:layout_constraintStart_toEndOf="@id/rbStar"
+            app:layout_constraintTop_toTopOf="@id/rbStar" />
 
         <TextView
             android:id="@+id/txtComment"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:fontFamily="@font/avenir_lt_pro_light"
             android:text="@string/comment"
-            android:layout_marginTop="10dp"
-            app:layout_constraintStart_toStartOf="@id/rbStar"
-            app:layout_constraintTop_toBottomOf="@id/rbStar"
             android:textColor="@color/title"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/rbStar"
+            app:layout_constraintTop_toBottomOf="@id/rbStar" />
 
         <TextView
             android:id="@+id/txtViewAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
+            android:layout_marginEnd="16dp"
             android:background="?selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
@@ -104,10 +105,8 @@
             android:textColor="@color/see_all"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintStart_toEndOf="@id/txtComment"
             app:layout_constraintBaseline_toBaselineOf="@id/txtComment"
-            app:layout_constraintEnd_toEndOf="parent" />
-
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/txtComment" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

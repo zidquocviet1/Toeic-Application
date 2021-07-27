@@ -107,7 +107,6 @@
 
     <string name="profile">Profile</string>
     <string name="account">Account</string>
-    <string name="comment_title">Comments</string>
 
     // course detail activity
     <string name="course_description" translatable="false">
@@ -163,5 +162,12 @@
     // rank fragment
     <string name="all">All</string>
     <string name="empty_leaderboard">Have no leader yet. Be the first leader right now.</string>
+    //
+
+    // comment activity
+    <string name="send">Send</string>
+    <string name="comment_title">Comments</string>
+    <string name="comment_input_hint">Add a comment...</string>
+    <string name="post">Post</string>
     //
 </resources>
