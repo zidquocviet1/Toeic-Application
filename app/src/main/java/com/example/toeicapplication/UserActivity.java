@@ -66,6 +66,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBinding>
         implements View.OnClickListener {
     private User user;
+    private String source;
     private final MyActivityForResult<Intent, ActivityResult> activityLauncher
             = getActivityForResult(new ActivityResultContracts.StartActivityForResult());
     private final MyActivityForResult<String, Boolean> requestPermissionLauncher
@@ -109,11 +110,13 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
                 }else if (state.getStatus() == Status.SUCCESS){
                     new Handler(getMainLooper()).postDelayed(() -> {
                         mBinding.pbLoading.setVisibility(View.GONE);
+                        if (source.equals(HomeActivity.class.getSimpleName())) mBinding.btnEdit.setVisibility(View.VISIBLE);
                         showInfo(state.getData());
                     }, 500);
                 }else {
                     new Handler(getMainLooper()).postDelayed(() -> {
                         mBinding.pbLoading.setVisibility(View.GONE);
+                        mBinding.btnEdit.setVisibility(View.GONE);
                         Toast.makeText(this, state.getMessage(), Toast.LENGTH_SHORT).show();
                     }, 500);
                 }
@@ -123,7 +126,7 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
 
     private void getUserFromIntent() {
         Intent intent = getIntent();
-        String source = intent.getStringExtra("source");
+        source = intent.getStringExtra("source");
 
         if (source.equals(HomeActivity.class.getSimpleName())) {
             user = intent.getParcelableExtra("user");

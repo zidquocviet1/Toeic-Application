@@ -30,7 +30,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     public WordAdapter(Context context, List<Word> data){
         this.context = context;
         this.data = data;
-        this.dataFiltered = this.data;
+        this.dataFiltered = data;
     }
 
     public void setOnItemClickListener(ItemClickListener callback){
@@ -39,6 +39,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
     public void setData(List<Word> words){
         this.data = words;
+        this.dataFiltered = words;
         notifyItemRangeInserted(0, data.size() -1);
     }
 
@@ -78,35 +79,35 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
         return data.size();
     }
 
-    // not complete yet
     @Override
     public Filter getFilter() {
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
                 String charString = charSequence.toString();
+                List<Word> filteredList;
+
                 if (charString.isEmpty()) {
-                    dataFiltered = data;
+                    filteredList = dataFiltered;
                 } else {
-                    List<Word> filteredList = new ArrayList<>();
-                    for (Word row : data) {
+                    List<Word> temp = new ArrayList<>();
+                    for (Word row : dataFiltered) {
                         if (row.getName().toLowerCase().contains(charString.toLowerCase())) {
-                            filteredList.add(row);
+                            temp.add(row);
                         }
                     }
-                    dataFiltered = filteredList;
+                    filteredList = temp;
                 }
 
                 FilterResults filterResults = new FilterResults();
-                filterResults.values = dataFiltered;
+                filterResults.values = filteredList;
                 return filterResults;
             }
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                dataFiltered = new ArrayList<>((List<Word>)filterResults.values);
-
-                notifyItemRangeChanged(0, dataFiltered.size() - 1);
+                data = (List<Word>) filterResults.values;
+                notifyDataSetChanged();
             }
         };
     }

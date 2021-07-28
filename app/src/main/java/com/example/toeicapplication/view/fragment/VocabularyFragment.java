@@ -101,7 +101,6 @@ public class VocabularyFragment extends BaseFragment<HomeViewModel, FragmentVoca
             setData();
         }
 
-        // chua xong phan nay
         mBinding.input.addTextChangedListener(this);
     }
 
