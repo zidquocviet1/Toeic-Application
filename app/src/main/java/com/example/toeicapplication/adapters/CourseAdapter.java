@@ -71,6 +71,18 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     }
 
     @Override
+    public void onBindViewHolder(@NonNull @NotNull CourseViewHolder holder, int position, @NonNull @NotNull List<Object> payloads) {
+        if (!payloads.isEmpty()){
+            if (payloads.get(0) instanceof Integer){
+                Integer commentCount = (Integer) payloads.get(0);
+                holder.txtComment.setText(context.getString(R.string.comment, commentCount == null ? 0 : commentCount));
+            }
+        }else {
+            super.onBindViewHolder(holder, position, payloads);
+        }
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull @NotNull CourseViewHolder holder, int position) {
         Course course = data.get(position);
 
@@ -86,11 +98,11 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
         if (owner == Owner.COURSE_FRAGMENT){
             holder.itemView.setOnClickListener(null);
-            holder.rbStar.setRating(course.getRating() == null ? 0.0f : course.getRating());
+            holder.rbStar.setRating(course.getRating() == null ? 5.0f : course.getRating());
             holder.txtComment.setText(context.getString(R.string.comment,
                                         course.getComment() == null ? 0: course.getComment().size()));
             holder.txtRatio.setText(context.getString(R.string.comment_ratio, String.format(Locale.getDefault(),
-                    "%.1f", course.getRating() == null ? 0.0 : course.getRating())));
+                    "%.1f", course.getRating() == null ? 5.0 : course.getRating())));
 
             holder.txtViewAll.setOnClickListener(l -> {
                 if (callback != null){

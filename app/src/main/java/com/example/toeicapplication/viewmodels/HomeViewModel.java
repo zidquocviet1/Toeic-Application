@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.toeicapplication.model.Comment;
 import com.example.toeicapplication.model.RankInfo;
 import com.example.toeicapplication.model.entity.Course;
 import com.example.toeicapplication.model.entity.Result;
@@ -50,6 +51,9 @@ public class HomeViewModel extends ViewModel {
     // Rank Fragment
     private final MutableLiveData<Resource<List<RankInfo>>> listRankInfo;
 
+    // Course Fragment
+    private final MutableLiveData<List<Comment>> commentLiveData;
+
     // Dependencies
     private final HomeRepository repository;
     private final CompositeDisposable cd;
@@ -64,6 +68,7 @@ public class HomeViewModel extends ViewModel {
         listRankInfo = new MutableLiveData<>();
         loginUserFromLocal = new MutableLiveData<>();
         loginUser = new MutableLiveData<>();
+        commentLiveData = new MutableLiveData<>();
         cd = new CompositeDisposable();
 
         this.repository = repository;
@@ -109,6 +114,10 @@ public class HomeViewModel extends ViewModel {
 
     public LiveData<User> getLoginUserLiveData() {
         return loginUser;
+    }
+
+    public LiveData<List<Comment>> getCommentLiveData() {
+        return commentLiveData;
     }
 
     // communicate with Repository
@@ -217,5 +226,20 @@ public class HomeViewModel extends ViewModel {
 
                     }
                 });
+    }
+
+    // Course Fragment
+    public void getAllComment() {
+        cd.add(repository.getAllComment(Integer.MAX_VALUE)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listMyResponse -> {
+                    if (listMyResponse != null && listMyResponse.isStatus()){
+                        commentLiveData.postValue(listMyResponse.getData());
+                    }
+                }, throwable -> {
+                    commentLiveData.postValue(null);
+                    throwable.printStackTrace();
+                }));
     }
 }

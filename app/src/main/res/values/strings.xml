@@ -169,5 +169,7 @@
     <string name="comment_title">Bình luận</string>
     <string name="comment_input_hint">Thêm bình luận...</string>
     <string name="post">Đăng</string>
+    <string name="comment_loading_state">Đang tải...</string>
+    <string name="comment_error_state"><u>Lỗi, thử lại</u></string>
     //
 </resources>

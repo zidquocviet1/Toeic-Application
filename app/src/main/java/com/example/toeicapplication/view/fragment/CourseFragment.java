@@ -1,6 +1,10 @@
 package com.example.toeicapplication.view.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -8,21 +12,22 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
+import com.example.toeicapplication.CommentActivity;
 import com.example.toeicapplication.HomeActivity;
 import com.example.toeicapplication.R;
 import com.example.toeicapplication.adapters.CourseAdapter;
 import com.example.toeicapplication.databinding.FragmentCourseBinding;
+import com.example.toeicapplication.model.Comment;
 import com.example.toeicapplication.model.entity.Course;
+import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.viewmodels.HomeViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -32,9 +37,14 @@ public class CourseFragment extends BaseFragment<HomeViewModel, FragmentCourseBi
     private HomeActivity context;
 
     private List<Course> courses;
+    private List<Comment> comments = new ArrayList<>();
+    private User user;
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    public static final String ENTRY = "entries";
+    public static final String USER_KEY = "user";
+    public static final String COURSE_KEY = "course";
 
     private String mParam1;
     private String mParam2;
@@ -85,15 +95,48 @@ public class CourseFragment extends BaseFragment<HomeViewModel, FragmentCourseBi
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupObserve();
         setupRecyclerView();
+        setupObserve();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mVM.getAllComment();
     }
 
     private void setupObserve(){
         mVM.getCourses().observe(getViewLifecycleOwner(), courses -> {
             if (courses != null){
+                this.courses.addAll(courses);
                 courseAdapter.setData(courses);
             }
+        });
+
+        mVM.getCommentLiveData().observe(getViewLifecycleOwner(), comments -> {
+            if (comments != null){
+                this.comments = new ArrayList<>(comments);
+
+                Map<Long, Integer> result = comments.stream()
+                        .collect(Collectors
+                                .toConcurrentMap(
+                                        Comment::getCourseId, // return key
+                                        comment -> 1, // return count value
+                                        Integer::sum));
+
+                result.entrySet().forEach(entry ->
+                        courses.stream()
+                        .filter(c -> c.getId().equals(entry.getKey()))
+                        .findFirst()
+                        .ifPresent(course1 -> {
+                            int position = courses.indexOf(course1);
+                            courseAdapter.notifyItemChanged(position, entry.getValue());
+                        }));
+            }
+        });
+
+        mVM.getLoginUserLiveData().observe(getViewLifecycleOwner(), user -> {
+            this.user = user;
         });
     }
 
@@ -104,6 +147,19 @@ public class CourseFragment extends BaseFragment<HomeViewModel, FragmentCourseBi
                 courses,
                 R.layout.info_course_fragment,
                 CourseAdapter.Owner.COURSE_FRAGMENT);
+
+        courseAdapter.setOnItemClickListener((object, position) -> {
+            Course course = courses.get(position);
+            ArrayList<Comment> entries = comments.stream()
+                    .filter(c -> c.getCourseId().equals(course.getId()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            Intent intent = new Intent(context, CommentActivity.class);
+            intent.putExtra(USER_KEY, user);
+            intent.putExtra(COURSE_KEY, course);
+            intent.putParcelableArrayListExtra(ENTRY, entries);
+            startActivity(intent);
+        });
 
         mBinding.rvCourseInfo.setAdapter(courseAdapter);
         mBinding.rvCourseInfo.setLayoutManager(new LinearLayoutManager(context,

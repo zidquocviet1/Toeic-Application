@@ -7,6 +7,7 @@ import com.example.toeicapplication.network.service.CommentService;
 import com.example.toeicapplication.network.service.CourseService;
 import com.example.toeicapplication.network.service.ResultService;
 import com.example.toeicapplication.network.service.UserService;
+import com.example.toeicapplication.repository.CommentRepository;
 import com.example.toeicapplication.repository.CourseDetailRepository;
 import com.example.toeicapplication.repository.EditProfileRepository;
 import com.example.toeicapplication.repository.ExamRepository;
@@ -14,6 +15,7 @@ import com.example.toeicapplication.repository.HomeRepository;
 import com.example.toeicapplication.repository.LoginRepository;
 import com.example.toeicapplication.repository.ResultRepository;
 import com.example.toeicapplication.repository.UserInfoRepository;
+import com.example.toeicapplication.repository.impl.CommentRepositoryImpl;
 import com.example.toeicapplication.repository.impl.CourseDetailRepositoryImpl;
 import com.example.toeicapplication.repository.impl.EditProfileRepositoryImpl;
 import com.example.toeicapplication.repository.impl.ExamRepositoryImpl;
@@ -48,9 +50,10 @@ public class RepositoryModule {
     @ViewModelScoped
     @Provides
     public HomeRepository provideHomeRepository(UserService userService,
+                                                CommentService commentService,
                                                 MyDB database,
                                                 CompositeDisposable cd){
-        return new HomeRepositoryImpl(userService, database, cd);
+        return new HomeRepositoryImpl(userService, commentService, database, cd);
     }
 
     @ViewModelScoped
@@ -75,5 +78,11 @@ public class RepositoryModule {
     @Provides
     public CourseDetailRepository provideCourseDetailRepository(CourseService courseService, CommentService commentService){
         return new CourseDetailRepositoryImpl(courseService, commentService);
+    }
+
+    @ViewModelScoped
+    @Provides
+    public CommentRepository provideCommentRepository(CommentService commentService){
+        return new CommentRepositoryImpl(commentService);
     }
 }

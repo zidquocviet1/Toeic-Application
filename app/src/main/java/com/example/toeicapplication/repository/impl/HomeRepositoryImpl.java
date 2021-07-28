@@ -5,11 +5,13 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.toeicapplication.db.MyDB;
+import com.example.toeicapplication.model.Comment;
 import com.example.toeicapplication.model.entity.Course;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.model.entity.Word;
 import com.example.toeicapplication.model.relations.RemoteUserWithResults;
 import com.example.toeicapplication.network.response.MyResponse;
+import com.example.toeicapplication.network.service.CommentService;
 import com.example.toeicapplication.network.service.UserService;
 import com.example.toeicapplication.repository.HomeRepository;
 import com.example.toeicapplication.utilities.AppConstants;
@@ -38,14 +40,17 @@ import retrofit2.Response;
 public class HomeRepositoryImpl implements HomeRepository {
     private final CompositeDisposable compositeDisposable;
     private final UserService userService;
+    private final CommentService commentService;
     private final MyDB database;
 
     @Inject
     public HomeRepositoryImpl(UserService userService,
+                              CommentService commentService,
                               MyDB database,
                               CompositeDisposable compositeDisposable) {
         this.compositeDisposable = compositeDisposable;
         this.userService = userService;
+        this.commentService = commentService;
         this.database = database;
     }
 
@@ -261,5 +266,10 @@ public class HomeRepositoryImpl implements HomeRepository {
                 return userService.login(user);
             }
         }.asObservable();
+    }
+
+    @Override
+    public Observable<MyResponse<List<Comment>>> getAllComment(Integer volume) {
+        return commentService.getAllComment(volume);
     }
 }

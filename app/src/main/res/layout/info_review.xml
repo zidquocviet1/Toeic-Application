@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cvComment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="6dp"
@@ -29,14 +30,26 @@
 
         <TextView
             android:id="@+id/txtReview"
-            android:text="Khoa hoc nay kha ok"
-            android:textSize="20sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="14dp"
-            app:layout_constraintTop_toTopOf="@id/cardView"
+            android:text="Khoa hoc nay kha ok"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@id/txtState"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/cardView"
-            app:layout_constraintBottom_toBottomOf="@id/cardView"/>
+            app:layout_constraintTop_toTopOf="@id/cardView" />
+
+        <TextView
+            android:id="@+id/txtState"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/comment_loading_state"
+            android:background="?selectableItemBackground"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/cardView"
+            app:layout_constraintStart_toStartOf="@id/txtReview"
+            app:layout_constraintTop_toBottomOf="@id/txtReview" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

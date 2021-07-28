@@ -2,10 +2,12 @@ package com.example.toeicapplication.repository;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.toeicapplication.model.Comment;
 import com.example.toeicapplication.model.entity.Course;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.model.entity.Word;
 import com.example.toeicapplication.model.relations.RemoteUserWithResults;
+import com.example.toeicapplication.network.response.MyResponse;
 import com.example.toeicapplication.utilities.Resource;
 
 import java.util.List;
@@ -38,4 +40,6 @@ public interface HomeRepository {
     Observable<List<RemoteUserWithResults>> getLeaderboard(Course course, boolean hasNetwork);
 
     Observable<User> loadUserFromLocalAndRemote(User user, boolean hasNetwork);
+
+    Observable<MyResponse<List<Comment>>> getAllComment(Integer volume);
 }

@@ -3,9 +3,6 @@ package com.example.toeicapplication.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.toeicapplication.model.entity.Course;
-import com.example.toeicapplication.model.entity.User;
-
 import java.time.LocalDateTime;
 
 public class Comment implements Parcelable {
@@ -40,6 +37,7 @@ public class Comment implements Parcelable {
         } else {
             userId = in.readLong();
         }
+        timestamp = (LocalDateTime) in.readSerializable();
     }
 
     public static final Creator<Comment> CREATOR = new Creator<Comment>() {
@@ -120,5 +118,6 @@ public class Comment implements Parcelable {
             dest.writeByte((byte) 1);
             dest.writeLong(userId);
         }
+        dest.writeSerializable(timestamp);
     }
 }

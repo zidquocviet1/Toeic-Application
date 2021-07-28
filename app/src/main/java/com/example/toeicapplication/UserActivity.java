@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Html;
 import android.util.Log;
@@ -42,6 +43,7 @@ import com.example.toeicapplication.model.entity.Result;
 import com.example.toeicapplication.model.entity.User;
 import com.example.toeicapplication.utilities.AppConstants;
 import com.example.toeicapplication.utilities.MyActivityForResult;
+import com.example.toeicapplication.utilities.Status;
 import com.example.toeicapplication.view.custom.AppInfoPermissionDialog;
 import com.example.toeicapplication.view.custom.ExplainReasonUsePermissionDialog;
 import com.example.toeicapplication.view.fragment.RankFragment;
@@ -92,9 +94,8 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
 
         getUserFromIntent();
         if (user == null) this.finish();
-        mVM.setUser(user);
+        mVM.findUserRemote(user.getId());
         setupViewPager();
-        showInfo(user);
         mBinding.imgAvatar.setOnClickListener(this);
         mBinding.btnEdit.setOnClickListener(this);
     }
@@ -102,17 +103,19 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
     @Override
     public void setupObserver() {
         if (mVM != null) {
-            mVM.getResultListLiveData().observe(this, resultList -> {
-                if (resultList != null && !resultList.isEmpty()) {
-                    mBinding.txtRecord.setText(Html.fromHtml(getString(R.string.record, resultList.size()), Html.FROM_HTML_MODE_COMPACT));
-                    Result result = resultList.stream()
-                            .max((o1, o2) -> o1.getScore().compareTo(o2.getScore()))
-                            .orElse(null);
-                    Integer maxCore = result == null ? 0 : result.getScore();
-                    mBinding.txtScore.setText(Html.fromHtml(getString(R.string.score, maxCore), Html.FROM_HTML_MODE_COMPACT));
-                } else {
-                    mBinding.txtRecord.setText(Html.fromHtml(getString(R.string.record, 0), Html.FROM_HTML_MODE_COMPACT));
-                    mBinding.txtScore.setText(Html.fromHtml(getString(R.string.score, 0), Html.FROM_HTML_MODE_COMPACT));
+            mVM.getUserLiveData().observe(this, state -> {
+                if (state.getStatus() == Status.LOADING){
+                    mBinding.pbLoading.setVisibility(View.VISIBLE);
+                }else if (state.getStatus() == Status.SUCCESS){
+                    new Handler(getMainLooper()).postDelayed(() -> {
+                        mBinding.pbLoading.setVisibility(View.GONE);
+                        showInfo(state.getData());
+                    }, 500);
+                }else {
+                    new Handler(getMainLooper()).postDelayed(() -> {
+                        mBinding.pbLoading.setVisibility(View.GONE);
+                        Toast.makeText(this, state.getMessage(), Toast.LENGTH_SHORT).show();
+                    }, 500);
                 }
             });
         }
@@ -124,14 +127,12 @@ public class UserActivity extends BaseActivity<UserInfoViewModel, ActivityUserBi
 
         if (source.equals(HomeActivity.class.getSimpleName())) {
             user = intent.getParcelableExtra("user");
-//            mVM.getCourseWithResults();
         } else if (source.equals(RankFragment.class.getSimpleName())) {
             mBinding.btnEdit.setVisibility(View.GONE);
             RemoteUser remoteUser = intent.getParcelableExtra("remote_user");
             user = new User(remoteUser.getId(), remoteUser.getUserName(), "", remoteUser.getDisplayName(),
                     remoteUser.getBiography(), "", "", "", null,
                     remoteUser.getTimestamp(), null, false, null);
-            mVM.getResultRemoteWithUserId(user.getId());
         }
     }
 

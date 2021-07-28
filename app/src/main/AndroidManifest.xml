@@ -33,8 +33,7 @@
         android:supportsRtl="true"
         android:theme="@style/NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CommentActivity"
-            android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".CommentActivity" android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".SendMessageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

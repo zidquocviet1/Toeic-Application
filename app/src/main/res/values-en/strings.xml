@@ -169,5 +169,7 @@
     <string name="comment_title">Comments</string>
     <string name="comment_input_hint">Add a comment...</string>
     <string name="post">Post</string>
+    <string name="comment_loading_state">Loading...</string>
+    <string name="comment_error_state"><u>Error, try again!</u></string>
     //
 </resources>
